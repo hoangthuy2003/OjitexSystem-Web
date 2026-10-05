@@ -1,0 +1,198 @@
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Ojitex trang chủ">
+      <span class="brand-mark">O</span>
+      <span class="brand-name">OJITEX <span>OPERATIONS</span></span>
+    </a>
+    <div class="connection-state">
+      <span class="status-dot"></span>
+      <span>Dữ liệu tồn kho</span>
+    </div>
+  </header>
+
+  <main class="content">
+    <section class="page-heading">
+      <div>
+        <p class="eyebrow">KHO VẬN <span>/</span> TỔNG QUAN</p>
+        <h1>Tồn kho hiện tại</h1>
+        <p class="page-description">Theo dõi lượng tồn theo từng mã sản phẩm.</p>
+      </div>
+      <button class="refresh-button" type="button" (click)="loadStocks()" [disabled]="loading">
+        <svg viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M16.2 8A6.5 6.5 0 0 0 4.5 6.2L3 8m0 0V4.8M3 8h3.2M3.8 12a6.5 6.5 0 0 0 11.7 1.8L17 12m0 0v3.2m0-3.2h-3.2" />
+        </svg>
+        Làm mới
+      </button>
+    </section>
+
+    <section class="summary-grid" aria-label="Tóm tắt tồn kho">
+      <article class="summary-card">
+        <div class="summary-label">Mã sản phẩm</div>
+        <div class="summary-value">{{ stockItems.length | number }}</div>
+        <div class="summary-note">Tổng số mặt hàng</div>
+        <span class="summary-icon icon-box" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z" /><path d="m4.3 7.6 7.7 4.3 7.7-4.3M12 12v9" /></svg>
+        </span>
+      </article>
+      <article class="summary-card">
+        <div class="summary-label">Tổng tồn hiện tại</div>
+        <div class="summary-value">{{ formatNumber(totalStock) }}</div>
+        <div class="summary-note">Cộng từ các mã có dữ liệu</div>
+        <span class="summary-icon icon-bars" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 19V9m8 10V5m8 14v-7" /><path d="M2 19h20" /></svg>
+        </span>
+      </article>
+      <article class="summary-card">
+        <div class="summary-label">Đang hết hàng</div>
+        <div class="summary-value">{{ outOfStockCount | number }}</div>
+        <div class="summary-note">Mã có tồn kho bằng hoặc dưới 0</div>
+        <span class="summary-icon icon-alert" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 3 2.8 19h18.4L12 3Z" /><path d="M12 9v4m0 3h.01" /></svg>
+        </span>
+      </article>
+    </section>
+
+    <section class="inventory-layout">
+      <article class="inventory-card">
+        <div class="card-heading">
+          <div>
+            <h2>Danh sách tồn kho</h2>
+            <p>{{ filteredStocks.length | number }} kết quả</p>
+          </div>
+          <label class="search-box">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <circle cx="8.8" cy="8.8" r="5.8" />
+              <path d="m13.2 13.2 4 4" />
+            </svg>
+            <input
+              type="search"
+              placeholder="Tìm mã sản phẩm"
+              aria-label="Tìm mã sản phẩm"
+              [(ngModel)]="searchTerm"
+            />
+            @if (searchTerm) {
+              <button type="button" class="clear-search" aria-label="Xóa nội dung tìm kiếm" (click)="searchTerm = ''">×</button>
+            }
+          </label>
+        </div>
+
+        <div class="filter-row" aria-label="Lọc mặt hàng">
+          <button type="button" [class.active]="stockFilter === 'all'" (click)="stockFilter = 'all'">Tất cả</button>
+          <button type="button" [class.active]="stockFilter === 'available'" (click)="stockFilter = 'available'">Còn hàng</button>
+          <button type="button" [class.active]="stockFilter === 'empty'" (click)="stockFilter = 'empty'">Hết hàng</button>
+        </div>
+
+        @if (loading) {
+          <div class="feedback-state" role="status">
+            <span class="spinner"></span>
+            <span>Đang tải dữ liệu tồn kho...</span>
+          </div>
+        } @else if (errorMessage) {
+          <div class="feedback-state error-state" role="alert">
+            <div class="feedback-symbol">!</div>
+            <h3>Chưa thể tải dữ liệu</h3>
+            <p>{{ errorMessage }}</p>
+            <button type="button" class="retry-button" (click)="loadStocks()">Thử lại</button>
+          </div>
+        } @else if (stockItems.length === 0) {
+          <div class="feedback-state">
+            <div class="empty-symbol">—</div>
+            <h3>Chưa có dữ liệu tồn kho</h3>
+            <p>API hiện không trả về mặt hàng nào.</p>
+          </div>
+        } @else if (filteredStocks.length === 0) {
+          <div class="feedback-state">
+            <div class="empty-symbol">⌕</div>
+            <h3>Không tìm thấy mặt hàng</h3>
+            <p>Thử đổi mã tìm kiếm hoặc bộ lọc.</p>
+          </div>
+        } @else {
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Mã sản phẩm</th>
+                  <th scope="col">Tồn đầu</th>
+                  <th scope="col">Kho NG</th>
+                  <th scope="col">Thanh lý</th>
+                  <th scope="col">Sửa chữa</th>
+                  <th scope="col">Sản xuất</th>
+                  <th scope="col">Giao hàng</th>
+                  <th scope="col" class="stock-column">Tồn hiện tại</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (stock of filteredStocks; track stock.cstProCd) {
+                  <tr [class.row-selected]="selectedStock?.cstProCd === stock.cstProCd">
+                    <td>
+                      <button
+                        type="button"
+                        class="product-code"
+                        [attr.aria-label]="'Xem chi tiết mã ' + formatNumber(stock.cstProCd)"
+                        (click)="selectStock(stock)"
+                      >{{ formatNumber(stock.cstProCd) }}</button>
+                    </td>
+                    <td>{{ formatNumber(stock.cstOpenStock) }}</td>
+                    <td>{{ formatNumber(stock.cstWarehouseNg) }}</td>
+                    <td>{{ formatNumber(stock.cstDisposal) }}</td>
+                    <td>{{ formatNumber(stock.cstRepair) }}</td>
+                    <td>{{ formatNumber(stock.cstProduction) }}</td>
+                    <td>{{ formatNumber(stock.cstDelivery) }}</td>
+                    <td class="stock-column">
+                      <span class="stock-number">{{ formatNumber(stock.cstStock) }}</span>
+                      <span class="stock-badge" [class]="stockStatusClass(stock.cstStock)">{{ stockStatusLabel(stock.cstStock) }}</span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            Chọn mã sản phẩm để xem thông tin chi tiết
+          </div>
+        }
+      </article>
+
+      <aside class="detail-card" aria-live="polite">
+        <div class="detail-heading">
+          <div>
+            <p class="eyebrow">THÔNG TIN</p>
+            <h2>Chi tiết mặt hàng</h2>
+          </div>
+          <span class="detail-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 1 4 16.5v-11Z" /><path d="M4 16.5A2.5 2.5 0 0 1 6.5 14H20M8 7h8m-8 3h5" /></svg>
+          </span>
+        </div>
+
+        @if (detailLoading) {
+          <div class="detail-placeholder" role="status"><span class="spinner"></span> Đang tải chi tiết...</div>
+        } @else if (detailError) {
+          <div class="detail-placeholder detail-error" role="alert">{{ detailError }}</div>
+        } @else if (selectedStock; as stock) {
+          <div class="product-detail">
+            <span class="detail-label">MÃ SẢN PHẨM</span>
+            <strong class="detail-code">{{ formatNumber(stock.cstProCd) }}</strong>
+            <div class="detail-stock">
+              <span>Tồn hiện tại</span>
+              <strong>{{ formatNumber(stock.cstStock) }}</strong>
+            </div>
+            <div class="detail-list">
+              <div><span>Tồn đầu kỳ</span><strong>{{ formatNumber(stock.cstOpenStock) }}</strong></div>
+              <div><span>Kho NG</span><strong>{{ formatNumber(stock.cstWarehouseNg) }}</strong></div>
+              <div><span>Thanh lý</span><strong>{{ formatNumber(stock.cstDisposal) }}</strong></div>
+              <div><span>Sửa chữa</span><strong>{{ formatNumber(stock.cstRepair) }}</strong></div>
+              <div><span>Sản xuất</span><strong>{{ formatNumber(stock.cstProduction) }}</strong></div>
+              <div><span>Giao hàng</span><strong>{{ formatNumber(stock.cstDelivery) }}</strong></div>
+            </div>
+          </div>
+        } @else {
+          <div class="detail-placeholder">
+            <div class="detail-empty-mark">↗</div>
+            <p>Chọn một mã sản phẩm trong danh sách để xem chi tiết tồn kho.</p>
+          </div>
+        }
+      </aside>
+    </section>
+    <footer class="page-footer">Ojitex <span>·</span> Quản lý tồn kho</footer>
+  </main>
+</div>
