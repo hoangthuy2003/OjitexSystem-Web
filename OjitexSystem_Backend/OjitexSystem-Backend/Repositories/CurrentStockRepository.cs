@@ -23,4 +23,14 @@ public class CurrentStockRepository : ICurrentStockRepository
         return await _context.TCurrentStocks.AsNoTracking()
             .FirstOrDefaultAsync(s => s.CstProCd == proCd);
     }
+
+    public async Task<IEnumerable<TCurrentStock>> GetByProductCodeRangeAsync(
+        decimal minimumCode,
+        decimal maximumCode)
+    {
+        return await _context.TCurrentStocks.AsNoTracking()
+            .Where(s => s.CstProCd >= minimumCode && s.CstProCd <= maximumCode)
+            .OrderBy(s => s.CstProCd)
+            .ToListAsync();
+    }
 }

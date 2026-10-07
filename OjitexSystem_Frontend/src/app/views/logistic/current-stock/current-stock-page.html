@@ -1,0 +1,73 @@
+<main class="page">
+  <header class="page-header">
+    <div>
+      <p class="department">LOGISTIC</p>
+      <h1>Tồn kho hiện tại</h1>
+    </div>
+    @if (searchMode !== 'idle') {
+      <button class="refresh-button" type="button" (click)="refresh()" [disabled]="loading">
+        Tải lại
+      </button>
+    }
+  </header>
+
+  <section class="stock-card" aria-label="Tra cứu tồn kho hiện tại">
+    <form class="table-toolbar" (ngSubmit)="searchByProductCode()">
+      <label class="search-field">
+        <span>Tìm theo mã sản phẩm (có thể nhập một phần đầu mã)</span>
+        <input
+          type="search"
+          name="productCode"
+          maxlength="7"
+          [(ngModel)]="searchTerm"
+          placeholder="Ví dụ: 100000"
+          aria-label="Mã sản phẩm"
+        />
+      </label>
+      <div class="search-actions">
+        <button class="search-button" type="submit" [disabled]="loading">Tìm mã</button>
+        <button
+          class="search-all-button"
+          type="button"
+          (click)="searchAll()"
+          [disabled]="loading"
+        >
+          Tìm tất cả
+        </button>
+      </div>
+    </form>
+
+    @if (loading) {
+      <p class="message" role="status">Đang tải dữ liệu tồn kho...</p>
+    } @else if (errorMessage) {
+      <div class="message error-message" role="alert">
+        <p>{{ errorMessage }}</p>
+        @if (searchMode !== 'idle') {
+          <button class="retry-button" type="button" (click)="refresh()">Thử lại</button>
+        }
+      </div>
+    } @else if (searchMode === 'idle') {
+      <p class="message">Nhập mã sản phẩm để tìm nhanh, hoặc chọn “Tìm tất cả” để duyệt dữ liệu.</p>
+    } @else if (stockItems.length === 0) {
+      <p class="message">Không có dữ liệu tồn kho phù hợp.</p>
+    } @else {
+      <div class="table-scroll" (copy)="copyGridRange($event)">
+        <ag-grid-angular
+          [rowData]="stockItems"
+          [columnDefs]="columnDefs"
+          [defaultColDef]="defaultColDef"
+          [theme]="gridTheme"
+          [pagination]="gridPagination"
+          [paginationPageSize]="50"
+          [paginationPageSizeSelector]="[25, 50, 100]"
+          [enableCellTextSelection]="true"
+          [ensureDomOrder]="true"
+          class="stock-grid"
+        />
+      </div>
+      <p class="copy-hint">
+        Kéo bôi đen vùng ô cần sao chép, nhấn Ctrl+C rồi dán vào Excel để giữ nguyên hàng và cột.
+      </p>
+    }
+  </section>
+</main>

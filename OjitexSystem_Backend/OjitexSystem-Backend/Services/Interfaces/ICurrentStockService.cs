@@ -7,4 +7,6 @@ public interface ICurrentStockService
     Task<IEnumerable<TCurrentStock>> GetAllAsync();
 
     Task<TCurrentStock?> GetByProductCodeAsync(decimal proCd);
+
+    Task<IEnumerable<TCurrentStock>> GetByProductCodeRangeAsync(decimal minimumCode, decimal maximumCode);
 }
