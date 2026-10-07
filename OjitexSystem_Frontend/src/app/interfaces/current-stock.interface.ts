@@ -8,3 +8,10 @@ export interface CurrentStock {
   cstDelivery: number | null;
   cstStock: number | null;
 }
+
+export interface CurrentStockPage {
+  items: CurrentStock[];
+  hasMore: boolean;
+  page: number;
+  pageSize: number;
+}

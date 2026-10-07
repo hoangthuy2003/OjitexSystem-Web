@@ -22,4 +22,11 @@ public class CurrentStockService : ICurrentStockService
     {
         return _repository.GetByProductCodeAsync(proCd);
     }
+
+    public Task<IEnumerable<TCurrentStock>> GetByProductCodeRangeAsync(
+        decimal minimumCode,
+        decimal maximumCode)
+    {
+        return _repository.GetByProductCodeRangeAsync(minimumCode, maximumCode);
+    }
 }
