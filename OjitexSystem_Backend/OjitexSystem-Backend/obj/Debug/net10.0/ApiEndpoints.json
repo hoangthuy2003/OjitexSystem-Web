@@ -35,32 +35,6 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "OjitexSystem_Backend.Data.Production.TCurrentStock",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "OjitexSystem_Backend.Controllers.CurrentStockController",
-    "Method": "SearchByProductCodePrefix",
-    "RelativePath": "api/CurrentStock/search/{proCdPrefix}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "proCdPrefix",
-        "Type": "System.String",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
         "Type": "System.Collections.Generic.IEnumerable\u00601[[OjitexSystem_Backend.Data.Production.TCurrentStock, OjitexSystem-Backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",

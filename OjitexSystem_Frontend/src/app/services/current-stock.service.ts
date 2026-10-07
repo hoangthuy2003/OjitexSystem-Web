@@ -10,9 +10,9 @@ export class CurrentStockService {
   private readonly requestTimeoutMs = 15_000;
 
   searchByProductCodePrefix(productCodePrefix: string): Observable<CurrentStock[]> {
-    return this.http.get<CurrentStock[]>(
-      `${this.endpoint}/search/${encodeURIComponent(productCodePrefix)}`,
-    ).pipe(timeout({ first: this.requestTimeoutMs }));
+    return this.http
+      .get<CurrentStock[]>(`${this.endpoint}/${encodeURIComponent(productCodePrefix)}`)
+      .pipe(timeout({ first: this.requestTimeoutMs }));
   }
 
   getAll(): Observable<CurrentStock[]> {

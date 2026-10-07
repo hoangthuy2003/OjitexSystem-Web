@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using OjitexSystem_Backend.Data.Production;
 using OjitexSystem_Backend.Repositories.Interfaces;
 
@@ -18,19 +19,13 @@ public class CurrentStockRepository : ICurrentStockRepository
         return await _context.TCurrentStocks.AsNoTracking().ToListAsync();
     }
 
-    public async Task<TCurrentStock?> GetByProductCodeAsync(decimal proCd)
+    public async Task<IEnumerable<TCurrentStock>> GetByProductCode(decimal proCd)
     {
-        return await _context.TCurrentStocks.AsNoTracking()
-            .FirstOrDefaultAsync(s => s.CstProCd == proCd);
-    }
+        var prefix = proCd.ToString(CultureInfo.InvariantCulture);
 
-    public async Task<IEnumerable<TCurrentStock>> GetByProductCodeRangeAsync(
-        decimal minimumCode,
-        decimal maximumCode)
-    {
         return await _context.TCurrentStocks.AsNoTracking()
-            .Where(s => s.CstProCd >= minimumCode && s.CstProCd <= maximumCode)
-            .OrderBy(s => s.CstProCd)
+            .Where(stock => stock.CstProCd.ToString().StartsWith(prefix))
+            .OrderBy(stock => stock.CstProCd)
             .ToListAsync();
     }
 }
