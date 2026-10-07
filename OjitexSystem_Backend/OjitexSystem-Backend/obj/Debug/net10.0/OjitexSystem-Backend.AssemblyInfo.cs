@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OjitexSystem-Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6efc49f7ae74b19c09968b208b8fa58e85bb13ba")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+76cfd2ef8dcdf749769b54c4d7aaee42539411b2")]
 [assembly: System.Reflection.AssemblyProductAttribute("OjitexSystem-Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OjitexSystem-Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

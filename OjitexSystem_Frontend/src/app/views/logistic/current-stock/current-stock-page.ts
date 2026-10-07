@@ -44,49 +44,49 @@ export class CurrentStockPage {
       headerName: 'Tồn đầu',
       width: 130,
       cellClass: 'numeric-cell',
-      valueFormatter: ({ value }) => value == null ? '—' : value.toLocaleString(),
+      valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstWarehouseNg',
       headerName: 'Kho NG',
       width: 130,
       cellClass: 'numeric-cell',
-      valueFormatter: ({ value }) => value == null ? '—' : value.toLocaleString(),
+      valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstDisposal',
       headerName: 'Thanh lý',
       width: 130,
       cellClass: 'numeric-cell',
-      valueFormatter: ({ value }) => value == null ? '—' : value.toLocaleString(),
+      valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstRepair',
       headerName: 'Sửa chữa',
       width: 130,
       cellClass: 'numeric-cell',
-      valueFormatter: ({ value }) => value == null ? '—' : value.toLocaleString(),
+      valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstProduction',
       headerName: 'Sản xuất',
       width: 130,
       cellClass: 'numeric-cell',
-      valueFormatter: ({ value }) => value == null ? '—' : value.toLocaleString(),
+      valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstDelivery',
       headerName: 'Giao hàng',
       width: 130,
       cellClass: 'numeric-cell',
-      valueFormatter: ({ value }) => value == null ? '—' : value.toLocaleString(),
+      valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstStock',
       headerName: 'Tồn hiện tại',
       width: 140,
       cellClass: 'numeric-cell',
-      valueFormatter: ({ value }) => value == null ? '—' : value.toLocaleString(),
+      valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
   ];
 
@@ -129,9 +129,7 @@ export class CurrentStockPage {
     const lastRow = Math.max(startRowIndex, endRowIndex);
     const firstColumn = Math.min(startColumnIndex, endColumnIndex);
     const lastColumn = Math.max(startColumnIndex, endColumnIndex);
-    const rows = Array.from(
-      gridElement.querySelectorAll<HTMLElement>('.ag-row[row-index]'),
-    )
+    const rows = Array.from(gridElement.querySelectorAll<HTMLElement>('.ag-row[row-index]'))
       .filter((row) => {
         const rowIndex = Number(row.getAttribute('row-index'));
         return rowIndex >= firstRow && rowIndex <= lastRow;
@@ -178,7 +176,7 @@ export class CurrentStockPage {
     this.errorMessage = null;
     this.stockItems = [];
 
-    this.currentStockService.searchByProductCodePrefix(query).subscribe({
+    this.currentStockService.searchByProductCode(query).subscribe({
       next: (stocks) => {
         if (requestId !== this.requestId) return;
         this.stockItems = stocks;
@@ -189,9 +187,11 @@ export class CurrentStockPage {
         if (requestId !== this.requestId) return;
         this.loading = false;
         if (error instanceof TimeoutError) {
-          this.errorMessage = 'API phản hồi quá lâu (15 giây). Vui lòng kiểm tra kết nối rồi thử lại.';
+          this.errorMessage =
+            'API phản hồi quá lâu (15 giây). Vui lòng kiểm tra kết nối rồi thử lại.';
         } else {
-          this.errorMessage = 'Không thể tìm mã sản phẩm. Vui lòng kiểm tra kết nối API rồi thử lại.';
+          this.errorMessage =
+            'Không thể tìm mã sản phẩm. Vui lòng kiểm tra kết nối API rồi thử lại.';
         }
         this.changeDetector.markForCheck();
       },
