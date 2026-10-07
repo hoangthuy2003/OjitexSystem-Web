@@ -18,15 +18,8 @@ public class CurrentStockService : ICurrentStockService
         return _repository.GetAllAsync();
     }
 
-    public Task<TCurrentStock?> GetByProductCodeAsync(decimal proCd)
+    public Task<IEnumerable<TCurrentStock>> GetByProductCode(decimal proCd)
     {
-        return _repository.GetByProductCodeAsync(proCd);
-    }
-
-    public Task<IEnumerable<TCurrentStock>> GetByProductCodeRangeAsync(
-        decimal minimumCode,
-        decimal maximumCode)
-    {
-        return _repository.GetByProductCodeRangeAsync(minimumCode, maximumCode);
+        return _repository.GetByProductCode(proCd);
     }
 }

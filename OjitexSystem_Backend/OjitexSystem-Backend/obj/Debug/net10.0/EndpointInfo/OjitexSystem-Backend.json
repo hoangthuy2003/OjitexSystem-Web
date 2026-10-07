@@ -77,45 +77,6 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/TCurrentStock"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TCurrentStock"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TCurrentStock"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CurrentStock/search/{proCdPrefix}": {
-      "get": {
-        "tags": [
-          "CurrentStock"
-        ],
-        "parameters": [
-          {
-            "name": "proCdPrefix",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/TCurrentStock"

@@ -23,7 +23,7 @@ src/app/
 
 Keep a page inside the folder for its department under `views` (for example, Logistic). Put TypeScript contracts in `interfaces` and API/business services in `services`. Add routes in `app.routes.ts`; use lazy-loaded pages for route entry points.
 
-The current-stock view searches product code prefixes through `GET /api/CurrentStock/search/{prefix}` (for example, `100000` returns product codes beginning with `100000`). The exact-code endpoint `GET /api/CurrentStock/{productCode}` remains available. The view uses the free AG Grid Community Angular component for client-side rendering and pagination. Use **Tìm tất cả** only to browse the inventory; `GET /api/CurrentStock` returns the complete list, which is cached for the current view to avoid repeatedly downloading it while browsing. **Tải lại** fetches the inventory again. AG Grid Community is free; Enterprise features require a paid licence.
+The current-stock view searches product code prefixes through `GET /api/CurrentStock/{productCode}` (for example, `100000` returns product codes beginning with `100000`). The view uses the free AG Grid Community Angular component for client-side rendering and pagination. Use **Tìm tất cả** only to browse the inventory; `GET /api/CurrentStock` returns the complete list, which is cached for the current view to avoid repeatedly downloading it while browsing. **Tải lại** fetches the inventory again. AG Grid Community is free; Enterprise features require a paid licence.
 
 ## Development server
 

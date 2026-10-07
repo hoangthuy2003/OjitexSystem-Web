@@ -44,7 +44,7 @@ describe('CurrentStockPage', () => {
     fixture.componentInstance.searchByProductCode();
     fixture.detectChanges();
 
-    const request = httpTesting.expectOne('/api/CurrentStock/search/1010010');
+    const request = httpTesting.expectOne('/api/CurrentStock/1010010');
     expect(request.request.method).toBe('GET');
     request.flush([stock]);
 
@@ -66,7 +66,7 @@ describe('CurrentStockPage', () => {
     fixture.componentInstance.searchByProductCode();
     fixture.detectChanges();
 
-    const request = httpTesting.expectOne('/api/CurrentStock/search/100000');
+    const request = httpTesting.expectOne('/api/CurrentStock/100000');
     request.flush([
       { ...stock, cstProCd: 1000001 },
       { ...stock, cstProCd: 1000002 },
@@ -90,7 +90,7 @@ describe('CurrentStockPage', () => {
     fixture.componentInstance.searchTerm = '1010010';
     fixture.componentInstance.searchByProductCode();
     fixture.detectChanges();
-    httpTesting.expectOne('/api/CurrentStock/search/1010010').flush([stock]);
+    httpTesting.expectOne('/api/CurrentStock/1010010').flush([stock]);
     await fixture.whenStable();
     fixture.detectChanges();
 
@@ -145,7 +145,7 @@ describe('CurrentStockPage', () => {
     fixture.detectChanges();
 
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('tối đa 7 chữ số');
-    httpTesting.expectNone((request) => request.url.includes('/api/CurrentStock/search/'));
+    httpTesting.expectNone((request) => request.url.startsWith('/api/CurrentStock/'));
   });
 
   it('loads the all endpoint once and enables AG Grid client-side pagination', async () => {
