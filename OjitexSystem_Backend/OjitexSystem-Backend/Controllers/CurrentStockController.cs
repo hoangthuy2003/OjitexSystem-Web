@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using OjitexSystem_Backend.Data.Production;
+using OjitexSystem_Backend.Security;
 using OjitexSystem_Backend.Services.Interfaces;
 
 namespace OjitexSystem_Backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Microsoft.AspNetCore.Authorization.Authorize(Policy = AuthorizationPolicies.LogisticsCategory)]
 public class CurrentStockController : ControllerBase
 {
     private readonly ICurrentStockService _service;

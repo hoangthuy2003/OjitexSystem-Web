@@ -253,6 +253,12 @@
   transition: background 150ms ease, transform 150ms ease;
 }
 
+.submit-button:disabled {
+  cursor: wait;
+  opacity: 0.75;
+  transform: none;
+}
+
 .submit-button:hover {
   transform: translateY(-1px);
   background: #102f56;
@@ -279,6 +285,10 @@
   color: #a64b3d;
   font-size: 12px;
   line-height: 1.5;
+}
+
+.status-message.status-success {
+  color: #287247;
 }
 
 .support-note {

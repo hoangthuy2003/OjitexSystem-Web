@@ -83,8 +83,8 @@
           <span>Ghi nhớ đăng nhập</span>
         </label>
 
-        <button class="submit-button" type="submit">
-          Đăng nhập
+        <button class="submit-button" type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Đang đăng nhập...' : 'Đăng nhập' }}
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M5 12h14"></path>
             <path d="m13 6 6 6-6 6"></path>
@@ -92,7 +92,14 @@
         </button>
 
         @if (statusMessage) {
-          <p class="status-message" role="status">{{ statusMessage }}</p>
+          <p
+            class="status-message"
+            [class.status-success]="statusType === 'success'"
+            role="status"
+            aria-live="polite"
+          >
+            {{ statusMessage }}
+          </p>
         }
       </form>
 

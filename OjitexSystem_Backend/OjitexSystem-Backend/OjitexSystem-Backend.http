@@ -1,6 +1,29 @@
 @OjitexSystem_Backend_HostAddress = http://localhost:5013
+@accessToken = replace-with-access-token
 
-GET {{OjitexSystem_Backend_HostAddress}}/weatherforecast/
-Accept: application/json
+### Đăng nhập để lấy JWT
+POST {{OjitexSystem_Backend_HostAddress}}/api/auth/login
+Content-Type: application/json
 
-###
+{
+  "username": "admin",
+  "password": "replace-with-password"
+}
+
+### Lấy thông tin user và các category được cấp quyền
+GET {{OjitexSystem_Backend_HostAddress}}/api/auth/me
+Authorization: Bearer {{accessToken}}
+
+### Liệt kê user (chỉ role ADMIN)
+GET {{OjitexSystem_Backend_HostAddress}}/api/admin/users
+Authorization: Bearer {{accessToken}}
+
+### Đổi mật khẩu
+POST {{OjitexSystem_Backend_HostAddress}}/api/auth/change-password
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "currentPassword": "replace-with-current-password",
+  "newPassword": "replace-with-new-password"
+}
