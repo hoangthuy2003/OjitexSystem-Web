@@ -60,6 +60,16 @@ describe('CurrentStockPage', () => {
     expect(element.textContent).toContain('Ctrl+C');
   });
 
+  it('assigns equal flexible widths to all stock columns', () => {
+    const component = TestBed.createComponent(CurrentStockPage).componentInstance;
+
+    expect(component.defaultColDef.flex).toBe(1);
+    expect(component.defaultColDef.minWidth).toBe(120);
+    expect(component.defaultColDef.headerClass).toBe('center-header');
+    expect(component.defaultColDef.cellStyle).toEqual({ textAlign: 'center' });
+    expect(component.columnDefs.every((column) => column.width === undefined)).toBe(true);
+  });
+
   it('displays multiple products returned for a product code prefix', async () => {
     const fixture = TestBed.createComponent(CurrentStockPage);
     fixture.componentInstance.searchTerm = '100000';

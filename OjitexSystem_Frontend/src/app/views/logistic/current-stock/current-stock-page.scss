@@ -128,6 +128,10 @@ h1 {
   font-size: 13px;
 }
 
+:host ::ng-deep .stock-grid .center-header .ag-header-cell-label {
+  justify-content: center;
+}
+
 .copy-hint {
   margin: 8px 0 0;
   color: #667085;
