@@ -34,57 +34,54 @@ export class CurrentStockPage {
   searchTerm = '';
   readonly gridTheme = themeQuartz;
   readonly defaultColDef: ColDef<CurrentStock> = {
+    flex: 1,
+    minWidth: 120,
     resizable: true,
     sortable: true,
+    headerClass: 'center-header',
+    cellStyle: { textAlign: 'center' },
   };
   readonly columnDefs: ColDef<CurrentStock>[] = [
-    { field: 'cstProCd', headerName: 'Mã sản phẩm', width: 160 },
+    { field: 'cstProCd', headerName: 'Mã sản phẩm' },
     {
       field: 'cstOpenStock',
       headerName: 'Tồn đầu',
-      width: 130,
       cellClass: 'numeric-cell',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstWarehouseNg',
       headerName: 'Kho NG',
-      width: 130,
       cellClass: 'numeric-cell',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstDisposal',
       headerName: 'Thanh lý',
-      width: 130,
       cellClass: 'numeric-cell',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstRepair',
       headerName: 'Sửa chữa',
-      width: 130,
       cellClass: 'numeric-cell',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstProduction',
       headerName: 'Sản xuất',
-      width: 130,
       cellClass: 'numeric-cell',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstDelivery',
       headerName: 'Giao hàng',
-      width: 130,
       cellClass: 'numeric-cell',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstStock',
       headerName: 'Tồn hiện tại',
-      width: 140,
       cellClass: 'numeric-cell',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },

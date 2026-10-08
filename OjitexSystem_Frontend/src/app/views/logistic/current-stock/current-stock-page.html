@@ -14,24 +14,19 @@
   <section class="stock-card" aria-label="Tra cứu tồn kho hiện tại">
     <form class="table-toolbar" (ngSubmit)="searchByProductCode()">
       <label class="search-field">
-        <span>Tìm theo mã sản phẩm (có thể nhập một phần đầu mã)</span>
+        <span>Tìm theo mã sản phẩm</span>
         <input
           type="search"
           name="productCode"
           maxlength="7"
           [(ngModel)]="searchTerm"
-          placeholder="Ví dụ: 100000"
+          placeholder="Nhập mã sản phẩm"
           aria-label="Mã sản phẩm"
         />
       </label>
       <div class="search-actions">
         <button class="search-button" type="submit" [disabled]="loading">Tìm mã</button>
-        <button
-          class="search-all-button"
-          type="button"
-          (click)="searchAll()"
-          [disabled]="loading"
-        >
+        <button class="search-all-button" type="button" (click)="searchAll()" [disabled]="loading">
           Tìm tất cả
         </button>
       </div>
@@ -65,9 +60,6 @@
           class="stock-grid"
         />
       </div>
-      <p class="copy-hint">
-        Kéo bôi đen vùng ô cần sao chép, nhấn Ctrl+C rồi dán vào Excel để giữ nguyên hàng và cột.
-      </p>
     }
   </section>
 </main>
