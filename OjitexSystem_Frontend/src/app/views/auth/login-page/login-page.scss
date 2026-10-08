@@ -1,0 +1,374 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.login-page {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(420px, 1fr);
+  min-height: 100vh;
+  background: #fff;
+}
+
+.company-panel {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  overflow: hidden;
+  align-items: flex-end;
+  padding: clamp(40px, 6.5vw, 100px);
+  background: #122642;
+  color: #fff;
+}
+
+.company-image,
+.image-shade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.company-image {
+  object-fit: cover;
+  object-position: center;
+}
+
+.image-shade {
+  background: linear-gradient(90deg, rgb(8 22 44 / 76%) 0%, rgb(8 22 44 / 36%) 58%, rgb(8 22 44 / 5%) 100%),
+    linear-gradient(0deg, rgb(8 22 44 / 54%) 0%, transparent 48%);
+}
+
+.company-caption,
+.image-credit {
+  position: relative;
+  z-index: 1;
+}
+
+.company-caption {
+  max-width: 600px;
+  padding-bottom: 16px;
+}
+
+.company-label,
+.eyebrow {
+  color: #a9c9f3;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
+.company-caption h1 {
+  margin: 22px 0 14px;
+  font-size: clamp(34px, 4.2vw, 58px);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.12;
+}
+
+.company-caption p {
+  margin: 0;
+  color: rgb(255 255 255 / 78%);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.caption-rule {
+  display: block;
+  width: 44px;
+  height: 3px;
+  margin-top: 30px;
+  border-radius: 3px;
+  background: #7bb4f4;
+}
+
+.image-credit {
+  position: absolute;
+  right: 30px;
+  bottom: 30px;
+  color: rgb(255 255 255 / 70%);
+  font-size: 9px;
+  letter-spacing: 0.17em;
+}
+
+.form-panel {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px clamp(36px, 5vw, 80px) 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 390px;
+  margin: auto 0;
+}
+
+.brand-mark {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 28px;
+  place-items: center;
+  border-radius: 12px;
+  background: #102a50;
+  box-shadow: 0 5px 12px rgb(16 42 80 / 16%);
+  color: #fff;
+  font-family: Georgia, serif;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: #54749b;
+  font-size: 10px;
+}
+
+.login-card h2 {
+  margin: 0;
+  color: #15263f;
+  font-size: clamp(25px, 2vw, 30px);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+}
+
+.intro {
+  margin: 10px 0 34px;
+  color: #758195;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-label {
+  margin-bottom: 9px;
+  color: #29384d;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.password-label {
+  margin-top: 20px;
+}
+
+.input-wrap {
+  display: flex;
+  height: 48px;
+  align-items: center;
+  gap: 11px;
+  padding: 0 13px;
+  border: 1px solid #dce2eb;
+  border-radius: 7px;
+  background: #fff;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.input-wrap:focus-within {
+  border-color: #527db5;
+  box-shadow: 0 0 0 3px rgb(82 125 181 / 12%);
+}
+
+.input-wrap > svg,
+.visibility-button svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: #98a3b3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+.input-wrap input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #1d2939;
+  font-size: 13px;
+}
+
+.input-wrap input::placeholder {
+  color: #a4adba;
+}
+
+.visibility-button {
+  display: grid;
+  width: 28px;
+  height: 32px;
+  flex: 0 0 auto;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.visibility-button:hover svg {
+  stroke: #526780;
+}
+
+.remember-option {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 9px;
+  margin: 18px 0 24px;
+  color: #667388;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.remember-option input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: #183c68;
+  cursor: pointer;
+}
+
+.submit-button {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 7px;
+  background: #173b68;
+  box-shadow: 0 4px 10px rgb(23 59 104 / 15%);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.submit-button:hover {
+  transform: translateY(-1px);
+  background: #102f56;
+}
+
+.submit-button:focus-visible,
+.visibility-button:focus-visible {
+  outline: 3px solid rgb(82 125 181 / 35%);
+  outline-offset: 3px;
+}
+
+.submit-button svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.status-message {
+  margin: 14px 0 0;
+  color: #a64b3d;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.support-note {
+  margin: 25px 0 0;
+  color: #929cac;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.form-footer {
+  margin-top: 32px;
+  color: #9aa3b0;
+  font-size: 10px;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .login-page {
+    grid-template-columns: minmax(0, 1.3fr) minmax(360px, 1fr);
+  }
+
+  .company-panel {
+    padding: 44px;
+  }
+
+  .form-panel {
+    padding-right: 36px;
+    padding-left: 36px;
+  }
+}
+
+@media (max-width: 700px) {
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+
+  .company-panel {
+    min-height: 250px;
+    align-items: flex-end;
+    padding: 34px 28px;
+  }
+
+  .company-image {
+    object-position: center 43%;
+  }
+
+  .company-caption {
+    padding-bottom: 0;
+  }
+
+  .company-caption h1 {
+    margin: 13px 0 7px;
+    font-size: 29px;
+  }
+
+  .company-caption p {
+    font-size: 12px;
+  }
+
+  .caption-rule,
+  .image-credit {
+    display: none;
+  }
+
+  .form-panel {
+    min-height: calc(100vh - 250px);
+    padding: 38px 28px 20px;
+  }
+
+  .login-card {
+    margin: 0;
+  }
+
+  .brand-mark {
+    margin-bottom: 20px;
+  }
+
+  .intro {
+    margin-bottom: 25px;
+  }
+}
+
+@media (max-width: 420px) {
+  .company-panel {
+    min-height: 220px;
+  }
+
+  .form-panel {
+    min-height: calc(100vh - 220px);
+  }
+}
