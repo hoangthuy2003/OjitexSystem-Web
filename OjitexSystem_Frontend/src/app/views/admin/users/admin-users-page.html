@@ -1,0 +1,203 @@
+<main class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">OJITEX SYSTEM / ADMIN</p>
+      <h1>Quản trị người dùng</h1>
+      <p class="subtitle">Quản lý tài khoản, vai trò và quyền truy cập các trang.</p>
+    </div>
+    <div class="header-actions">
+      @if (hasStockAccess) {
+        <button class="button secondary" type="button" (click)="openStockPage()">
+          Tồn kho hiện tại
+        </button>
+      }
+      <button class="button secondary" type="button" (click)="loadData()" [disabled]="loading">
+        Tải lại
+      </button>
+      <button class="button secondary" type="button" (click)="logout()">Đăng xuất</button>
+    </div>
+  </header>
+
+  @if (notice) {
+    <p class="feedback success" role="status">{{ notice }}</p>
+  }
+  @if (pageError) {
+    <p class="feedback error" role="alert">{{ pageError }}</p>
+  }
+
+  <section class="users-card" aria-labelledby="users-heading">
+    <div class="list-toolbar">
+      <div>
+        <h2 id="users-heading">Danh sách tài khoản</h2>
+        <p>{{ filteredUsers.length }} / {{ users.length }} tài khoản</p>
+      </div>
+      <div class="list-actions">
+        <input
+          type="search"
+          name="searchUsers"
+          [(ngModel)]="searchTerm"
+          placeholder="Tìm mã tài khoản, tên hoặc role"
+          aria-label="Tìm tài khoản"
+        />
+        <button class="button primary" type="button" (click)="startCreate()">
+          + Tạo tài khoản
+        </button>
+      </div>
+    </div>
+
+    @if (loading) {
+      <p class="empty-state" role="status">Đang tải dữ liệu người dùng...</p>
+    } @else if (users.length === 0 && !pageError) {
+      <p class="empty-state">Chưa có tài khoản hoạt động.</p>
+    } @else if (filteredUsers.length === 0) {
+      <p class="empty-state">Không tìm thấy tài khoản phù hợp.</p>
+    } @else {
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Tài khoản</th>
+              <th>Họ và tên</th>
+              <th>Vai trò</th>
+              <th>Quyền category</th>
+              <th>Trạng thái</th>
+              <th>Đăng nhập gần nhất</th>
+              <th><span class="visually-hidden">Thao tác</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of filteredUsers; track user.userId) {
+              <tr>
+                <td class="user-id">{{ user.userId }}</td>
+                <td>{{ displayName(user) }}</td>
+                <td>
+                  <div class="tag-list">
+                    @for (role of user.roles; track role) {
+                      <span class="tag" [class.admin-tag]="role === 'ADMIN'">{{ role }}</span>
+                    } @empty {
+                      <span class="muted">Chưa gán</span>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <div class="tag-list">
+                    @for (category of user.categories; track category.categoryId) {
+                      <span class="tag" [title]="category.categoryId">{{ category.categoryName }}</span>
+                    } @empty {
+                      <span class="muted">Chưa gán</span>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <span class="status-pill" [class.locked]="user.isLocked">
+                    {{ user.isLocked ? 'Đang khóa' : 'Hoạt động' }}
+                  </span>
+                </td>
+                <td>{{ user.lastLoginDate ? (user.lastLoginDate | date: 'dd/MM/yyyy HH:mm') : 'Chưa đăng nhập' }}</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="text-button" type="button" (click)="startEdit(user)">Sửa</button>
+                    <button class="text-button" type="button" (click)="resetPassword(user)">Reset mật khẩu</button>
+                    <button class="text-button danger-text" type="button" (click)="deleteUser(user)">
+                      Xóa
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  @if (formOpen) {
+    <section class="editor-card" aria-labelledby="editor-heading">
+      <div class="editor-heading">
+        <div>
+          <p class="eyebrow">{{ editing ? 'CẬP NHẬT HỒ SƠ' : 'TÀI KHOẢN MỚI' }}</p>
+          <h2 id="editor-heading">{{ editing ? 'Sửa tài khoản' : 'Tạo tài khoản' }}</h2>
+        </div>
+        <button class="close-button" type="button" aria-label="Đóng biểu mẫu" (click)="cancelEdit()">
+          ×
+        </button>
+      </div>
+
+      @if (formError) {
+        <p class="feedback error" role="alert">{{ formError }}</p>
+      }
+
+      <form (ngSubmit)="saveUser()">
+        <div class="form-grid">
+          <label class="field">
+            <span>Mã tài khoản <b>*</b></span>
+            <input
+              name="userId"
+              [(ngModel)]="form.userId"
+              [readonly]="editing"
+              maxlength="100"
+              required
+            />
+          </label>
+          <label class="field">
+            <span>Họ</span>
+            <input name="userFamilyName" [(ngModel)]="form.userFamilyName" maxlength="40" />
+          </label>
+          <label class="field">
+            <span>Tên</span>
+            <input name="userFirstName" [(ngModel)]="form.userFirstName" maxlength="40" />
+          </label>
+        </div>
+
+        <fieldset class="choice-group">
+          <legend>Vai trò</legend>
+          <div class="choices">
+            @for (role of roles; track role.role) {
+              <label class="choice">
+                <input
+                  type="checkbox"
+                  [name]="'role-' + role.role"
+                  [checked]="form.roles.includes(role.role)"
+                  (change)="toggleRole(role.role, $any($event.target).checked)"
+                />
+                <span>{{ role.role }}{{ role.description ? ' — ' + role.description : '' }}</span>
+              </label>
+            } @empty {
+              <span class="muted">Không tìm thấy role trong IE_ROLE.</span>
+            }
+          </div>
+          <p class="hint">Role ADMIN cho phép mở API quản trị user.</p>
+        </fieldset>
+
+        <fieldset class="choice-group">
+          <legend>Trang được phép truy cập</legend>
+          <div class="choices category-choices">
+            @for (category of categories; track category.categoryId) {
+              <label class="choice">
+                <input
+                  type="checkbox"
+                  [name]="'category-' + category.categoryId"
+                  [checked]="form.categoryIds.includes(category.categoryId)"
+                  (change)="toggleCategory(category.categoryId, $any($event.target).checked)"
+                />
+                <span>{{ category.categoryName }} <small>{{ category.categoryId }}</small></span>
+              </label>
+            } @empty {
+              <span class="muted">Không tìm thấy category trong IE_CATEGORY.</span>
+            }
+          </div>
+        </fieldset>
+
+        @if (!editing) {
+          <p class="hint">Mật khẩu ban đầu là <strong>123456</strong>; user nên đổi sau khi đăng nhập.</p>
+        }
+        <div class="form-actions">
+          <button class="button secondary" type="button" (click)="cancelEdit()">Hủy</button>
+          <button class="button primary" type="submit" [disabled]="saving">
+            {{ saving ? 'Đang lưu...' : editing ? 'Lưu thay đổi' : 'Tạo tài khoản' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+</main>
