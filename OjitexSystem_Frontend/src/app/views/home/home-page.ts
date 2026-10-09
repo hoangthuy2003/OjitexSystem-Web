@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 interface Department {
   name: string;
@@ -13,6 +14,11 @@ interface Department {
   templateUrl: './home-page.html',
 })
 export class HomePage {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
+  adminAccessDialogOpen = false;
+
   readonly departments: Department[] = [
     { name: 'SALES', slug: 'sales' },
     { name: 'CS', slug: 'cs' },
@@ -28,4 +34,28 @@ export class HomePage {
     { name: 'REPORT', slug: 'report' },
     { name: 'ADMIN', slug: 'admin' },
   ];
+
+  openDepartment(event: MouseEvent, department: Department): void {
+    if (department.slug !== 'admin') {
+      return;
+    }
+
+    event.preventDefault();
+    if (!this.authService.isAdmin) {
+      this.adminAccessDialogOpen = true;
+      return;
+    }
+
+    void this.router.navigateByUrl('/admin/dashboard');
+  }
+
+  closeAdminAccessDialog(): void {
+    this.adminAccessDialogOpen = false;
+  }
+
+  closeAdminAccessDialogFromBackdrop(event: MouseEvent): void {
+    if (event.target === event.currentTarget) {
+      this.closeAdminAccessDialog();
+    }
+  }
 }

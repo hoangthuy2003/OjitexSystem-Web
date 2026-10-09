@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
 
 interface ReportItem {
   name: string;
@@ -14,7 +13,6 @@ interface ReportItem {
   templateUrl: './department-page.html',
 })
 export class DepartmentPage {
-  private readonly authService = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -24,10 +22,6 @@ export class DepartmentPage {
 
   get isReport(): boolean {
     return this.route.snapshot.paramMap.get('departmentId') === 'report';
-  }
-
-  get isAdmin(): boolean {
-    return this.route.snapshot.paramMap.get('departmentId') === 'admin' && this.authService.isAdmin;
   }
 
   readonly reportItems: ReportItem[] = [

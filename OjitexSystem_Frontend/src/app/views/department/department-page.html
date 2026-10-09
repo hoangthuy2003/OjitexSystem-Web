@@ -10,13 +10,6 @@
         </button>
       }
     </div>
-  } @else if (isAdmin) {
-    <header class="page-heading">
-      <h1>ADMIN MENU</h1>
-    </header>
-    <div class="report-grid" aria-label="Admin menu">
-      <a class="report-card" routerLink="/admin/dashboard">User Management</a>
-    </div>
   } @else {
     <header class="page-heading">
       <h1>{{ department }} MENU</h1>
