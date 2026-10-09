@@ -1,14 +1,14 @@
 <main class="login-page">
-  <section class="company-panel" aria-label="Hình ảnh nhà máy Ojitex">
+  <section class="company-panel" aria-label="Ojitex factory">
     <img
       class="company-image"
       src="/company-factory.png"
-      alt="Nhà máy Ojitex Hải Phòng"
+      alt="Ojitex factory in Hai Phong"
     />
     <div class="image-shade"></div>
     <div class="company-caption">
       <span class="company-label">OJITEX SYSTEM</span>
-      <h1>Chúng tôi cung cấp những giải pháp<br />đóng gói tốt nhất</h1>
+      <h1>We provide the best<br />packaging solutions</h1>
       
       <span class="caption-rule" aria-hidden="true"></span>
     </div>
@@ -21,10 +21,10 @@
         <img src="/logo.png" alt="Ojitex System" />
       </div>
       <p class="eyebrow">OJITEX SYSTEM</p>
-      <h2 id="login-heading">Đăng nhập</h2>
+      <h2 id="login-heading">Sign In</h2>
 <br />
       <form class="login-form" (ngSubmit)="submitLogin()">
-        <label class="field-label" for="username">Tên đăng nhập</label>
+        <label class="field-label" for="username">Username</label>
         <div class="input-wrap">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="8" r="3.5"></circle>
@@ -40,7 +40,7 @@
           />
         </div>
 
-        <label class="field-label password-label" for="password">Mật khẩu</label>
+        <label class="field-label password-label" for="password">Password</label>
         <div class="input-wrap">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <rect x="4.5" y="10" width="15" height="10" rx="2"></rect>
@@ -58,7 +58,7 @@
           <button
             class="visibility-button"
             type="button"
-            [attr.aria-label]="showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'"
+            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
             [attr.aria-pressed]="showPassword"
             (click)="showPassword = !showPassword"
           >
@@ -80,11 +80,11 @@
 
         <label class="remember-option">
           <input name="rememberMe" type="checkbox" [(ngModel)]="rememberMe" />
-          <span>Ghi nhớ đăng nhập</span>
+          <span>Remember me</span>
         </label>
 
         <button class="submit-button" type="submit" [disabled]="isSubmitting">
-          {{ isSubmitting ? 'Đang đăng nhập...' : 'Đăng nhập' }}
+          {{ isSubmitting ? 'Signing in...' : 'Sign In' }}
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M5 12h14"></path>
             <path d="m13 6 6 6-6 6"></path>

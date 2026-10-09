@@ -127,8 +127,8 @@ export class AdminUsersPage implements OnInit {
       next: (user) => {
         this.saving = false;
         this.notice = this.editing
-          ? `Đã cập nhật tài khoản ${user.userId}.`
-          : `Đã tạo tài khoản ${user.userId}; mật khẩu mặc định là 123456.`;
+          ? `User account ${user.userId} was updated.`
+          : `User account ${user.userId} was created. The default password is 123456.`;
         this.cancelEdit();
         this.loadData();
       },
@@ -140,13 +140,13 @@ export class AdminUsersPage implements OnInit {
   }
 
   resetPassword(user: AdminUser): void {
-    if (!window.confirm(`Đặt lại mật khẩu của "${user.userId}" về 123456?`)) {
+    if (!window.confirm(`Reset the password for "${user.userId}" to 123456?`)) {
       return;
     }
 
     this.adminUserService.resetPassword(user.userId).subscribe({
-      next: ({ message }) => {
-        this.notice = `${user.userId}: ${message}`;
+      next: () => {
+        this.notice = `The password for ${user.userId} was reset to the default password (123456).`;
         this.pageError = '';
       },
       error: (error: HttpErrorResponse) => {
@@ -156,13 +156,13 @@ export class AdminUsersPage implements OnInit {
   }
 
   deleteUser(user: AdminUser): void {
-    if (!window.confirm(`Xóa mềm tài khoản "${user.userId}"?`)) {
+    if (!window.confirm(`Deactivate the user account "${user.userId}"?`)) {
       return;
     }
 
     this.adminUserService.deleteUser(user.userId).subscribe({
       next: () => {
-        this.notice = `Đã xóa tài khoản ${user.userId}.`;
+        this.notice = `User account ${user.userId} was deactivated.`;
         this.pageError = '';
         this.loadData();
       },
@@ -174,7 +174,7 @@ export class AdminUsersPage implements OnInit {
 
   logout(): void {
     this.authService.clearSession();
-    void this.router.navigateByUrl('/');
+    void this.router.navigateByUrl('/login');
   }
 
   openStockPage(): void {
@@ -205,19 +205,15 @@ export class AdminUsersPage implements OnInit {
 
   private getErrorMessage(error: HttpErrorResponse): string {
     if (error.status === 0) {
-      return 'Không kết nối được máy chủ. Kiểm tra backend rồi thử tải lại.';
+      return 'Unable to connect to the server. Check the backend and try again.';
     }
 
     if (error.status === 401 || error.status === 403) {
       this.authService.clearSession();
-      void this.router.navigateByUrl('/');
-      return 'Phiên đăng nhập đã hết hạn hoặc tài khoản không còn quyền quản trị.';
+      void this.router.navigateByUrl('/login');
+      return 'Your session has expired or your account no longer has administrator access.';
     }
 
-    if (error.error && typeof error.error.message === 'string') {
-      return error.error.message;
-    }
-
-    return 'Không thể hoàn tất thao tác. Vui lòng thử lại.';
+    return 'Unable to complete the request. Please try again.';
   }
 }

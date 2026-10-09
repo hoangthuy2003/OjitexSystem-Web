@@ -5,8 +5,8 @@ import { AuthService } from '../services/auth.service';
 export const adminAccessGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   if (!authService.accessToken) {
-    return inject(Router).parseUrl('/');
+    return inject(Router).parseUrl('/login');
   }
 
-  return authService.isAdmin || inject(Router).parseUrl('/');
+  return authService.isAdmin || inject(Router).parseUrl('/home');
 };

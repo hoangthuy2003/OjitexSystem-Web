@@ -42,46 +42,46 @@ export class CurrentStockPage {
     cellStyle: { textAlign: 'center' },
   };
   readonly columnDefs: ColDef<CurrentStock>[] = [
-    { field: 'cstProCd', headerName: 'Mã sản phẩm' },
+    { field: 'cstProCd', headerName: 'Product Code' },
     {
       field: 'cstOpenStock',
-      headerName: 'Tồn đầu',
+      headerName: 'Opening Stock',
       cellClass: 'numeric-cell',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstWarehouseNg',
-      headerName: 'Kho NG',
+      headerName: 'NG Warehouse',
       cellClass: 'numeric-cell',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstDisposal',
-      headerName: 'Thanh lý',
+      headerName: 'Disposal',
       cellClass: 'numeric-cell',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstRepair',
-      headerName: 'Sửa chữa',
+      headerName: 'Repair',
       cellClass: 'numeric-cell',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstProduction',
-      headerName: 'Sản xuất',
+      headerName: 'Production',
       cellClass: 'numeric-cell',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstDelivery',
-      headerName: 'Giao hàng',
+      headerName: 'Delivery',
       cellClass: 'numeric-cell',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
     {
       field: 'cstStock',
-      headerName: 'Tồn hiện tại',
+      headerName: 'Current Stock',
       cellClass: 'numeric-cell',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
@@ -163,7 +163,7 @@ export class CurrentStockPage {
       this.searchMode = 'product';
       this.loading = false;
       this.stockItems = [];
-      this.errorMessage = 'Vui lòng nhập mã sản phẩm gồm tối đa 7 chữ số.';
+      this.errorMessage = 'Enter a product code containing no more than 7 digits.';
       return;
     }
 
@@ -185,10 +185,10 @@ export class CurrentStockPage {
         this.loading = false;
         if (error instanceof TimeoutError) {
           this.errorMessage =
-            'API phản hồi quá lâu (15 giây). Vui lòng kiểm tra kết nối rồi thử lại.';
+            'The API request timed out (15 seconds). Check your connection and try again.';
         } else {
           this.errorMessage =
-            'Không thể tìm mã sản phẩm. Vui lòng kiểm tra kết nối API rồi thử lại.';
+            'Unable to search for this product code. Check the API connection and try again.';
         }
         this.changeDetector.markForCheck();
       },
@@ -233,8 +233,8 @@ export class CurrentStockPage {
         this.loading = false;
         this.errorMessage =
           error instanceof TimeoutError
-            ? 'API phản hồi quá lâu (15 giây). Vui lòng kiểm tra kết nối rồi thử lại.'
-            : 'Không thể tải danh sách tồn kho. Vui lòng thử lại.';
+            ? 'The API request timed out (15 seconds). Check your connection and try again.'
+            : 'Unable to load the stock list. Please try again.';
         this.changeDetector.markForCheck();
       },
     });

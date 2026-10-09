@@ -56,7 +56,7 @@ describe('LoginPage', () => {
     });
     fixture.detectChanges();
 
-    expect(navigateSpy).toHaveBeenCalledWith('/logistic/current-stock');
+    expect(navigateSpy).toHaveBeenCalledWith('/home');
     expect(localStorage.getItem('ojitex.auth')).toContain('test-token');
     expect(sessionStorage.getItem('ojitex.auth')).toBeNull();
     http.verify();
@@ -76,7 +76,7 @@ describe('LoginPage', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('[role="status"]').textContent).toContain(
-      'Tên đăng nhập hoặc mật khẩu không đúng',
+      'The username or password is incorrect',
     );
     http.verify();
   });

@@ -1,0 +1,14 @@
+<section class="home-page">
+  <div class="welcome">
+  </div>
+  <nav class="department-grid" aria-label="Departments">
+    @for (department of departments; track department.slug) {
+      <a class="department-card" [routerLink]="['/department', department.slug]">
+        <span>{{ department.name }}</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 12h14m-6-6 6 6-6 6"></path>
+        </svg>
+      </a>
+    }
+  </nav>
+</section>

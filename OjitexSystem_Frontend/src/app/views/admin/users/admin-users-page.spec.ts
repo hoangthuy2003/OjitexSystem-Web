@@ -76,7 +76,7 @@ describe('AdminUsersPage', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('#editor-heading').textContent).toContain(
-      'Tạo tài khoản',
+      'Create User',
     );
     http.verify();
   });
