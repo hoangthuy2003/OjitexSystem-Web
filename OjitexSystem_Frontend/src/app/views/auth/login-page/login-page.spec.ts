@@ -56,7 +56,7 @@ describe('LoginPage', () => {
     });
     fixture.detectChanges();
 
-    expect(navigateSpy).toHaveBeenCalledWith('/home');
+    expect(navigateSpy).toHaveBeenCalledWith('/home', { replaceUrl: true });
     expect(localStorage.getItem('ojitex.auth')).toContain('test-token');
     expect(sessionStorage.getItem('ojitex.auth')).toBeNull();
     http.verify();
