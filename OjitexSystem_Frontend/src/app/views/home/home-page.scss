@@ -3,7 +3,7 @@
 }
 
 .home-page {
-  width: min(1180px, calc(100% - 48px));
+  width: min(1180px, calc(100% - clamp(48px, 8vw, 112px)));
   margin: 0 auto;
   padding: clamp(32px, 7vh, 72px) 0 48px;
 }
@@ -99,7 +99,7 @@ h1 {
 
 @media (max-width: 560px) {
   .home-page {
-    width: calc(100% - 28px);
+    width: calc(100% - 40px);
     padding-top: 32px;
   }
 

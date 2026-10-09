@@ -1,8 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TimeoutError, timeout } from 'rxjs';
 import { AdminUser, UserForm, UserRole } from '../../../interfaces/admin-dashboard.interface';
 import { Category } from '../../../interfaces/auth.interface';
 import { AdminDashboardService } from '../../../services/admin-dashboard.service';
@@ -14,11 +15,14 @@ import { AuthService } from '../../../services/auth.service';
   styleUrl: './admin-dashboard-page.scss',
   templateUrl: './admin-dashboard-page.html',
 })
-export class AdminDashboardPage implements OnInit {
+export class AdminDashboardPage implements OnDestroy, OnInit {
   private readonly adminDashboardService = inject(AdminDashboardService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly requestTimeoutMs = 15000;
   private loadRequestId = 0;
+  private noticeTimer: ReturnType<typeof setTimeout> | undefined;
 
   users: AdminUser[] = [];
   roles: UserRole[] = [];
@@ -36,10 +40,6 @@ export class AdminDashboardPage implements OnInit {
   pageError = '';
   formError = '';
   notice = '';
-
-  get hasStockAccess(): boolean {
-    return this.authService.hasCategory('C000000005');
-  }
 
   get filteredUsers(): AdminUser[] {
     const search = this.searchTerm.trim().toLocaleLowerCase();
@@ -75,45 +75,65 @@ export class AdminDashboardPage implements OnInit {
     this.loadData();
   }
 
+  ngOnDestroy(): void {
+    this.clearNoticeTimer();
+  }
+
   loadData(): void {
     const requestId = ++this.loadRequestId;
     this.loading = true;
     this.usersLoadFailed = false;
     this.pageError = '';
 
-    this.adminDashboardService.getUsers().subscribe({
+    this.adminDashboardService.getUsers().pipe(
+      timeout({ first: this.requestTimeoutMs }),
+    ).subscribe({
       next: (users) => {
         if (requestId !== this.loadRequestId) return;
         this.users = users;
         this.loading = false;
         this.goToPage(this.currentPage);
+        this.changeDetector.markForCheck();
       },
-      error: (error: HttpErrorResponse) => {
+      error: (error: HttpErrorResponse | TimeoutError) => {
         if (requestId !== this.loadRequestId) return;
         this.loading = false;
         this.usersLoadFailed = true;
         this.appendLoadError('Unable to load user accounts', error);
+        this.changeDetector.markForCheck();
       },
     });
 
-    this.adminDashboardService.getRoles().subscribe({
+    this.adminDashboardService.getRoles().pipe(
+      timeout({ first: this.requestTimeoutMs }),
+    ).subscribe({
       next: (roles) => {
-        if (requestId === this.loadRequestId) this.roles = roles;
+        if (requestId === this.loadRequestId) {
+          this.roles = roles;
+          this.changeDetector.markForCheck();
+        }
       },
-      error: (error: HttpErrorResponse) => {
+      error: (error: HttpErrorResponse | TimeoutError) => {
         if (requestId === this.loadRequestId) {
           this.appendLoadError('Unable to load roles', error);
+          this.changeDetector.markForCheck();
         }
       },
     });
 
-    this.adminDashboardService.getCategories().subscribe({
+    this.adminDashboardService.getCategories().pipe(
+      timeout({ first: this.requestTimeoutMs }),
+    ).subscribe({
       next: (categories) => {
-        if (requestId === this.loadRequestId) this.categories = categories;
+        if (requestId === this.loadRequestId) {
+          this.categories = categories;
+          this.changeDetector.markForCheck();
+        }
       },
-      error: (error: HttpErrorResponse) => {
+      error: (error: HttpErrorResponse | TimeoutError) => {
         if (requestId === this.loadRequestId) {
           this.appendLoadError('Unable to load page access categories', error);
+          this.changeDetector.markForCheck();
         }
       },
     });
@@ -128,7 +148,7 @@ export class AdminDashboardPage implements OnInit {
     this.editing = false;
     this.formOpen = true;
     this.formError = '';
-    this.notice = '';
+    this.clearNotice();
   }
 
   startEdit(user: AdminUser): void {
@@ -142,7 +162,7 @@ export class AdminDashboardPage implements OnInit {
     this.editing = true;
     this.formOpen = true;
     this.formError = '';
-    this.notice = '';
+    this.clearNotice();
   }
 
   cancelEdit(): void {
@@ -150,6 +170,12 @@ export class AdminDashboardPage implements OnInit {
     this.editing = false;
     this.formOpen = false;
     this.formError = '';
+  }
+
+  closeFormFromBackdrop(event: MouseEvent): void {
+    if (event.target === event.currentTarget) {
+      this.cancelEdit();
+    }
   }
 
   toggleRole(role: string, checked: boolean): void {
@@ -171,18 +197,20 @@ export class AdminDashboardPage implements OnInit {
       ? this.adminDashboardService.updateUser(this.form)
       : this.adminDashboardService.createUser(this.form);
 
-    request.subscribe({
+    request.pipe(timeout({ first: this.requestTimeoutMs })).subscribe({
       next: (user) => {
         this.saving = false;
-        this.notice = this.editing
+        this.showNotice(this.editing
           ? `User account ${user.userId} was updated.`
-          : `User account ${user.userId} was created. The default password is 123456.`;
+          : `User account ${user.userId} was created. The default password is 123456.`);
         this.cancelEdit();
+        this.changeDetector.markForCheck();
         this.loadData();
       },
-      error: (error: HttpErrorResponse) => {
+      error: (error: HttpErrorResponse | TimeoutError) => {
         this.saving = false;
         this.formError = this.getErrorMessage(error);
+        this.changeDetector.markForCheck();
       },
     });
   }
@@ -197,17 +225,21 @@ export class AdminDashboardPage implements OnInit {
     }
 
     this.resettingUserIds.add(user.userId);
-    this.notice = '';
+    this.clearNotice();
     this.pageError = '';
-    this.adminDashboardService.resetPassword(user.userId).subscribe({
+    this.adminDashboardService.resetPassword(user.userId).pipe(
+      timeout({ first: this.requestTimeoutMs }),
+    ).subscribe({
       next: () => {
-        this.notice = `The password for ${user.userId} was reset to the default password (123456).`;
+        this.showNotice(`The password for ${user.userId} was reset to the default password (123456).`);
         this.resettingUserIds.delete(user.userId);
+        this.changeDetector.markForCheck();
         this.loadData();
       },
-      error: (error: HttpErrorResponse) => {
+      error: (error: HttpErrorResponse | TimeoutError) => {
         this.pageError = this.getErrorMessage(error);
         this.resettingUserIds.delete(user.userId);
+        this.changeDetector.markForCheck();
       },
     });
   }
@@ -217,14 +249,18 @@ export class AdminDashboardPage implements OnInit {
       return;
     }
 
-    this.adminDashboardService.deleteUser(user.userId).subscribe({
+    this.adminDashboardService.deleteUser(user.userId).pipe(
+      timeout({ first: this.requestTimeoutMs }),
+    ).subscribe({
       next: () => {
-        this.notice = `User account ${user.userId} was deactivated.`;
+        this.showNotice(`User account ${user.userId} was deactivated.`);
         this.pageError = '';
+        this.changeDetector.markForCheck();
         this.loadData();
       },
-      error: (error: HttpErrorResponse) => {
+      error: (error: HttpErrorResponse | TimeoutError) => {
         this.pageError = this.getErrorMessage(error);
+        this.changeDetector.markForCheck();
       },
     });
   }
@@ -234,12 +270,31 @@ export class AdminDashboardPage implements OnInit {
     void this.router.navigateByUrl('/login');
   }
 
-  openStockPage(): void {
-    void this.router.navigateByUrl('/logistic/current-stock');
-  }
-
   displayName(user: AdminUser): string {
     return [user.userFamilyName, user.userFirstName].filter(Boolean).join(' ') || '—';
+  }
+
+  private showNotice(message: string): void {
+    this.clearNoticeTimer();
+    this.notice = message;
+    this.changeDetector.markForCheck();
+    this.noticeTimer = setTimeout(() => {
+      this.notice = '';
+      this.noticeTimer = undefined;
+      this.changeDetector.markForCheck();
+    }, 3000);
+  }
+
+  private clearNotice(): void {
+    this.clearNoticeTimer();
+    this.notice = '';
+  }
+
+  private clearNoticeTimer(): void {
+    if (this.noticeTimer !== undefined) {
+      clearTimeout(this.noticeTimer);
+      this.noticeTimer = undefined;
+    }
   }
 
   private emptyForm(): UserForm {
@@ -260,12 +315,16 @@ export class AdminDashboardPage implements OnInit {
     return values.filter((item) => item !== value);
   }
 
-  private appendLoadError(context: string, error: HttpErrorResponse): void {
+  private appendLoadError(context: string, error: HttpErrorResponse | TimeoutError): void {
     const message = `${context}: ${this.getErrorMessage(error)}`;
     this.pageError = [this.pageError, message].filter(Boolean).join(' ');
   }
 
-  private getErrorMessage(error: HttpErrorResponse): string {
+  private getErrorMessage(error: HttpErrorResponse | TimeoutError): string {
+    if (error instanceof TimeoutError) {
+      return 'The server took too long to respond. Please try again.';
+    }
+
     if (error.status === 0) {
       return 'Unable to connect to the server. Check the backend and try again.';
     }

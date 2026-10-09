@@ -73,11 +73,14 @@ describe('LoginPage', () => {
       { message: 'Invalid credentials' },
       { status: 401, statusText: 'Unauthorized' },
     );
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(fixture.nativeElement.querySelector('[role="status"]').textContent).toContain(
       'The username or password is incorrect',
     );
+    expect(fixture.componentInstance.isSubmitting).toBe(false);
+    expect((fixture.nativeElement.querySelector('.submit-button') as HTMLButtonElement).disabled)
+      .toBe(false);
     http.verify();
   });
 });

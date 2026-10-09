@@ -15,6 +15,13 @@ export class AuthService {
       .pipe(tap((response) => this.saveSession(response, rememberMe)));
   }
 
+  changePassword(currentPassword: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(`${this.endpoint}/change-password`, {
+      currentPassword,
+      newPassword,
+    });
+  }
+
   get accessToken(): string | null {
     return this.readSession()?.accessToken ?? null;
   }
