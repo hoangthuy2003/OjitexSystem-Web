@@ -376,6 +376,82 @@ tbody tr:last-child td {
   background: rgb(16 24 40 / 58%);
 }
 
+.confirmation-backdrop {
+  position: fixed;
+  z-index: 1100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(16 24 40 / 58%);
+  backdrop-filter: blur(3px);
+}
+
+.confirmation-card {
+  width: min(440px, 100%);
+  padding: 28px;
+  border: 1px solid #eaecf0;
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 24px 64px rgb(16 24 40 / 24%);
+  text-align: center;
+}
+
+.confirmation-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 17px;
+  place-items: center;
+  border: 1px solid #b2ddff;
+  border-radius: 50%;
+  background: #eff8ff;
+  color: #175cd3;
+  font-size: 27px;
+  font-weight: 600;
+}
+
+.confirmation-icon.delete-icon {
+  border-color: #fecdca;
+  background: #fef3f2;
+  color: #b42318;
+  font-size: 23px;
+}
+
+.confirmation-card h2 {
+  margin-bottom: 9px;
+  color: #1d2939;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+
+.confirmation-message {
+  margin-bottom: 24px;
+  color: #667085;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.confirmation-message strong {
+  color: #344054;
+}
+
+.confirmation-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.danger {
+  border-color: #b42318;
+  background: #b42318;
+  color: white;
+}
+
+.danger:hover:not(:disabled) {
+  background: #912018;
+}
+
 .editor-heading {
   margin-bottom: 18px;
 }
@@ -520,5 +596,9 @@ tbody tr:last-child td {
 
   .editor-backdrop {
     padding: 12px;
+  }
+
+  .confirmation-card {
+    padding: 24px 20px;
   }
 }

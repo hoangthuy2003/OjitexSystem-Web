@@ -1,6 +1,5 @@
 <section class="home-page">
-  <div class="welcome">
-  </div>
+  <div class="welcome"></div>
   <nav class="department-grid" aria-label="Departments">
     @for (department of departments; track department.slug) {
       @if (department.slug === 'admin') {
@@ -38,7 +37,7 @@
     >
       <div class="admin-access-icon" aria-hidden="true">!</div>
       <h2 id="admin-access-heading">Access denied</h2>
-      <p id="admin-access-message">Bạn không có quyền truy cập tính năng này.</p>
+      <p id="admin-access-message">You do not have permission to access this feature.</p>
       <button type="button" (click)="closeAdminAccessDialog()">Đóng</button>
     </section>
   </div>
