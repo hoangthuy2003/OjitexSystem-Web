@@ -21,6 +21,11 @@ export const routes: Routes = [
           import('./views/home/home-page').then((module) => module.HomePage),
       },
       {
+        path: 'department/admin',
+        pathMatch: 'full',
+        redirectTo: 'admin/dashboard',
+      },
+      {
         path: 'department/:departmentId',
         loadComponent: () =>
           import('./views/department/department-page').then((module) => module.DepartmentPage),
