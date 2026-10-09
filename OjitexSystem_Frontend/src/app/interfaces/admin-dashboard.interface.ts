@@ -1,4 +1,4 @@
-import { Category } from './auth.interface';
+import type { Category } from './auth.interface';
 
 export interface AdminUser {
   userId: string;

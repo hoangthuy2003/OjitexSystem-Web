@@ -1,6 +1,6 @@
 using OjitexSystem_Backend.Data.Production;
 
-namespace OjitexSystem_Backend.Services.Interfaces;
+namespace OjitexSystem_Backend.Services;
 
 public interface ICurrentStockService
 {

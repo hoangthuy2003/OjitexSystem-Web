@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using OjitexSystem_Backend.Data.Production;
-using OjitexSystem_Backend.Repositories.Interfaces;
 
 namespace OjitexSystem_Backend.Repositories;
 

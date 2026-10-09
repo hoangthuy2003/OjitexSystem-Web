@@ -3,32 +3,36 @@ import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { forkJoin } from 'rxjs';
-import { AdminUser, UserForm, UserRole } from '../../../interfaces/admin-user.interface';
+import { AdminUser, UserForm, UserRole } from '../../../interfaces/admin-dashboard.interface';
 import { Category } from '../../../interfaces/auth.interface';
-import { AdminUserService } from '../../../services/admin-user.service';
+import { AdminDashboardService } from '../../../services/admin-dashboard.service';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
   imports: [DatePipe, FormsModule],
-  selector: 'app-admin-users-page',
-  styleUrl: './admin-users-page.scss',
-  templateUrl: './admin-users-page.html',
+  selector: 'app-admin-dashboard-page',
+  styleUrl: './admin-dashboard-page.scss',
+  templateUrl: './admin-dashboard-page.html',
 })
-export class AdminUsersPage implements OnInit {
-  private readonly adminUserService = inject(AdminUserService);
+export class AdminDashboardPage implements OnInit {
+  private readonly adminDashboardService = inject(AdminDashboardService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private loadRequestId = 0;
 
   users: AdminUser[] = [];
   roles: UserRole[] = [];
   categories: Category[] = [];
+  readonly pageSize = 8;
   form: UserForm = this.emptyForm();
   searchTerm = '';
+  currentPage = 1;
   formOpen = false;
   editing = false;
   loading = false;
+  usersLoadFailed = false;
   saving = false;
+  readonly resettingUserIds = new Set<string>();
   pageError = '';
   formError = '';
   notice = '';
@@ -50,29 +54,73 @@ export class AdminUsersPage implements OnInit {
     );
   }
 
+  get pageCount(): number {
+    return Math.max(1, Math.ceil(this.filteredUsers.length / this.pageSize));
+  }
+
+  get paginatedUsers(): AdminUser[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredUsers.slice(start, start + this.pageSize);
+  }
+
+  get pageStart(): number {
+    return this.filteredUsers.length === 0 ? 0 : (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get pageEnd(): number {
+    return Math.min(this.currentPage * this.pageSize, this.filteredUsers.length);
+  }
+
   ngOnInit(): void {
     this.loadData();
   }
 
   loadData(): void {
+    const requestId = ++this.loadRequestId;
     this.loading = true;
+    this.usersLoadFailed = false;
     this.pageError = '';
-    forkJoin({
-      users: this.adminUserService.getUsers(),
-      roles: this.adminUserService.getRoles(),
-      categories: this.adminUserService.getCategories(),
-    }).subscribe({
-      next: ({ users, roles, categories }) => {
+
+    this.adminDashboardService.getUsers().subscribe({
+      next: (users) => {
+        if (requestId !== this.loadRequestId) return;
         this.users = users;
-        this.roles = roles;
-        this.categories = categories;
         this.loading = false;
+        this.goToPage(this.currentPage);
       },
       error: (error: HttpErrorResponse) => {
+        if (requestId !== this.loadRequestId) return;
         this.loading = false;
-        this.pageError = this.getErrorMessage(error);
+        this.usersLoadFailed = true;
+        this.appendLoadError('Unable to load user accounts', error);
       },
     });
+
+    this.adminDashboardService.getRoles().subscribe({
+      next: (roles) => {
+        if (requestId === this.loadRequestId) this.roles = roles;
+      },
+      error: (error: HttpErrorResponse) => {
+        if (requestId === this.loadRequestId) {
+          this.appendLoadError('Unable to load roles', error);
+        }
+      },
+    });
+
+    this.adminDashboardService.getCategories().subscribe({
+      next: (categories) => {
+        if (requestId === this.loadRequestId) this.categories = categories;
+      },
+      error: (error: HttpErrorResponse) => {
+        if (requestId === this.loadRequestId) {
+          this.appendLoadError('Unable to load page access categories', error);
+        }
+      },
+    });
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = Math.min(Math.max(1, page), this.pageCount);
   }
 
   startCreate(): void {
@@ -120,8 +168,8 @@ export class AdminUsersPage implements OnInit {
     this.saving = true;
     this.formError = '';
     const request = this.editing
-      ? this.adminUserService.updateUser(this.form)
-      : this.adminUserService.createUser(this.form);
+      ? this.adminDashboardService.updateUser(this.form)
+      : this.adminDashboardService.createUser(this.form);
 
     request.subscribe({
       next: (user) => {
@@ -140,17 +188,26 @@ export class AdminUsersPage implements OnInit {
   }
 
   resetPassword(user: AdminUser): void {
+    if (this.resettingUserIds.has(user.userId)) {
+      return;
+    }
+
     if (!window.confirm(`Reset the password for "${user.userId}" to 123456?`)) {
       return;
     }
 
-    this.adminUserService.resetPassword(user.userId).subscribe({
+    this.resettingUserIds.add(user.userId);
+    this.notice = '';
+    this.pageError = '';
+    this.adminDashboardService.resetPassword(user.userId).subscribe({
       next: () => {
         this.notice = `The password for ${user.userId} was reset to the default password (123456).`;
-        this.pageError = '';
+        this.resettingUserIds.delete(user.userId);
+        this.loadData();
       },
       error: (error: HttpErrorResponse) => {
         this.pageError = this.getErrorMessage(error);
+        this.resettingUserIds.delete(user.userId);
       },
     });
   }
@@ -160,7 +217,7 @@ export class AdminUsersPage implements OnInit {
       return;
     }
 
-    this.adminUserService.deleteUser(user.userId).subscribe({
+    this.adminDashboardService.deleteUser(user.userId).subscribe({
       next: () => {
         this.notice = `User account ${user.userId} was deactivated.`;
         this.pageError = '';
@@ -203,6 +260,11 @@ export class AdminUsersPage implements OnInit {
     return values.filter((item) => item !== value);
   }
 
+  private appendLoadError(context: string, error: HttpErrorResponse): void {
+    const message = `${context}: ${this.getErrorMessage(error)}`;
+    this.pageError = [this.pageError, message].filter(Boolean).join(' ');
+  }
+
   private getErrorMessage(error: HttpErrorResponse): string {
     if (error.status === 0) {
       return 'Unable to connect to the server. Check the backend and try again.';
@@ -212,6 +274,10 @@ export class AdminUsersPage implements OnInit {
       this.authService.clearSession();
       void this.router.navigateByUrl('/login');
       return 'Your session has expired or your account no longer has administrator access.';
+    }
+
+    if (typeof error.error?.message === 'string' && error.error.message.trim()) {
+      return error.error.message;
     }
 
     return 'Unable to complete the request. Please try again.';

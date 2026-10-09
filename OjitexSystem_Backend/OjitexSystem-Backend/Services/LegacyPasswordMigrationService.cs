@@ -7,7 +7,7 @@ namespace OjitexSystem_Backend.Services;
 
 public sealed class LegacyPasswordMigrationService(
     AuthContext context,
-    PasswordHasher<IeUser> passwordHasher)
+    PasswordHasher<IeUser> passwordHasher) : ILegacyPasswordMigrationService
 {
     public async Task<int> ResetLegacyPasswordsAsync()
     {

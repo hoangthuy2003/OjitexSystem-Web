@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OjitexSystem_Backend.Data.Production;
 using OjitexSystem_Backend.Security;
-using OjitexSystem_Backend.Services.Interfaces;
+using OjitexSystem_Backend.Services;
 
 namespace OjitexSystem_Backend.Controllers;
 

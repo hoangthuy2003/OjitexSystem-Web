@@ -135,6 +135,35 @@ h1 {
   overflow: auto;
 }
 
+.pagination,
+.pagination-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pagination {
+  padding: 12px 20px;
+  border-top: 1px solid #eaecf0;
+  color: #667085;
+  font-size: 12px;
+}
+
+.pagination-actions {
+  justify-content: flex-end;
+}
+
+.pagination .button {
+  min-height: 32px;
+  font-size: 12px;
+}
+
+.page-indicator {
+  min-width: 72px;
+  text-align: center;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -230,6 +259,11 @@ tbody tr:last-child td {
 
 .text-button:hover {
   text-decoration: underline;
+}
+
+.text-button:disabled {
+  color: #98a2b3;
+  cursor: wait;
 }
 
 .danger-text {
@@ -388,6 +422,15 @@ tbody tr:last-child td {
   .list-actions {
     justify-content: flex-start;
     flex-wrap: wrap;
+  }
+
+  .pagination {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .pagination-actions {
+    width: 100%;
   }
 
   .list-actions input {

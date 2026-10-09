@@ -34,10 +34,12 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'admin/users',
+        path: 'admin/dashboard',
         canActivate: [adminAccessGuard],
         loadComponent: () =>
-          import('./views/admin/users/admin-users-page').then((module) => module.AdminUsersPage),
+          import('./views/admin/dashboard/admin-dashboard-page').then(
+            (module) => module.AdminDashboardPage,
+          ),
       },
     ],
   },

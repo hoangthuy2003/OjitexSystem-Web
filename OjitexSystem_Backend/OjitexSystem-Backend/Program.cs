@@ -9,10 +9,8 @@ using OjitexSystem_Backend.Controllers;
 using OjitexSystem_Backend.Data.Auth;
 using OjitexSystem_Backend.Data.Production;
 using OjitexSystem_Backend.Repositories;
-using OjitexSystem_Backend.Repositories.Interfaces;
 using OjitexSystem_Backend.Security;
 using OjitexSystem_Backend.Services;
-using OjitexSystem_Backend.Services.Interfaces;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,9 +25,9 @@ builder.Services.AddDbContext<AuthContext>(options =>
 
 builder.Services.AddScoped<ICurrentStockRepository, CurrentStockRepository>();
 builder.Services.AddScoped<ICurrentStockService, CurrentStockService>();
-builder.Services.AddScoped<AuthenticationService>();
-builder.Services.AddScoped<AdminUserService>();
-builder.Services.AddScoped<LegacyPasswordMigrationService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+builder.Services.AddScoped<ILegacyPasswordMigrationService, LegacyPasswordMigrationService>();
 builder.Services.AddScoped<PasswordHasher<IeUser>>();
 
 var issuer = builder.Configuration["Authentication:Issuer"] ?? "OjitexSystem";
@@ -111,7 +109,7 @@ var app = builder.Build();
 if (args.Any(argument => string.Equals(argument, "--reset-legacy-passwords", StringComparison.OrdinalIgnoreCase)))
 {
     await using var scope = app.Services.CreateAsyncScope();
-    var migration = scope.ServiceProvider.GetRequiredService<LegacyPasswordMigrationService>();
+    var migration = scope.ServiceProvider.GetRequiredService<ILegacyPasswordMigrationService>();
     var updatedUsers = await migration.ResetLegacyPasswordsAsync();
     Console.WriteLine($"Password migration completed. {updatedUsers} active account(s) reset to 123456.");
     return;

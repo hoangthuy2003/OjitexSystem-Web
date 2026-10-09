@@ -7,7 +7,7 @@ namespace OjitexSystem_Backend.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public sealed class AuthController(AuthenticationService authenticationService) : ControllerBase
+public sealed class AuthController(IAuthenticationService authenticationService) : ControllerBase
 {
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponse>> Login(LoginRequest request)

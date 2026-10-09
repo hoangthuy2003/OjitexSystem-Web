@@ -1,6 +1,6 @@
 using OjitexSystem_Backend.Data.Production;
 
-namespace OjitexSystem_Backend.Repositories.Interfaces;
+namespace OjitexSystem_Backend.Repositories;
 
 public interface ICurrentStockRepository
 {

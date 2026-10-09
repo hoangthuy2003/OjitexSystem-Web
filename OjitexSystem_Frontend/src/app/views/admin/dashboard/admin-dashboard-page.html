@@ -36,6 +36,7 @@
           type="search"
           name="searchUsers"
           [(ngModel)]="searchTerm"
+          (ngModelChange)="currentPage = 1"
           placeholder="Search by user ID, name, or role"
           aria-label="Search users"
         />
@@ -47,7 +48,9 @@
 
     @if (loading) {
       <p class="empty-state" role="status">Loading user data...</p>
-    } @else if (users.length === 0 && !pageError) {
+    } @else if (usersLoadFailed) {
+      <p class="empty-state">Unable to load user accounts. Check the error above and try again.</p>
+    } @else if (users.length === 0) {
       <p class="empty-state">No active user accounts.</p>
     } @else if (filteredUsers.length === 0) {
       <p class="empty-state">No matching user accounts found.</p>
@@ -66,7 +69,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (user of filteredUsers; track user.userId) {
+            @for (user of paginatedUsers; track user.userId) {
               <tr>
                 <td class="user-id">{{ user.userId }}</td>
                 <td>{{ displayName(user) }}</td>
@@ -97,7 +100,14 @@
                 <td>
                   <div class="row-actions">
                     <button class="text-button" type="button" (click)="startEdit(user)">Edit</button>
-                    <button class="text-button" type="button" (click)="resetPassword(user)">Reset Password</button>
+                    <button
+                      class="text-button"
+                      type="button"
+                      [disabled]="resettingUserIds.has(user.userId)"
+                      (click)="resetPassword(user)"
+                    >
+                      {{ resettingUserIds.has(user.userId) ? 'Resetting...' : 'Reset Password' }}
+                    </button>
                     <button class="text-button danger-text" type="button" (click)="deleteUser(user)">
                       Delete
                     </button>
@@ -108,6 +118,30 @@
           </tbody>
         </table>
       </div>
+      <nav class="pagination" aria-label="User list pages">
+        <span>Showing {{ pageStart }}–{{ pageEnd }} of {{ filteredUsers.length }} users</span>
+        <div class="pagination-actions">
+          <button
+            class="button secondary"
+            type="button"
+            aria-label="Previous page"
+            [disabled]="currentPage === 1"
+            (click)="goToPage(currentPage - 1)"
+          >
+            Previous
+          </button>
+          <span class="page-indicator">Page {{ currentPage }} of {{ pageCount }}</span>
+          <button
+            class="button secondary"
+            type="button"
+            aria-label="Next page"
+            [disabled]="currentPage === pageCount"
+            (click)="goToPage(currentPage + 1)"
+          >
+            Next
+          </button>
+        </div>
+      </nav>
     }
   </section>
 
