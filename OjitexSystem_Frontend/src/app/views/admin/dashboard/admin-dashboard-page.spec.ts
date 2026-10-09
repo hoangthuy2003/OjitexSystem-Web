@@ -63,7 +63,6 @@ describe('AdminDashboardPage', () => {
       { categoryId: 'C000000005', categoryName: 'LOGISTICS' },
     ]);
     await fixture.whenStable();
-    fixture.detectChanges();
 
     return { fixture, http };
   }
@@ -72,7 +71,17 @@ describe('AdminDashboardPage', () => {
     const { fixture, http } = await createPage();
 
     expect(fixture.nativeElement.textContent).toContain('trung');
-    expect(fixture.nativeElement.textContent).toContain('LOGISTICS');
+    expect(fixture.nativeElement.textContent).not.toContain('Category Access');
+    expect(fixture.nativeElement.querySelectorAll('tbody tr td')).toHaveLength(6);
+    expect(fixture.nativeElement.querySelector('thead').textContent).toContain('Action');
+    expect(fixture.nativeElement.querySelectorAll('.row-actions .action-button')).toHaveLength(3);
+    expect(getComputedStyle(fixture.nativeElement.querySelector('table')).textAlign).toBe('center');
+    expect(getComputedStyle(fixture.nativeElement.querySelector('.row-actions')).flexWrap).toBe(
+      'nowrap',
+    );
+    expect(getComputedStyle(fixture.nativeElement.querySelector('.delete-action')).whiteSpace).toBe(
+      'nowrap',
+    );
 
     const createButton = fixture.nativeElement.querySelector(
       '.list-actions .primary',
@@ -83,6 +92,15 @@ describe('AdminDashboardPage', () => {
     expect(fixture.nativeElement.querySelector('#editor-heading').textContent).toContain(
       'Create User',
     );
+    expect(fixture.nativeElement.querySelector('[role="dialog"][aria-modal="true"]')).not.toBeNull();
+    http.verify();
+  });
+
+  it('renders the users as soon as the API responds without another user interaction', async () => {
+    const { fixture, http } = await createPage();
+
+    expect(fixture.nativeElement.textContent).toContain('trung');
+    expect(fixture.nativeElement.textContent).not.toContain('Loading user data...');
     http.verify();
   });
 
@@ -128,6 +146,36 @@ describe('AdminDashboardPage', () => {
     http.verify();
   });
 
+  it('shows success feedback as a top-right toast and dismisses it after three seconds', async () => {
+    const { fixture, http } = await createPage();
+    vi.useFakeTimers();
+
+    try {
+      const page = fixture.componentInstance;
+      page.startCreate();
+      page.form.userId = 'new-user';
+      page.saveUser();
+
+      http.expectOne('/api/admin/dashboard').flush({ ...user, userId: 'new-user' });
+      fixture.detectChanges();
+
+      const toast = fixture.nativeElement.querySelector('.toast') as HTMLElement;
+      expect(toast.textContent).toContain('new-user');
+      expect(toast.getAttribute('role')).toBe('status');
+
+      vi.advanceTimersByTime(3000);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('.toast')).toBeNull();
+      http.expectOne('/api/admin/dashboard').flush([user]);
+      http.expectOne('/api/admin/dashboard/roles').flush([]);
+      http.expectOne('/api/admin/dashboard/categories').flush([]);
+      http.verify();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('resets a user password through the admin API', async () => {
     const { fixture, http } = await createPage();
     const originalConfirm = window.confirm;
@@ -144,6 +192,26 @@ describe('AdminDashboardPage', () => {
       http.expectOne('/api/admin/dashboard').flush([user]);
       http.expectOne('/api/admin/dashboard/roles').flush([]);
       http.expectOne('/api/admin/dashboard/categories').flush([]);
+      http.verify();
+    } finally {
+      window.confirm = originalConfirm;
+    }
+  });
+
+  it('clears the reset indicator and reports an API failure', async () => {
+    const { fixture, http } = await createPage();
+    const originalConfirm = window.confirm;
+    window.confirm = () => true;
+
+    try {
+      fixture.componentInstance.resetPassword(user);
+      http.expectOne('/api/admin/dashboard/trung/reset-password').flush(
+        { message: 'Reset failed.' },
+        { status: 500, statusText: 'Server Error' },
+      );
+
+      expect(fixture.componentInstance.resettingUserIds.has('trung')).toBe(false);
+      expect(fixture.componentInstance.pageError).toContain('Reset failed.');
       http.verify();
     } finally {
       window.confirm = originalConfirm;

@@ -17,6 +17,14 @@ public sealed class AdminDashboardService(
             .AsNoTracking()
             .Where(user => user.LogicalDelFlag == 0)
             .OrderBy(user => user.UserId)
+            .Select(user => new
+            {
+                user.UserId,
+                user.UserFamilyName,
+                user.UserFirstName,
+                user.UserLockFlag,
+                user.LastLoginDate
+            })
             .ToListAsync();
         var userIds = users.Select(user => user.UserId).ToList();
         var roles = await context.IeUserRoles

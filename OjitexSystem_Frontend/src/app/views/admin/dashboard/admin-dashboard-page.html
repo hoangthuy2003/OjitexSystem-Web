@@ -3,23 +3,16 @@
     <div>
       <p class="eyebrow">OJITEX SYSTEM / ADMIN</p>
       <h1>User Management</h1>
-      <p class="subtitle">Manage user accounts, roles, and page access.</p>
     </div>
     <div class="header-actions">
-      @if (hasStockAccess) {
-        <button class="button secondary" type="button" (click)="openStockPage()">
-          Current Stock
-        </button>
-      }
       <button class="button secondary" type="button" (click)="loadData()" [disabled]="loading">
         Refresh
       </button>
-      <button class="button secondary" type="button" (click)="logout()">Sign Out</button>
     </div>
   </header>
 
   @if (notice) {
-    <p class="feedback success" role="status">{{ notice }}</p>
+    <p class="feedback success toast" role="status">{{ notice }}</p>
   }
   @if (pageError) {
     <p class="feedback error" role="alert">{{ pageError }}</p>
@@ -62,10 +55,9 @@
               <th>User ID</th>
               <th>Full Name</th>
               <th>Roles</th>
-              <th>Category Access</th>
               <th>Status</th>
               <th>Last Login</th>
-              <th><span class="visually-hidden">Actions</span></th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -83,15 +75,6 @@
                   </div>
                 </td>
                 <td>
-                  <div class="tag-list">
-                    @for (category of user.categories; track category.categoryId) {
-                      <span class="tag" [title]="category.categoryId">{{ category.categoryName }}</span>
-                    } @empty {
-                      <span class="muted">Not assigned</span>
-                    }
-                  </div>
-                </td>
-                <td>
                   <span class="status-pill" [class.locked]="user.isLocked">
                     {{ user.isLocked ? 'Locked' : 'Active' }}
                   </span>
@@ -99,16 +82,18 @@
                 <td>{{ user.lastLoginDate ? (user.lastLoginDate | date: 'MMM d, y, h:mm a') : 'Never' }}</td>
                 <td>
                   <div class="row-actions">
-                    <button class="text-button" type="button" (click)="startEdit(user)">Edit</button>
+                    <button class="action-button edit-action" type="button" (click)="startEdit(user)">
+                      Edit
+                    </button>
                     <button
-                      class="text-button"
+                      class="action-button reset-action"
                       type="button"
                       [disabled]="resettingUserIds.has(user.userId)"
                       (click)="resetPassword(user)"
                     >
                       {{ resettingUserIds.has(user.userId) ? 'Resetting...' : 'Reset Password' }}
                     </button>
-                    <button class="text-button danger-text" type="button" (click)="deleteUser(user)">
+                    <button class="action-button delete-action" type="button" (click)="deleteUser(user)">
                       Delete
                     </button>
                   </div>
@@ -146,92 +131,100 @@
   </section>
 
   @if (formOpen) {
-    <section class="editor-card" aria-labelledby="editor-heading">
-      <div class="editor-heading">
-        <div>
-          <p class="eyebrow">{{ editing ? 'UPDATE ACCOUNT' : 'NEW ACCOUNT' }}</p>
-          <h2 id="editor-heading">{{ editing ? 'Edit User' : 'Create User' }}</h2>
-        </div>
-        <button class="close-button" type="button" aria-label="Close form" (click)="cancelEdit()">
-          ×
-        </button>
-      </div>
-
-      @if (formError) {
-        <p class="feedback error" role="alert">{{ formError }}</p>
-      }
-
-      <form (ngSubmit)="saveUser()">
-        <div class="form-grid">
-          <label class="field">
-            <span>User ID <b>*</b></span>
-            <input
-              name="userId"
-              [(ngModel)]="form.userId"
-              [readonly]="editing"
-              maxlength="100"
-              required
-            />
-          </label>
-          <label class="field">
-            <span>Family Name</span>
-            <input name="userFamilyName" [(ngModel)]="form.userFamilyName" maxlength="40" />
-          </label>
-          <label class="field">
-            <span>First Name</span>
-            <input name="userFirstName" [(ngModel)]="form.userFirstName" maxlength="40" />
-          </label>
-        </div>
-
-        <fieldset class="choice-group">
-          <legend>Roles</legend>
-          <div class="choices">
-            @for (role of roles; track role.role) {
-              <label class="choice">
-                <input
-                  type="checkbox"
-                  [name]="'role-' + role.role"
-                  [checked]="form.roles.includes(role.role)"
-                  (change)="toggleRole(role.role, $any($event.target).checked)"
-                />
-                <span>{{ role.role }}{{ role.description ? ' — ' + role.description : '' }}</span>
-              </label>
-            } @empty {
-              <span class="muted">No roles found in IE_ROLE.</span>
-            }
+    <div class="editor-backdrop" (click)="closeFormFromBackdrop($event)" (keydown.escape)="cancelEdit()">
+      <section
+        class="editor-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="editor-heading"
+        tabindex="-1"
+      >
+        <div class="editor-heading">
+          <div>
+            <p class="eyebrow">{{ editing ? 'UPDATE ACCOUNT' : 'NEW ACCOUNT' }}</p>
+            <h2 id="editor-heading">{{ editing ? 'Edit User' : 'Create User' }}</h2>
           </div>
-          <p class="hint">The ADMIN role grants access to user administration.</p>
-        </fieldset>
-
-        <fieldset class="choice-group">
-          <legend>Page Access</legend>
-          <div class="choices category-choices">
-            @for (category of categories; track category.categoryId) {
-              <label class="choice">
-                <input
-                  type="checkbox"
-                  [name]="'category-' + category.categoryId"
-                  [checked]="form.categoryIds.includes(category.categoryId)"
-                  (change)="toggleCategory(category.categoryId, $any($event.target).checked)"
-                />
-                <span>{{ category.categoryName }} <small>{{ category.categoryId }}</small></span>
-              </label>
-            } @empty {
-              <span class="muted">No categories found in IE_CATEGORY.</span>
-            }
-          </div>
-        </fieldset>
-
-        @if (!editing) {
-          <p class="hint">The initial password is <strong>123456</strong>; users should change it after signing in.</p>
-        }
-        <div class="form-actions">
-          <button class="button secondary" type="button" (click)="cancelEdit()">Cancel</button>
-          <button class="button primary" type="submit" [disabled]="saving">
-            {{ saving ? 'Saving...' : editing ? 'Save Changes' : 'Create User' }}
+          <button class="close-button" type="button" aria-label="Close form" (click)="cancelEdit()">
+            ×
           </button>
         </div>
-      </form>
-    </section>
+
+        @if (formError) {
+          <p class="feedback error" role="alert">{{ formError }}</p>
+        }
+
+        <form (ngSubmit)="saveUser()">
+          <div class="form-grid">
+            <label class="field">
+              <span>User ID <b>*</b></span>
+              <input
+                name="userId"
+                [(ngModel)]="form.userId"
+                [readonly]="editing"
+                maxlength="100"
+                required
+              />
+            </label>
+            <label class="field">
+              <span>Family Name</span>
+              <input name="userFamilyName" [(ngModel)]="form.userFamilyName" maxlength="40" />
+            </label>
+            <label class="field">
+              <span>First Name</span>
+              <input name="userFirstName" [(ngModel)]="form.userFirstName" maxlength="40" />
+            </label>
+          </div>
+
+          <fieldset class="choice-group">
+            <legend>Roles</legend>
+            <div class="choices">
+              @for (role of roles; track role.role) {
+                <label class="choice">
+                  <input
+                    type="checkbox"
+                    [name]="'role-' + role.role"
+                    [checked]="form.roles.includes(role.role)"
+                    (change)="toggleRole(role.role, $any($event.target).checked)"
+                  />
+                  <span>{{ role.role }}{{ role.description ? ' — ' + role.description : '' }}</span>
+                </label>
+              } @empty {
+                <span class="muted">No roles found in IE_ROLE.</span>
+              }
+            </div>
+            <p class="hint">The ADMIN role grants access to user administration.</p>
+          </fieldset>
+
+          <fieldset class="choice-group">
+            <legend>Page Access</legend>
+            <div class="choices category-choices">
+              @for (category of categories; track category.categoryId) {
+                <label class="choice">
+                  <input
+                    type="checkbox"
+                    [name]="'category-' + category.categoryId"
+                    [checked]="form.categoryIds.includes(category.categoryId)"
+                    (change)="toggleCategory(category.categoryId, $any($event.target).checked)"
+                  />
+                  <span>{{ category.categoryName }} <small>{{ category.categoryId }}</small></span>
+                </label>
+              } @empty {
+                <span class="muted">No categories found in IE_CATEGORY.</span>
+              }
+            </div>
+          </fieldset>
+
+          @if (!editing) {
+            <p class="hint">The initial password is <strong>123456</strong>; users should change it after signing in.</p>
+          }
+          <div class="form-actions">
+            <button class="button secondary" type="button" (click)="cancelEdit()">Cancel</button>
+            <button class="button primary" type="submit" [disabled]="saving">
+              {{ saving ? 'Saving...' : editing ? 'Save Changes' : 'Create User' }}
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
   }
 </main>
