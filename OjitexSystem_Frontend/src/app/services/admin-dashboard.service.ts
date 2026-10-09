@@ -2,12 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Category } from '../interfaces/auth.interface';
-import { AdminUser, UserForm, UserRole } from '../interfaces/admin-user.interface';
+import { AdminUser, UserForm, UserRole } from '../interfaces/admin-dashboard.interface';
 
 @Injectable({ providedIn: 'root' })
-export class AdminUserService {
+export class AdminDashboardService {
   private readonly http = inject(HttpClient);
-  private readonly endpoint = '/api/admin/users';
+  private readonly endpoint = '/api/admin/dashboard';
 
   getUsers(): Observable<AdminUser[]> {
     return this.http.get<AdminUser[]>(this.endpoint);

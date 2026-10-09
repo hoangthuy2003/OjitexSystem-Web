@@ -1,6 +1,5 @@
 using OjitexSystem_Backend.Data.Production;
-using OjitexSystem_Backend.Repositories.Interfaces;
-using OjitexSystem_Backend.Services.Interfaces;
+using OjitexSystem_Backend.Repositories;
 
 namespace OjitexSystem_Backend.Services;
 

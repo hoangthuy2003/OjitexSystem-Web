@@ -10,7 +10,7 @@ namespace OjitexSystem_Backend.Services;
 public sealed class AuthenticationService(
     AuthContext context,
     PasswordHasher<IeUser> passwordHasher,
-    JwtTokenService tokenService)
+    JwtTokenService tokenService) : IAuthenticationService
 {
     public async Task<LoginResponse?> LoginAsync(LoginRequest request)
     {

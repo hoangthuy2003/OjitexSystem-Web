@@ -5,9 +5,9 @@ using OjitexSystem_Backend.Dtos;
 
 namespace OjitexSystem_Backend.Services;
 
-public sealed class AdminUserService(
+public sealed class AdminDashboardService(
     AuthContext context,
-    PasswordHasher<IeUser> passwordHasher)
+    PasswordHasher<IeUser> passwordHasher) : IAdminDashboardService
 {
     private const string DefaultPassword = "123456";
 
