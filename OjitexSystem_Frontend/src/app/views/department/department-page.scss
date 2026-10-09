@@ -1,0 +1,126 @@
+:host {
+  display: block;
+  min-height: 100%;
+}
+
+.department-page {
+  width: min(1180px, calc(100% - 48px));
+  min-height: calc(100vh - 76px);
+  margin: 0 auto;
+  padding: clamp(32px, 7vh, 72px) 0 48px;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-heading {
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: #34788b;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+}
+
+h1 {
+  margin: 0;
+  color: #1f5366;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(27px, 4vw, 36px);
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.report-card {
+  display: flex;
+  min-height: 88px;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  border: 2px solid #367b8d;
+  border-radius: 15px;
+  background: #fff;
+  color: #28697e;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(14px, 1.5vw, 19px);
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease,
+    transform 140ms ease;
+}
+
+.report-card:hover,
+.report-card:focus-visible {
+  background: #286f84;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.report-card.unavailable-card {
+  border-color: #c5d6db;
+  background: #f6f9fa;
+  color: #748a92;
+  cursor: default;
+}
+
+.report-card.unavailable-card:hover {
+  transform: none;
+}
+
+.back-button {
+  display: inline-flex;
+  min-width: 80px;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  margin-top: auto;
+  margin-bottom: clamp(8px, 5vh, 42px);
+  padding: 0 10px;
+  border: 2px solid #367b8d;
+  border-radius: 0 4px 0 4px;
+  background: #fff;
+  color: #28697e;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.back-button:hover,
+.back-button:focus-visible {
+  background: #286f84;
+  color: #fff;
+}
+
+@media (max-width: 520px) {
+  .department-page {
+    width: calc(100% - 28px);
+    padding-top: 32px;
+    min-height: calc(100vh - 64px);
+  }
+
+  .report-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .report-card {
+    min-height: 72px;
+    padding: 10px;
+    border-radius: 12px;
+  }
+}

@@ -34,7 +34,7 @@ describe('CurrentStockPage', () => {
     const fixture = TestBed.createComponent(CurrentStockPage);
     fixture.detectChanges();
 
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Tìm tất cả');
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Show All');
     httpTesting.expectNone((request) => request.url.includes('/api/CurrentStock'));
   });
 
@@ -154,7 +154,7 @@ describe('CurrentStockPage', () => {
     fixture.componentInstance.searchByProductCode();
     fixture.detectChanges();
 
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('tối đa 7 chữ số');
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('no more than 7 digits');
     httpTesting.expectNone((request) => request.url.startsWith('/api/CurrentStock/'));
   });
 

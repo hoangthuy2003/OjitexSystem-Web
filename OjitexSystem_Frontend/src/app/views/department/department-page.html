@@ -1,0 +1,31 @@
+<section class="department-page">
+  @if (isReport) {
+    <header class="page-heading">
+      <h1>REPORT MENU</h1>
+    </header>
+    <div class="report-grid" aria-label="Report menu">
+      @for (item of reportItems; track item.name) {
+        <button class="report-card" type="button" (click)="openReportItem(item)">
+          {{ item.name }}
+        </button>
+      }
+    </div>
+  } @else if (isAdmin) {
+    <header class="page-heading">
+      <h1>ADMIN MENU</h1>
+    </header>
+    <div class="report-grid" aria-label="Admin menu">
+      <a class="report-card" routerLink="/admin/users">User Management</a>
+    </div>
+  } @else {
+    <header class="page-heading">
+      <h1>{{ department }} MENU</h1>
+    </header>
+    <div class="report-grid" aria-label="Department menu">
+      <button class="report-card unavailable-card" type="button" disabled>
+        Feature in Development
+      </button>
+    </div>
+  }
+  <a class="back-button" routerLink="/home">Go Back</a>
+</section>

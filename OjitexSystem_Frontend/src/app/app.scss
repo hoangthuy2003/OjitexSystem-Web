@@ -1,0 +1,134 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  color: #1d3440;
+}
+
+.app-header {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: 76px;
+  padding: 8px 28px;
+  border-bottom: 1px solid #dce8ec;
+  background: #fff;
+}
+
+.brand {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+}
+
+.brand img {
+  display: block;
+  width: 154px;
+  height: 54px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.system-title {
+  color: #1d6279;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.user-menu {
+  position: relative;
+  justify-self: end;
+}
+
+.user-button {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid #d5e2e7;
+  border-radius: 50%;
+  background: #f5fafb;
+  color: #286f84;
+  cursor: pointer;
+}
+
+.user-button svg {
+  width: 23px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.7;
+}
+
+.user-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  display: none;
+  min-width: 190px;
+  padding: 8px;
+  border: 1px solid #dce8ec;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgb(20 55 67 / 14%);
+}
+
+.user-menu:hover .user-popover,
+.user-menu:focus-within .user-popover {
+  display: grid;
+  gap: 4px;
+}
+
+.user-name {
+  overflow: hidden;
+  padding: 9px 10px;
+  color: #294650;
+  font-size: 13px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+}
+
+.user-popover button {
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #9e342c;
+  text-align: left;
+  cursor: pointer;
+}
+
+.user-popover button:hover {
+  background: #fff2f0;
+}
+
+.app-content {
+  min-height: calc(100vh - 76px);
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    min-height: 64px;
+    padding: 6px 12px;
+  }
+
+  .brand img {
+    width: 105px;
+    height: 44px;
+  }
+
+  .system-title {
+    font-size: 16px;
+  }
+
+  .app-content {
+    min-height: calc(100vh - 64px);
+  }
+}

@@ -30,20 +30,9 @@ export class LoginPage {
     this.statusMessage = '';
     this.isSubmitting = true;
     this.authService.login(this.username.trim(), this.password, this.rememberMe).subscribe({
-      next: ({ user }) => {
+      next: () => {
         this.isSubmitting = false;
-        if (user.roles.includes('ADMIN')) {
-          void this.router.navigateByUrl('/admin/users');
-          return;
-        }
-
-        if (user.categories.some((category) => category.categoryId === 'C000000005')) {
-          void this.router.navigateByUrl('/logistic/current-stock');
-          return;
-        }
-
-        this.statusType = 'success';
-        this.statusMessage = 'Đăng nhập thành công nhưng tài khoản chưa được cấp quyền vào trang hiện có.';
+        void this.router.navigateByUrl('/home');
       },
       error: (error: HttpErrorResponse) => {
         this.isSubmitting = false;
@@ -55,13 +44,13 @@ export class LoginPage {
 
   private getLoginErrorMessage(error: HttpErrorResponse): string {
     if (error.status === 0) {
-      return 'Không kết nối được máy chủ. Vui lòng kiểm tra backend và thử lại.';
+      return 'Unable to connect to the server. Check the backend and try again.';
     }
 
     if (error.status === 401) {
-      return 'Tên đăng nhập hoặc mật khẩu không đúng, hoặc tài khoản đang bị khóa.';
+      return 'The username or password is incorrect, or the account is locked.';
     }
 
-    return 'Đăng nhập thất bại do lỗi máy chủ. Vui lòng thử lại sau.';
+    return 'Sign-in failed due to a server error. Please try again later.';
   }
 }

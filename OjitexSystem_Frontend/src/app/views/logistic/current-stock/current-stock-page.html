@@ -1,50 +1,49 @@
 <main class="page">
   <header class="page-header">
     <div>
-      <p class="department">LOGISTIC</p>
-      <h1>Tồn kho hiện tại</h1>
+      <h1>Current Stock</h1>
     </div>
     @if (searchMode !== 'idle') {
       <button class="refresh-button" type="button" (click)="refresh()" [disabled]="loading">
-        Tải lại
+        Refresh
       </button>
     }
   </header>
 
-  <section class="stock-card" aria-label="Tra cứu tồn kho hiện tại">
+  <section class="stock-card" aria-label="Current stock lookup">
     <form class="table-toolbar" (ngSubmit)="searchByProductCode()">
       <label class="search-field">
-        <span>Tìm theo mã sản phẩm</span>
+        <span style="font-weight: bold;">Search by product code</span>
         <input
           type="search"
           name="productCode"
           maxlength="7"
           [(ngModel)]="searchTerm"
-          placeholder="Nhập mã sản phẩm"
-          aria-label="Mã sản phẩm"
+          placeholder="Enter a product code"
+          aria-label="Product code"
         />
       </label>
       <div class="search-actions">
-        <button class="search-button" type="submit" [disabled]="loading">Tìm mã</button>
+        <button class="search-button" type="submit" [disabled]="loading">Search</button>
         <button class="search-all-button" type="button" (click)="searchAll()" [disabled]="loading">
-          Tìm tất cả
+          Show All
         </button>
       </div>
     </form>
 
     @if (loading) {
-      <p class="message" role="status">Đang tải dữ liệu tồn kho...</p>
+      <p class="message" role="status">Loading current stock...</p>
     } @else if (errorMessage) {
       <div class="message error-message" role="alert">
         <p>{{ errorMessage }}</p>
         @if (searchMode !== 'idle') {
-          <button class="retry-button" type="button" (click)="refresh()">Thử lại</button>
+          <button class="retry-button" type="button" (click)="refresh()">Retry</button>
         }
       </div>
     } @else if (searchMode === 'idle') {
-      <p class="message">Nhập mã sản phẩm để tìm nhanh, hoặc chọn “Tìm tất cả” để duyệt dữ liệu.</p>
+      <p class="message">Enter a product code to search, or select “Show All” to browse the inventory.</p>
     } @else if (stockItems.length === 0) {
-      <p class="message">Không có dữ liệu tồn kho phù hợp.</p>
+      <p class="message">No matching stock records found.</p>
     } @else {
       <div class="table-scroll" (copy)="copyGridRange($event)">
         <ag-grid-angular

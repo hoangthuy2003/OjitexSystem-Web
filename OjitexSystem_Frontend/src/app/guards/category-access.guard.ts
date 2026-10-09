@@ -5,8 +5,8 @@ import { AuthService } from '../services/auth.service';
 export const logisticsAccessGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   if (!authService.accessToken) {
-    return inject(Router).parseUrl('/');
+    return inject(Router).parseUrl('/login');
   }
 
-  return authService.hasCategory('C000000005') || inject(Router).parseUrl('/');
+  return authService.hasCategory('C000000005') || inject(Router).parseUrl('/home');
 };

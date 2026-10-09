@@ -22,10 +22,10 @@ public class CurrentStockRepository : ICurrentStockRepository
     public async Task<IEnumerable<TCurrentStock>> GetByProductCode(decimal proCd)
     {
         var prefix = proCd.ToString(CultureInfo.InvariantCulture);
-
+            
         return await _context.TCurrentStocks.AsNoTracking()
             .Where(stock => stock.CstProCd.ToString().StartsWith(prefix))
             .OrderBy(stock => stock.CstProCd)
-            .ToListAsync();
-    }
+            .ToListAsync();              
+    }       
 }
