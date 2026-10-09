@@ -178,44 +178,77 @@ describe('AdminDashboardPage', () => {
 
   it('resets a user password through the admin API', async () => {
     const { fixture, http } = await createPage();
-    const originalConfirm = window.confirm;
-    window.confirm = () => true;
+    const page = fixture.componentInstance;
 
-    try {
-      fixture.componentInstance.resetPassword(user);
-      const resetRequest = http.expectOne('/api/admin/dashboard/trung/reset-password');
-      expect(resetRequest.request.method).toBe('POST');
-      resetRequest.flush({ message: 'Password reset.' });
+    page.resetPassword(user);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[role="dialog"]').textContent).toContain('123456');
+    http.expectNone('/api/admin/dashboard/trung/reset-password');
 
-      expect(fixture.componentInstance.notice).toContain('trung');
-      expect(fixture.componentInstance.resettingUserIds.has('trung')).toBe(false);
-      http.expectOne('/api/admin/dashboard').flush([user]);
-      http.expectOne('/api/admin/dashboard/roles').flush([]);
-      http.expectOne('/api/admin/dashboard/categories').flush([]);
-      http.verify();
-    } finally {
-      window.confirm = originalConfirm;
-    }
+    page.confirmPendingAction();
+    const resetRequest = http.expectOne('/api/admin/dashboard/trung/reset-password');
+    expect(resetRequest.request.method).toBe('POST');
+    resetRequest.flush({ message: 'Password reset.' });
+
+    expect(page.notice).toContain('trung');
+    expect(page.resettingUserIds.has('trung')).toBe(false);
+    http.expectOne('/api/admin/dashboard').flush([user]);
+    http.expectOne('/api/admin/dashboard/roles').flush([]);
+    http.expectOne('/api/admin/dashboard/categories').flush([]);
+    http.verify();
   });
 
   it('clears the reset indicator and reports an API failure', async () => {
     const { fixture, http } = await createPage();
-    const originalConfirm = window.confirm;
-    window.confirm = () => true;
+    const page = fixture.componentInstance;
 
-    try {
-      fixture.componentInstance.resetPassword(user);
-      http.expectOne('/api/admin/dashboard/trung/reset-password').flush(
-        { message: 'Reset failed.' },
-        { status: 500, statusText: 'Server Error' },
-      );
+    page.resetPassword(user);
+    page.confirmPendingAction();
+    http.expectOne('/api/admin/dashboard/trung/reset-password').flush(
+      { message: 'Reset failed.' },
+      { status: 500, statusText: 'Server Error' },
+    );
 
-      expect(fixture.componentInstance.resettingUserIds.has('trung')).toBe(false);
-      expect(fixture.componentInstance.pageError).toContain('Reset failed.');
-      http.verify();
-    } finally {
-      window.confirm = originalConfirm;
-    }
+    expect(page.resettingUserIds.has('trung')).toBe(false);
+    expect(page.pageError).toContain('Reset failed.');
+    http.verify();
+  });
+
+  it('does not perform a user action when its confirmation is cancelled', async () => {
+    const { fixture, http } = await createPage();
+    const page = fixture.componentInstance;
+
+    page.deleteUser(user);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[role="dialog"]').textContent).toContain(
+      'cannot be undone',
+    );
+
+    page.cancelPendingAction();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[role="dialog"]')).toBeNull();
+    expect(page.pendingConfirmation).toBeNull();
+    http.expectNone('/api/admin/dashboard/trung');
+    http.verify();
+  });
+
+  it('deletes a user only after the confirmation is accepted', async () => {
+    const { fixture, http } = await createPage();
+    const page = fixture.componentInstance;
+
+    page.deleteUser(user);
+    http.expectNone('/api/admin/dashboard/trung');
+    page.confirmPendingAction();
+
+    const deleteRequest = http.expectOne('/api/admin/dashboard/trung');
+    expect(deleteRequest.request.method).toBe('DELETE');
+    deleteRequest.flush(null);
+
+    expect(page.notice).toContain('trung');
+    http.expectOne('/api/admin/dashboard').flush([]);
+    http.expectOne('/api/admin/dashboard/roles').flush([]);
+    http.expectOne('/api/admin/dashboard/categories').flush([]);
+    http.verify();
   });
 
   it('shows no more than eight users per page', async () => {

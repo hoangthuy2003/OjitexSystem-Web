@@ -37,7 +37,7 @@ export class LoginPage {
         next: () => {
           this.isSubmitting = false;
           this.changeDetector.markForCheck();
-          void this.router.navigateByUrl('/home');
+          void this.router.navigateByUrl('/home', { replaceUrl: true });
         },
         error: (error: HttpErrorResponse | TimeoutError) => {
           this.isSubmitting = false;
@@ -58,7 +58,7 @@ export class LoginPage {
     }
 
     if (error.status === 401) {
-      return 'The username or password is incorrect, or the account is locked.';
+      return 'The username or password is incorrect. If you forgot your password, please contact the administrator.';
     }
 
     return 'Sign-in failed due to a server error. Please try again later.';

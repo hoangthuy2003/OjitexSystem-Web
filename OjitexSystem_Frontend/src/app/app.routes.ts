@@ -1,11 +1,13 @@
 import { Routes } from '@angular/router';
 import { authenticatedGuard } from './guards/authenticated.guard';
+import { anonymousOnlyGuard } from './guards/anonymous-only.guard';
 import { adminAccessGuard } from './guards/admin-access.guard';
 import { logisticsAccessGuard } from './guards/category-access.guard';
 
 export const routes: Routes = [
   {
     path: 'login',
+    canActivate: [anonymousOnlyGuard],
     loadComponent: () =>
       import('./views/auth/login-page/login-page').then((module) => module.LoginPage),
   },

@@ -9,6 +9,11 @@ import { Category } from '../../../interfaces/auth.interface';
 import { AdminDashboardService } from '../../../services/admin-dashboard.service';
 import { AuthService } from '../../../services/auth.service';
 
+type UserConfirmation = {
+  action: 'reset-password' | 'delete-user';
+  user: AdminUser;
+};
+
 @Component({
   imports: [DatePipe, FormsModule],
   selector: 'app-admin-dashboard-page',
@@ -27,7 +32,7 @@ export class AdminDashboardPage implements OnDestroy, OnInit {
   users: AdminUser[] = [];
   roles: UserRole[] = [];
   categories: Category[] = [];
-  readonly pageSize = 8;
+  readonly pageSize = 7;
   form: UserForm = this.emptyForm();
   searchTerm = '';
   currentPage = 1;
@@ -40,6 +45,7 @@ export class AdminDashboardPage implements OnDestroy, OnInit {
   pageError = '';
   formError = '';
   notice = '';
+  pendingConfirmation: UserConfirmation | null = null;
 
   get filteredUsers(): AdminUser[] {
     const search = this.searchTerm.trim().toLocaleLowerCase();
@@ -220,10 +226,37 @@ export class AdminDashboardPage implements OnDestroy, OnInit {
       return;
     }
 
-    if (!window.confirm(`Reset the password for "${user.userId}" to 123456?`)) {
+    this.pendingConfirmation = { action: 'reset-password', user };
+    this.changeDetector.markForCheck();
+  }
+
+  confirmPendingAction(): void {
+    const confirmation = this.pendingConfirmation;
+    if (!confirmation) {
       return;
     }
 
+    this.pendingConfirmation = null;
+    this.changeDetector.markForCheck();
+    if (confirmation.action === 'reset-password') {
+      this.performPasswordReset(confirmation.user);
+    } else {
+      this.performUserDeletion(confirmation.user);
+    }
+  }
+
+  cancelPendingAction(): void {
+    this.pendingConfirmation = null;
+    this.changeDetector.markForCheck();
+  }
+
+  closeConfirmationFromBackdrop(event: MouseEvent): void {
+    if (event.target === event.currentTarget) {
+      this.cancelPendingAction();
+    }
+  }
+
+  private performPasswordReset(user: AdminUser): void {
     this.resettingUserIds.add(user.userId);
     this.clearNotice();
     this.pageError = '';
@@ -245,15 +278,16 @@ export class AdminDashboardPage implements OnDestroy, OnInit {
   }
 
   deleteUser(user: AdminUser): void {
-    if (!window.confirm(`Deactivate the user account "${user.userId}"?`)) {
-      return;
-    }
+    this.pendingConfirmation = { action: 'delete-user', user };
+    this.changeDetector.markForCheck();
+  }
 
+  private performUserDeletion(user: AdminUser): void {
     this.adminDashboardService.deleteUser(user.userId).pipe(
       timeout({ first: this.requestTimeoutMs }),
     ).subscribe({
       next: () => {
-        this.showNotice(`User account ${user.userId} was deactivated.`);
+        this.showNotice(`User account ${user.userId} was deleted.`);
         this.pageError = '';
         this.changeDetector.markForCheck();
         this.loadData();
