@@ -23,7 +23,7 @@ describe('AdminDashboardPage', () => {
       'ojitex.auth',
       JSON.stringify({
         accessToken: 'test-token',
-        expiresAt: '2026-10-08T08:00:00Z',
+        expiresAt: new Date(Date.now() + 3600000).toISOString(),
         user: {
           userId: 'admin',
           userFamilyName: null,
@@ -256,7 +256,7 @@ describe('AdminDashboardPage', () => {
       'ojitex.auth',
       JSON.stringify({
         accessToken: 'test-token',
-        expiresAt: '2026-10-08T08:00:00Z',
+        expiresAt: new Date(Date.now() + 3600000).toISOString(),
         user: {
           userId: 'admin',
           userFamilyName: null,

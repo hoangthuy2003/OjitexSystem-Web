@@ -23,7 +23,7 @@ describe('App', () => {
       'ojitex.auth',
       JSON.stringify({
         accessToken: 'test-token',
-        expiresAt: '2026-10-10T08:00:00Z',
+        expiresAt: new Date(Date.now() + 3600000).toISOString(),
         user: {
           userId: 'trung',
           userFamilyName: null,
@@ -81,7 +81,7 @@ describe('App', () => {
       'ojitex.auth',
       JSON.stringify({
         accessToken: 'test-token',
-        expiresAt: '2026-10-10T08:00:00Z',
+        expiresAt: new Date(Date.now() + 3600000).toISOString(),
         user: {
           userId: 'trung',
           userFamilyName: null,

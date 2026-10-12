@@ -5,6 +5,17 @@ import { TestBed } from '@angular/core/testing';
 import { LoginPage } from './login-page';
 
 describe('LoginPage', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+
   async function createPage() {
     await TestBed.configureTestingModule({
       imports: [LoginPage],
@@ -45,7 +56,7 @@ describe('LoginPage', () => {
 
     request.flush({
       accessToken: 'test-token',
-      expiresAt: '2026-10-08T08:00:00Z',
+      expiresAt: new Date(Date.now() + 3600000).toISOString(),
       user: {
         userId: 'trung',
         userFamilyName: null,
@@ -81,6 +92,27 @@ describe('LoginPage', () => {
     expect(fixture.componentInstance.isSubmitting).toBe(false);
     expect((fixture.nativeElement.querySelector('.submit-button') as HTMLButtonElement).disabled)
       .toBe(false);
+    http.verify();
+  });
+
+  it('explains storage failures without navigating away', async () => {
+    const fixture = await createPage();
+    const http = TestBed.inject(HttpTestingController);
+    const navigateSpy = vi.spyOn(TestBed.inject(Router), 'navigateByUrl');
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('Storage full', 'QuotaExceededError');
+    });
+
+    fixture.componentInstance.submitLogin();
+    http.expectOne('/api/auth/login').flush({
+      accessToken: 'test-token',
+      expiresAt: new Date(Date.now() + 3600000).toISOString(),
+      user: { userId: 'trung', userFamilyName: null, userFirstName: null, roles: [], categories: [] },
+    });
+
+    expect(fixture.componentInstance.statusMessage).toContain('Allow browser storage');
+    expect(fixture.componentInstance.isSubmitting).toBe(false);
+    expect(navigateSpy).not.toHaveBeenCalled();
     http.verify();
   });
 });

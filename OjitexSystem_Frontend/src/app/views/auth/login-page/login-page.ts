@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TimeoutError, timeout } from 'rxjs';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService, AuthSessionError } from '../../../services/auth.service';
 
 @Component({
   imports: [FormsModule],
@@ -39,7 +39,7 @@ export class LoginPage {
           this.changeDetector.markForCheck();
           void this.router.navigateByUrl('/home', { replaceUrl: true });
         },
-        error: (error: HttpErrorResponse | TimeoutError) => {
+        error: (error: HttpErrorResponse | TimeoutError | AuthSessionError) => {
           this.isSubmitting = false;
           this.statusType = 'error';
           this.statusMessage = this.getLoginErrorMessage(error);
@@ -48,7 +48,10 @@ export class LoginPage {
       });
   }
 
-  private getLoginErrorMessage(error: HttpErrorResponse | TimeoutError): string {
+  private getLoginErrorMessage(error: HttpErrorResponse | TimeoutError | AuthSessionError): string {
+    if (error instanceof AuthSessionError) {
+      return error.message;
+    }
     if (error instanceof TimeoutError) {
       return 'The sign-in request timed out. Please try again.';
     }

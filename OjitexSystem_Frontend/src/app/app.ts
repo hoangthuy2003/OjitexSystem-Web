@@ -115,9 +115,13 @@ export class App implements OnDestroy {
       return 'Unable to reach the server. Please try again.';
     }
 
-    if (error.status === 401 || error.status === 403) {
+    if (error.status === 401) {
       this.logout();
       return 'Your session has expired. Please sign in again.';
+    }
+
+    if (error.status === 403) {
+      return 'You do not have permission to change the password.';
     }
 
     if (typeof error.error?.message === 'string' && error.error.message.trim()) {
