@@ -1,4 +1,4 @@
-export type StockReportKind = 'last' | 'monthly';
+export type StockReportKind = 'current' | 'last' | 'monthly';
 
 export interface StockReportItem {
   id: number | null;

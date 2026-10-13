@@ -23,8 +23,6 @@ builder.Services.AddDbContext<ProductionContext>(options =>
 builder.Services.AddDbContext<AuthContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("EVOLIO")));
 
-builder.Services.AddScoped<ICurrentStockRepository, CurrentStockRepository>();
-builder.Services.AddScoped<ICurrentStockService, CurrentStockService>();
 builder.Services.AddScoped<IStockReportRepository, StockReportRepository>();
 builder.Services.AddScoped<IStockReportService, StockReportService>();
 builder.Services.AddSingleton(TimeProvider.System);

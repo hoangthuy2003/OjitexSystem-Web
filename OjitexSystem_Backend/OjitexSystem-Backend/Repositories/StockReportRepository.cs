@@ -8,7 +8,37 @@ namespace OjitexSystem_Backend.Repositories;
 
 public class StockReportRepository(ProductionContext context, AuthContext authContext) : IStockReportRepository
 {
-    public async Task<IReadOnlyList<StockReportItemDto>> GetLastStockAsync(decimal? productCode)
+    public Task<IReadOnlyList<StockReportItemDto>> GetStockAsync(StockReportKind kind, decimal? productCode) => kind switch
+    {
+        StockReportKind.Current => GetCurrentStockAsync(productCode),
+        StockReportKind.Last => GetLastStockAsync(productCode),
+        StockReportKind.Monthly => GetMonthlyStockAsync(productCode),
+        _ => throw new ArgumentOutOfRangeException(nameof(kind))
+    };
+
+    private async Task<IReadOnlyList<StockReportItemDto>> GetCurrentStockAsync(decimal? productCode)
+    {
+        var query = context.TCurrentStocks.AsNoTracking();
+        if (productCode.HasValue)
+        {
+            var prefix = productCode.Value.ToString(CultureInfo.InvariantCulture);
+            query = query.Where(stock => stock.CstProCd.ToString().StartsWith(prefix));
+        }
+
+        return await query.OrderBy(stock => stock.CstProCd).Select(stock => new StockReportItemDto
+        {
+            ProductCode = stock.CstProCd,
+            OpeningStock = stock.CstOpenStock,
+            WarehouseNg = stock.CstWarehouseNg,
+            Disposal = stock.CstDisposal,
+            Repair = stock.CstRepair,
+            Production = stock.CstProduction,
+            Delivery = stock.CstDelivery,
+            ClosingStock = stock.CstStock
+        }).ToListAsync();
+    }
+
+    private async Task<IReadOnlyList<StockReportItemDto>> GetLastStockAsync(decimal? productCode)
     {
         var query = context.TLastStocks.AsNoTracking();
         if (productCode.HasValue)
@@ -30,7 +60,7 @@ public class StockReportRepository(ProductionContext context, AuthContext authCo
         }).ToListAsync();
     }
 
-    public async Task<IReadOnlyList<StockReportItemDto>> GetMonthlyStockAsync(decimal? productCode)
+    private async Task<IReadOnlyList<StockReportItemDto>> GetMonthlyStockAsync(decimal? productCode)
     {
         var query = context.TMonthlyStocks.AsNoTracking();
         if (productCode.HasValue)
@@ -55,7 +85,7 @@ public class StockReportRepository(ProductionContext context, AuthContext authCo
             }).ToListAsync();
     }
 
-    public async Task<StockReportHistoryDto> GetHistoryAsync(decimal productCode, DateOnly from, DateOnly to, bool monthly)
+    public async Task<StockReportHistoryDto> GetHistoryAsync(StockReportKind kind, decimal productCode, DateOnly from, DateOnly to)
     {
         var product = await (
             from p in context.TInputProducts.AsNoTracking()
@@ -66,7 +96,7 @@ public class StockReportRepository(ProductionContext context, AuthContext authCo
         ).FirstOrDefaultAsync();
 
         List<StockReportHistoryItemDto> items;
-        if (monthly)
+        if (kind == StockReportKind.Monthly)
         {
             // Report dates can be earlier than the last calendar day of the month.
             // Select the stored report month rather than the transaction/input date.
@@ -81,7 +111,7 @@ public class StockReportRepository(ProductionContext context, AuthContext authCo
                     DateInput = item.MsthDateInput, UserId = item.MsthUserId
                 }).ToListAsync();
         }
-        else
+        else if (kind == StockReportKind.Last)
         {
             // LastStockHistory is the previous month's snapshot, just as CurrentStockHistory
             // is the current snapshot. Keep all of its entries for the exact product.
@@ -96,6 +126,21 @@ public class StockReportRepository(ProductionContext context, AuthContext authCo
                     DateInput = item.LsthDateInput, UserId = item.LsthUserId
                 }).ToListAsync();
         }
+
+        else if (kind == StockReportKind.Current)
+        {
+            items = await context.TCurrentStockHistories.AsNoTracking()
+                .Where(item => item.CsthProCd == productCode)
+                .OrderBy(item => item.CsthWorkDate).ThenBy(item => item.CsthDateInput).ThenBy(item => item.CsthId)
+                .Select(item => new StockReportHistoryItemDto
+                {
+                    Id = item.CsthId, ReceiveNo = item.CsthReceiveNo, ProductCode = item.CsthProCd,
+                    Section = item.CsthSection, InputStock = item.CsthInputStock, OutputStock = item.CsthOutputStock,
+                    CurrentStock = item.CsthCurrentStock, Remark = item.CsthRemark, WorkDate = item.CsthWorkDate,
+                    DateInput = item.CsthDateInput, UserId = item.CsthUserId
+                }).ToListAsync();
+        }
+        else throw new ArgumentOutOfRangeException(nameof(kind));
 
         var userIds = items.Where(item => !string.IsNullOrWhiteSpace(item.UserId))
             .Select(item => item.UserId!.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();

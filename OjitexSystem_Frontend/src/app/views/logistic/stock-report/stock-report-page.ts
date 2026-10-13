@@ -40,14 +40,18 @@ ModuleRegistry.registerModules([
 @Component({
   imports: [FormsModule, AgGridAngular, DatePipe, DecimalPipe],
   selector: 'app-stock-report-page',
-  styleUrl: '../current-stock/current-stock-page.scss',
+  styleUrl: './stock-report-page.scss',
   templateUrl: './stock-report-page.html',
 })
 export class StockReportPage {
   private readonly stockReportService = inject(StockReportService);
   private readonly changeDetector = inject(ChangeDetectorRef);
   readonly reportKind: StockReportKind = inject(ActivatedRoute).snapshot.data['stockReport'];
-  readonly reportTitle = this.reportKind === 'monthly' ? 'Monthly Stock' : 'Last Stock';
+  readonly reportTitle = {
+    current: 'Current Stock',
+    last: 'Last Stock',
+    monthly: 'Monthly Stock',
+  }[this.reportKind];
   reportPeriod: string | null = null;
   historyReportDate: string | null = null;
   private requestId = 0;
@@ -124,7 +128,11 @@ export class StockReportPage {
     },
     {
       field: 'closingStock',
-      headerName: this.reportKind === 'monthly' ? 'Closing Stock' : 'Stock',
+      headerName: {
+        current: 'Current Stock',
+        last: 'Stock',
+        monthly: 'Closing Stock',
+      }[this.reportKind],
       cellClass: 'numeric-cell stock-history-cell',
       tooltipValueGetter: () => 'Double-click to view stock history',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),

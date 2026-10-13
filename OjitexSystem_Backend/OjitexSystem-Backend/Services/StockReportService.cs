@@ -5,35 +5,39 @@ namespace OjitexSystem_Backend.Services;
 
 public class StockReportService(IStockReportRepository repository, TimeProvider timeProvider) : IStockReportService
 {
-    private DateOnly LastMonthStart()
+    private (DateOnly From, DateOnly To) GetPeriod(StockReportKind kind, DateOnly? reportDate = null)
     {
         var today = DateOnly.FromDateTime(timeProvider.GetUtcNow().ToOffset(TimeSpan.FromHours(7)).DateTime);
-        return new DateOnly(today.Year, today.Month, 1).AddMonths(-1);
-    }
-
-    public async Task<StockReportDto> GetLastStockAsync(decimal? productCode = null)
-    {
-        var from = LastMonthStart();
-        return new StockReportDto
+        var currentMonth = new DateOnly(today.Year, today.Month, 1);
+        var from = kind switch
         {
-            WorkingDayFrom = from, WorkingDayTo = from.AddMonths(1).AddDays(-1),
-            Items = await repository.GetLastStockAsync(productCode)
+            StockReportKind.Current => currentMonth,
+            StockReportKind.Last => currentMonth.AddMonths(-1),
+            StockReportKind.Monthly when reportDate.HasValue => new DateOnly(reportDate.Value.Year, reportDate.Value.Month, 1),
+            StockReportKind.Monthly => throw new ArgumentException("Report date is required for monthly history.", nameof(reportDate)),
+            _ => throw new ArgumentOutOfRangeException(nameof(kind))
         };
+        var to = kind == StockReportKind.Current
+            ? today
+            : new DateOnly(from.Year, from.Month, DateTime.DaysInMonth(from.Year, from.Month));
+        return (from, to);
     }
 
-    public async Task<StockReportDto> GetMonthlyStockAsync(decimal? productCode = null) =>
-        new() { Items = await repository.GetMonthlyStockAsync(productCode) };
-
-    public Task<StockReportHistoryDto> GetLastHistoryAsync(decimal productCode)
+    public async Task<StockReportDto> GetStockAsync(StockReportKind kind, decimal? productCode = null)
     {
-        var from = LastMonthStart();
-        return repository.GetHistoryAsync(productCode, from, from.AddMonths(1).AddDays(-1), false);
+        var report = new StockReportDto { Items = await repository.GetStockAsync(kind, productCode) };
+        if (kind != StockReportKind.Monthly)
+        {
+            var period = GetPeriod(kind);
+            report.WorkingDayFrom = period.From;
+            report.WorkingDayTo = period.To;
+        }
+        return report;
     }
 
-    public Task<StockReportHistoryDto> GetMonthlyHistoryAsync(decimal productCode, DateOnly reportDate)
+    public Task<StockReportHistoryDto> GetHistoryAsync(StockReportKind kind, decimal productCode, DateOnly? reportDate = null)
     {
-        var from = new DateOnly(reportDate.Year, reportDate.Month, 1);
-        var to = new DateOnly(from.Year, from.Month, DateTime.DaysInMonth(from.Year, from.Month));
-        return repository.GetHistoryAsync(productCode, from, to, true);
+        var period = GetPeriod(kind, reportDate);
+        return repository.GetHistoryAsync(kind, productCode, period.From, period.To);
     }
 }

@@ -51,8 +51,8 @@ const history: StockReportHistory = {
   ],
 };
 
-describe.each<StockReportKind>(['last', 'monthly'])('%s stock report', (kind) => {
-  const endpoint = kind === 'last' ? '/api/LastStock' : '/api/MonthlyStock';
+describe.each<StockReportKind>(['current', 'last', 'monthly'])('%s stock report', (kind) => {
+  const endpoint = `/api/StockReport/${kind}`;
   const report = {
     workingDayFrom: kind === 'last' ? '2026-09-01' : null,
     workingDayTo: kind === 'last' ? '2026-09-30' : null,
@@ -87,7 +87,7 @@ describe.each<StockReportKind>(['last', 'monthly'])('%s stock report', (kind) =>
     return http.expectOne(
       (request) =>
         request.url === `${endpoint}/${productCode}/history` &&
-        (kind === 'last'
+        (kind !== 'monthly'
           ? !request.params.has('reportDate')
           : request.params.get('reportDate') === reportDate),
     );
@@ -244,6 +244,69 @@ describe.each<StockReportKind>(['last', 'monthly'])('%s stock report', (kind) =>
     http.expectNone((request) => request.url.startsWith(endpoint));
   });
 
+  it('assigns equal flexible widths to all stock columns', () => {
+    const component = TestBed.createComponent(StockReportPage).componentInstance;
+
+    expect(component.defaultColDef.flex).toBe(1);
+    expect(component.defaultColDef.minWidth).toBe(120);
+    expect(component.defaultColDef.headerClass).toBe('center-header');
+    expect(component.defaultColDef.cellStyle).toEqual({ textAlign: 'center' });
+    expect(component.columnDefs.every((column) => column.width === undefined)).toBe(true);
+  });
+
+  it('copies a selected cell range as tab-separated values for spreadsheets', async () => {
+    const fixture = TestBed.createComponent(StockReportPage);
+    fixture.componentInstance.searchTerm = '1010010';
+    fixture.componentInstance.searchByProductCode();
+    fixture.detectChanges();
+    http.expectOne(`${endpoint}/1010010`).flush(report);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const container = fixture.nativeElement.querySelector('.table-scroll') as HTMLElement;
+    const firstRow = document.createElement('div');
+    firstRow.className = 'ag-row';
+    firstRow.setAttribute('row-index', '100');
+    const firstProductCell = document.createElement('div');
+    firstProductCell.className = 'ag-cell';
+    firstProductCell.setAttribute('col-id', 'productCode');
+    firstProductCell.textContent = '1010060';
+    const firstStockCell = document.createElement('div');
+    firstStockCell.className = 'ag-cell';
+    firstStockCell.setAttribute('col-id', 'openingStock');
+    firstStockCell.textContent = '300';
+    firstRow.append(firstProductCell, firstStockCell);
+
+    const secondRow = document.createElement('div');
+    secondRow.className = 'ag-row';
+    secondRow.setAttribute('row-index', '101');
+    const secondProductCell = document.createElement('div');
+    secondProductCell.className = 'ag-cell';
+    secondProductCell.setAttribute('col-id', 'productCode');
+    secondProductCell.textContent = '1010061';
+    const secondStockCell = document.createElement('div');
+    secondStockCell.className = 'ag-cell';
+    secondStockCell.setAttribute('col-id', 'openingStock');
+    secondStockCell.textContent = '450';
+    secondRow.append(secondProductCell, secondStockCell);
+    container.append(firstRow, secondRow);
+
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.setStart(firstProductCell.firstChild!, 0);
+    range.setEnd(secondStockCell.firstChild!, secondStockCell.textContent!.length);
+    selection!.removeAllRanges();
+    selection!.addRange(range);
+
+    const setData = vi.fn();
+    const copyEvent = new Event('copy', { bubbles: true, cancelable: true });
+    Object.defineProperty(copyEvent, 'clipboardData', { value: { setData } });
+    container.dispatchEvent(copyEvent);
+
+    expect(copyEvent.defaultPrevented).toBe(true);
+    expect(setData).toHaveBeenCalledWith('text/plain', '1010060\t300\n1010061\t450');
+  });
+
   if (kind === 'monthly') {
     it('selects each row month separately for the same product and ignores stale month responses', () => {
       const { page } = setup();
@@ -267,9 +330,9 @@ describe.each<StockReportKind>(['last', 'monthly'])('%s stock report', (kind) =>
   }
 });
 
-it('protects both new report routes with the logistics guard', () => {
+it('uses the shared component and logistics guard for all three report routes', () => {
   const children = routes.find((route) => route.path === '')!.children!;
-  for (const kind of ['last', 'monthly']) {
+  for (const kind of ['current', 'last', 'monthly']) {
     const route = children.find((route) => route.path === `logistic/${kind}-stock`)!;
     expect(route.data?.['stockReport']).toBe(kind);
     expect(route.canActivate).toContain(logisticsAccessGuard);

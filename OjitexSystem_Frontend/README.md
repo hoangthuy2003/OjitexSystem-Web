@@ -14,24 +14,26 @@ src/app/
   guards/
     authenticated.guard.ts
   interfaces/
-    current-stock.interface.ts
+    stock-report.interface.ts
   services/
-    current-stock.service.ts
+    stock-report.service.ts
   views/
     department/
       department-page.*
     home/
       home-page.*
     logistic/
-      current-stock/
-        current-stock-page.*
+      stock-report/
+        stock-report-page.*
 ```
 
 Keep a page inside the folder for its department under `views` (for example, Logistic). Put TypeScript contracts in `interfaces` and API/business services in `services`. Add routes in `app.routes.ts`; use lazy-loaded pages for route entry points.
 
-After signing in, users land on the department menu at `/home`. Selecting a department opens a large-button submenu beneath the shared header; the Report menu links **Current Stock** to the existing `/logistic/current-stock` page. The other department and report entries are placeholders until their pages are implemented.
+After signing in, users land on the department menu at `/home`. Selecting a department opens a large-button submenu beneath the shared header. The Report menu links **Current Stock**, **Last Stock**, and **Monthly Stock** to their respective routes, which use the shared Stock Report page. The remaining report entries are placeholders until their pages are implemented.
 
-The current-stock view searches product code prefixes through `GET /api/CurrentStock/{productCode}` (for example, `100000` returns product codes beginning with `100000`). The view uses the free AG Grid Community Angular component for client-side rendering and pagination. Use **Show All** only to browse the inventory; `GET /api/CurrentStock` returns the complete list, which is cached for the current view to avoid repeatedly downloading it while browsing. **Refresh** fetches the inventory again. AG Grid Community is free; Enterprise features require a paid licence.
+Current Stock, Last Stock, and Monthly Stock share the Stock Report component, service, and models. The existing `/logistic/current-stock`, `/logistic/last-stock`, and `/logistic/monthly-stock` routes select the report type through route data. The shared backend API is `GET /api/StockReport/{kind}`, where `kind` is `current`, `last`, or `monthly`. Append `/{productCode}` to search a product code prefix (for example, `100000` returns product codes beginning with `100000`). **Show All** loads the complete report and caches it for the current view; **Refresh** fetches it again. The view uses AG Grid Community for client-side rendering, pagination, and copying selected cells.
+
+Double-click **Current Stock**, **Stock**, or **Closing Stock** to load `GET /api/StockReport/{kind}/{productCode}/history` for the exact product, including zero stock values. Monthly history includes `?reportDate=YYYY-MM-DD` from the selected row and uses that report month. Current and Last history use their respective snapshot tables, with report periods calculated in Vietnam time. All three reports require logistics access.
 
 ## Development server
 

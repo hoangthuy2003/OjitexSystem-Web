@@ -12,7 +12,7 @@ export class StockReportService {
   private readonly http = inject(HttpClient);
 
   private endpoint(kind: StockReportKind): string {
-    return kind === 'last' ? '/api/LastStock' : '/api/MonthlyStock';
+    return `/api/StockReport/${kind}`;
   }
 
   searchByProductCode(kind: StockReportKind, productCode: string): Observable<StockReport> {

@@ -35,9 +35,10 @@ export const routes: Routes = [
       {
         path: 'logistic/current-stock',
         canActivate: [logisticsAccessGuard],
+        data: { stockReport: 'current' },
         loadComponent: () =>
-          import('./views/logistic/current-stock/current-stock-page').then(
-            (module) => module.CurrentStockPage,
+          import('./views/logistic/stock-report/stock-report-page').then(
+            (module) => module.StockReportPage,
           ),
       },
       {
