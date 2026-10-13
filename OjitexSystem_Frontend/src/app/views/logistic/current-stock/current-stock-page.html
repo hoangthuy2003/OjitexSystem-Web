@@ -56,9 +56,69 @@
           [paginationPageSizeSelector]="[25, 50, 100]"
           [enableCellTextSelection]="true"
           [ensureDomOrder]="true"
+          (cellDoubleClicked)="onStockDoubleClicked($event)"
           class="stock-grid"
         />
       </div>
     }
   </section>
 </main>
+
+<dialog #historyDialog class="stock-history-dialog" aria-labelledby="history-title" (cancel)="closeHistory()">
+  <header class="history-header">
+    <span>History Of Stock Detail</span>
+    <button type="button" class="history-close" aria-label="Close stock history" (click)="closeHistory()">×</button>
+  </header>
+  <h2 id="history-title">Ojitex Hai Phong Stock History</h2>
+  <div class="history-details">
+    <div class="history-details-column">
+    <span><strong>Customer:</strong> {{ history?.customerName || '—' }}</span>
+    <span><strong>Product Code:</strong> {{ historyProductCode }}</span>
+    </div>
+    <div class="history-details-column">
+    <span><strong>Product Name:</strong> {{ history?.productName || '—' }}</span>
+    <span><strong>Working Day From:</strong> {{ (history?.workingDayFrom | date:'MMM-dd-yyyy') || '—' }}
+      <strong>To:</strong> {{ (history?.workingDayTo | date:'MMM-dd-yyyy') || '—' }}</span>
+    </div>
+  </div>
+  @if (historyLoading) {
+    <p class="message" role="status">Loading stock history...</p>
+  } @else if (historyError) {
+    <div class="message error-message" role="alert">
+      <p>{{ historyError }}</p>
+      <button class="retry-button" type="button" (click)="openHistory(historyProductCode!)">Retry</button>
+    </div>
+  } @else if (history) {
+    <div class="history-table-scroll">
+      <table class="history-table">
+        <thead><tr>
+          <th>Receive No</th><th>Product Code</th><th>Section</th><th>Input Stock</th>
+          <th>Output Stock</th><th>Current Stock</th><th>Remark</th><th>Working Day</th>
+          <th>Date Input</th><th>User Input</th>
+        </tr></thead>
+        <tbody>
+          @for (item of history.items; track item.csthId) {
+            <tr>
+              <td>{{ item.csthReceiveNo ?? '—' }}</td><td>{{ item.csthProCd ?? '—' }}</td>
+              <td>{{ item.csthSection || '—' }}</td>
+              <td class="numeric-cell">{{ (item.csthInputStock | number) ?? '—' }}</td>
+              <td class="numeric-cell">{{ (item.csthOutputStock | number) ?? '—' }}</td>
+              <td class="numeric-cell">{{ (item.csthCurrentStock | number) ?? '—' }}</td>
+              <td>{{ item.csthRemark || '—' }}</td>
+              <td>{{ (item.csthWorkDate | date:'MMM-dd-yyyy') || '—' }}</td>
+              <td>{{ (item.csthDateInput | date:'MMM-dd-yyyy HH:mm') || '—' }}</td>
+              <td>{{ item.userFirstName || '—' }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="10" class="message">No stock history found for this product.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+  <footer class="history-actions">
+    <button type="button" class="retry-button" (click)="closeHistory()">Quit</button>
+    <button type="button" class="search-button" (click)="printHistory()"
+      [disabled]="historyLoading || !!historyError || !history?.items?.length">Print</button>
+  </footer>
+</dialog>

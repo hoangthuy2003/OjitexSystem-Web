@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using OjitexSystem_Backend.Data.Production;
+using OjitexSystem_Backend.Dtos;
 using OjitexSystem_Backend.Security;
 using OjitexSystem_Backend.Services;
 
@@ -15,6 +16,15 @@ public class CurrentStockController : ControllerBase
     public CurrentStockController(ICurrentStockService service)
     {
         _service = service;
+    }
+
+    [HttpGet("{proCd}/history")]
+    public async Task<ActionResult<CurrentStockHistoryDto>> GetHistoryByProductCode(decimal proCd)
+    {
+        if (proCd < 0 || proCd > 9999999 || decimal.Truncate(proCd) != proCd)
+            return BadRequest("Product code must contain no more than 7 digits.");
+
+        return Ok(await _service.GetHistoryByProductCodeAsync(proCd));
     }
 
     // GET: api/CurrentStock

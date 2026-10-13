@@ -1,4 +1,6 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, ElementRef, ViewChild, inject } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { TimeoutError } from 'rxjs';
 import { AgGridAngular } from 'ag-grid-angular';
@@ -6,17 +8,19 @@ import {
   CellStyleModule,
   ClientSideRowModelModule,
   ColDef,
+  CellDoubleClickedEvent,
   ModuleRegistry,
   PaginationModule,
+  TooltipModule,
   themeQuartz,
 } from 'ag-grid-community';
-import { CurrentStock } from '../../../interfaces/current-stock.interface';
+import { CurrentStock, CurrentStockHistory } from '../../../interfaces/current-stock.interface';
 import { CurrentStockService } from '../../../services/current-stock.service';
 
-ModuleRegistry.registerModules([CellStyleModule, ClientSideRowModelModule, PaginationModule]);
+ModuleRegistry.registerModules([CellStyleModule, ClientSideRowModelModule, PaginationModule, TooltipModule]);
 
 @Component({
-  imports: [FormsModule, AgGridAngular],
+  imports: [FormsModule, AgGridAngular, DatePipe, DecimalPipe],
   selector: 'app-current-stock-page',
   styleUrl: './current-stock-page.scss',
   templateUrl: './current-stock-page.html',
@@ -25,6 +29,13 @@ export class CurrentStockPage {
   private readonly currentStockService = inject(CurrentStockService);
   private readonly changeDetector = inject(ChangeDetectorRef);
   private requestId = 0;
+  private readonly destroyRef = inject(DestroyRef);
+  private historyRequestId = 0;
+  @ViewChild('historyDialog') historyDialog!: ElementRef<HTMLDialogElement>;
+  history: CurrentStockHistory | null = null;
+  historyProductCode: number | null = null;
+  historyLoading = false;
+  historyError: string | null = null;
 
   stockItems: CurrentStock[] = [];
   private allStockItems: CurrentStock[] | null = null;
@@ -82,13 +93,51 @@ export class CurrentStockPage {
     {
       field: 'cstStock',
       headerName: 'Current Stock',
-      cellClass: 'numeric-cell',
+      cellClass: 'numeric-cell stock-history-cell',
+      tooltipValueGetter: () => 'Double-click to view stock history',
       valueFormatter: ({ value }) => (value == null ? '—' : value.toLocaleString()),
     },
   ];
 
   get gridPagination(): boolean {
     return this.searchMode === 'all' || this.stockItems.length > 1;
+  }
+
+  onStockDoubleClicked(event: CellDoubleClickedEvent<CurrentStock>): void {
+    if (event.colDef.field !== 'cstStock' || !event.data) return;
+    this.openHistory(event.data.cstProCd);
+  }
+
+  openHistory(productCode: number): void {
+    this.historyProductCode = productCode;
+    this.history = null;
+    this.historyError = null;
+    this.historyLoading = true;
+    if (!this.historyDialog.nativeElement.open) this.historyDialog.nativeElement.showModal();
+    const requestId = ++this.historyRequestId;
+    this.currentStockService.getHistory(productCode).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (history) => {
+        if (requestId !== this.historyRequestId) return;
+        this.history = history;
+        this.historyLoading = false;
+        this.changeDetector.markForCheck();
+      },
+      error: () => {
+        if (requestId !== this.historyRequestId) return;
+        this.historyLoading = false;
+        this.historyError = 'Unable to load stock history. Please try again.';
+        this.changeDetector.markForCheck();
+      },
+    });
+  }
+
+  closeHistory(): void {
+    this.historyRequestId++;
+    this.historyDialog.nativeElement.close();
+  }
+
+  printHistory(): void {
+    if (this.history && !this.historyLoading && !this.historyError) window.print();
   }
 
   copyGridRange(event: ClipboardEvent): void {
