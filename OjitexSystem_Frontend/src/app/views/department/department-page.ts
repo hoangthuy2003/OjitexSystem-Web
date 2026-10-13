@@ -27,9 +27,9 @@ export class DepartmentPage {
   readonly reportItems: ReportItem[] = [
     { name: 'Current Stock', route: '/logistic/current-stock' },
     { name: 'Work Progress' },
-    { name: 'Last Stock' },
+    { name: 'Last Stock', route: '/logistic/last-stock' },
     { name: 'Management Loss' },
-    { name: 'Monthly Stock' },
+    { name: 'Monthly Stock', route: '/logistic/monthly-stock' },
     { name: 'FFG' },
   ];
 

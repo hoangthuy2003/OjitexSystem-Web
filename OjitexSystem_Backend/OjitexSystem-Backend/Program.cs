@@ -25,6 +25,9 @@ builder.Services.AddDbContext<AuthContext>(options =>
 
 builder.Services.AddScoped<ICurrentStockRepository, CurrentStockRepository>();
 builder.Services.AddScoped<ICurrentStockService, CurrentStockService>();
+builder.Services.AddScoped<IStockReportRepository, StockReportRepository>();
+builder.Services.AddScoped<IStockReportService, StockReportService>();
+builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 builder.Services.AddScoped<ILegacyPasswordMigrationService, LegacyPasswordMigrationService>();

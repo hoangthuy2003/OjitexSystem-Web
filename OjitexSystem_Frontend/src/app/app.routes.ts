@@ -41,6 +41,24 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'logistic/last-stock',
+        canActivate: [logisticsAccessGuard],
+        data: { stockReport: 'last' },
+        loadComponent: () =>
+          import('./views/logistic/stock-report/stock-report-page').then(
+            (module) => module.StockReportPage,
+          ),
+      },
+      {
+        path: 'logistic/monthly-stock',
+        canActivate: [logisticsAccessGuard],
+        data: { stockReport: 'monthly' },
+        loadComponent: () =>
+          import('./views/logistic/stock-report/stock-report-page').then(
+            (module) => module.StockReportPage,
+          ),
+      },
+      {
         path: 'admin/dashboard',
         canActivate: [adminAccessGuard],
         loadComponent: () =>
