@@ -25,11 +25,16 @@ if (app.Environment.IsDevelopment())
 
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
-
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+// API không tồn tại trả 404.
+app.MapFallback("/api/{**path}", () => Results.NotFound());
 
+// Các URL giao diện được Angular xử lý.
+app.MapFallbackToFile("index.html");
 app.Run();
