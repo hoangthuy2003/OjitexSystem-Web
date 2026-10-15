@@ -4,11 +4,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace OjitexSystem_Backend.Security;
 
-public sealed class JwtTokenService(string issuer, string audience, byte[] signingKey)
+public sealed class JwtTokenService(string issuer, string audience, byte[] signingKey, TimeProvider timeProvider)
 {
     public (string Token, DateTime ExpiresAt) CreateToken(string userId, IEnumerable<string> roles)
     {
-        var expiresAt = DateTime.UtcNow.AddHours(1);
+        var expiresAt = timeProvider.GetUtcNow().UtcDateTime.AddHours(1);
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, userId),
