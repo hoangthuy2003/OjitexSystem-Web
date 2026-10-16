@@ -1,24 +1,11 @@
 <main class="page">
-  <header class="page-header">
-    <div>
-      <h1>
-        {{ reportTitle }}
-        @if (reportKind === 'last' && reportPeriod) {
-          <span>{{ reportPeriod | date: 'MMM-yyyy' }}</span>
-        }
-      </h1>
-    </div>
-    @if (searchMode !== 'idle') {
-      <button class="refresh-button" type="button" (click)="refresh()" [disabled]="loading">
-        Refresh
-      </button>
-    }
-  </header>
-
-  <section class="stock-card" [attr.aria-label]="reportTitle + ' lookup'">
+  <section
+    class="stock-card"
+    [attr.aria-label]="reportTitle + ' lookup'"
+    [attr.aria-busy]="loading"
+  >
     <form class="table-toolbar" (ngSubmit)="searchByProductCode()">
-      <label class="search-field">
-        <span style="font-weight: bold">Search by product code</span>
+      <div class="search-field">
         <input
           type="search"
           name="productCode"
@@ -27,12 +14,23 @@
           placeholder="Enter a product code"
           aria-label="Product code"
         />
-      </label>
-      <div class="search-actions">
         <button class="search-button" type="submit" [disabled]="loading">Search</button>
+      </div>
+      <h1>
+        {{ reportTitle }}
+        @if (reportKind === 'last' && reportPeriod) {
+          <span>{{ reportPeriod | date: 'MMM-yyyy' }}</span>
+        }
+      </h1>
+      <div class="search-actions">
         <button class="search-all-button" type="button" (click)="searchAll()" [disabled]="loading">
           Show All
         </button>
+        @if (searchMode !== 'idle') {
+          <button class="refresh-button" type="button" (click)="refresh()" [disabled]="loading">
+            Refresh
+          </button>
+        }
       </div>
     </form>
 
