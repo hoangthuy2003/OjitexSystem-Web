@@ -66,17 +66,6 @@ h1 {
   transform: translateY(-2px);
 }
 
-.report-card.unavailable-card {
-  border-color: #c5d6db;
-  background: #f6f9fa;
-  color: #748a92;
-  cursor: default;
-}
-
-.report-card.unavailable-card:hover {
-  transform: none;
-}
-
 .back-button {
   display: inline-flex;
   min-width: 80px;
@@ -98,6 +87,10 @@ h1 {
   transition:
     background-color 140ms ease,
     color 140ms ease;
+}
+
+.factory-card {
+  opacity: 1;
 }
 
 .back-button:hover,

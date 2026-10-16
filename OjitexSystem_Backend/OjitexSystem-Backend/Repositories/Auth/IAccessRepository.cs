@@ -4,6 +4,7 @@ namespace OjitexSystem_Backend.Repositories.Auth;
 
 public interface IAccessRepository
 {
+    Task<bool> IsActiveUserAsync(string userId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<string>> GetRolesAsync(string userId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<CategoryDto>> GetCategoriesAsync(
         string userId, IReadOnlyCollection<string> roles, CancellationToken cancellationToken = default);

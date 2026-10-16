@@ -7,6 +7,9 @@ namespace OjitexSystem_Backend.Repositories.Auth;
 
 public sealed class AccessRepository(AuthContext context) : IAccessRepository
 {
+    public Task<bool> IsActiveUserAsync(string userId, CancellationToken cancellationToken = default) =>
+        ActiveUsers().AnyAsync(user => user.UserId == userId, cancellationToken);
+
     public async Task<IReadOnlyList<string>> GetRolesAsync(
         string userId, CancellationToken cancellationToken = default) =>
         await context.IeUserRoles.AsNoTracking().Where(role => role.UserId == userId)

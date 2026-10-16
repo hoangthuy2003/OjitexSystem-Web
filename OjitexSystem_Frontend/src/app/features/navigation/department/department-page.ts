@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import { REPORT_ITEMS, ReportItem } from '../department-catalog';
+import { FACTORY_ITEMS, REPORT_ITEMS, ReportItem } from '../department-catalog';
 
 @Component({
   imports: [RouterLink],
@@ -20,6 +20,12 @@ export class DepartmentPage {
   get isReport(): boolean {
     return this.route.snapshot.paramMap.get('departmentId') === 'report';
   }
+
+  protected get isFactory(): boolean {
+    return this.route.snapshot.paramMap.get('departmentId') === 'factory';
+  }
+
+  protected readonly factoryItems = FACTORY_ITEMS;
 
   readonly reportItems = REPORT_ITEMS;
 

@@ -3,6 +3,18 @@ namespace OjitexSystem_Backend.Tests;
 public sealed class AccessTests
 {
     [Theory]
+    [InlineData(false, false, true)]
+    [InlineData(true, false, false)]
+    [InlineData(false, true, false)]
+    public async Task ActiveUserAccessDoesNotRequireRoleOrCategory(bool locked, bool deleted, bool expected)
+    {
+        using var fixture = new AuthTestFixture();
+        fixture.AddUser(locked: locked, deleted: deleted);
+        Assert.Equal(expected, await fixture.Access.IsActiveUserAsync("alice"));
+        Assert.False(await fixture.Access.IsActiveUserAsync("missing"));
+    }
+
+    [Theory]
     [InlineData(false)]
     [InlineData(true)]
     public async Task CategoryAccessAcceptsDirectOrInheritedGrants(bool inherited)

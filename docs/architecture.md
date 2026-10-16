@@ -75,10 +75,11 @@ src/app/
     auth/                        # route đăng nhập và login-page
     admin/                       # routes, user-management: API, models, page, tests
     logistics/                   # routes, stock-report: API, models, grid, clipboard, page, tests
+    factory/                     # routes, corrugator-online: API, models, columns, page, tests
     navigation/                  # catalog, routes, home, department
 ```
 
-- Root App chỉ render shell. Các route entry point tải component qua `loadComponent`; AG Grid tiếp tục nằm trong chunk của trang tồn kho.
+- Root App chỉ render shell. Các route entry point tải component qua `loadComponent`; AG Grid chỉ tải khi mở trang báo cáo tồn kho hoặc Corrugator Online, không import vào root/core.
 - `app.routes.ts` ghép route từng feature và guard xác thực toàn vùng. Giữ URL `/logistic/...` để tương thích dù thư mục nghiệp vụ tên `logistics`.
 - `AuthService` xử lý HTTP và expose thông tin phiên. `AuthSessionStore` xử lý storage, schema/expiry validation, memory cache và thay đổi storage từ tab khác.
 - `authInterceptor` gắn token cho API nội bộ và xử lý 401, bảo vệ phiên mới khỏi phản hồi của token cũ. Component hiển thị lỗi; lỗi 403 quản trị điều hướng về home và giữ phiên đăng nhập.
@@ -89,6 +90,17 @@ src/app/
 - `ag-grid-community` được khai báo là dependency trực tiếp vì ứng dụng import package này trực tiếp.
 
 ## Kiểm thử và giới hạn
+
+### Corrugator Online (16/10/2026)
+
+- Trang `/factory/corrugator-online` được tải theo nhu cầu từ Factory Menu; nguồn dữ liệu là `GET /api/factory/corrugator-online`. Các chức năng Factory còn lại vẫn chờ triển khai.
+- Backend bổ sung nhóm `Factory` trong Controllers, Services, Repositories và Dtos, giữ luồng Controller → Service → Repository → ProductionContext. Dùng entity `TCorrugatorOnlineReport` đã scaffold; không đổi mapping/schema.
+- Mọi tài khoản đang hoạt động đều được xem, không yêu cầu category Factory. Policy `ActiveUser` kiểm tra lại tài khoản chưa khóa/chưa xóa qua `IAccessService` ở mỗi yêu cầu.
+- Repository lọc `coor_no40_corrugated_datetime` theo tiền tố `yyMMdd` của ngày UTC+7 do service cung cấp, sắp theo timestamp rồi order no/date input để ổn định thứ tự khi trùng thời điểm. Không lọc theo plan date hoặc date input.
+- Bảng hiển thị 20 cột theo Excel. Service đổi giây sang phút, làm tròn một chữ số theo SQL ROUND; AV Speed = FLOOR(quality item × corru length / drive minutes đã làm tròn / 1000). Trả 0 khi quality/length/drive time không dương hoặc drive minutes làm tròn về 0 để tránh chia cho 0. Giá trị giấy giữ quy tắc ba ký tự đầu trống thì trả chuỗi rỗng, còn lại trim dấu cách. Ngày sáu chữ số dùng ngưỡng năm hai chữ số mặc định SQL Server 2049; ngày/giờ không hợp lệ trả null.
+- Trang tự tải khi mở; Refresh truy vấn lại dữ liệu, không cache. Clear chỉ xóa bảng phía trình duyệt và hủy request đang chờ, không xóa dữ liệu database. Có trạng thái loading/error/empty. Bảng dùng AG Grid/theme Quartz như Stock Report, cùng kiểu khung, header, toolbar và nút thao tác; hỗ trợ cuộn ngang, sắp xếp, kéo giãn cột và phân trang 25/50/100 dòng. Giữ đủ 20 cột; định dạng số theo locale như Stock Report, giá trị trống hiển thị dấu —. Cấu hình/formatter cột thuộc feature Factory, không import nội bộ feature Logistics và không thêm thư viện.
+- Corrugator Online dùng bố cục gọn để ưu tiên dữ liệu: tiêu đề nằm giữa thanh thông tin và nhóm Refresh/Clear; bảng chiếm phần chiều cao màn hình còn lại phía trên Go Back. Theme Quartz dùng chữ 13px, dòng 32px, padding ô 8px; cột có độ rộng tối thiểu riêng 50–140px theo nội dung, header tự xuống dòng để giữ đầy đủ tên cột. Màn hình hẹp cho toolbar xuống dòng và giữ cuộn ngang bảng.
+- Kiểm thử tự động bao phủ công thức, làm tròn, null/ngày lỗi, chuyển ngày UTC+7, lọc và thứ tự dòng, policy tài khoản, HTTP 401/403/200, Refresh/Clear và hủy request. Test repository dùng khóa chỉ trong model InMemory để seed bảng keyless; mapping sản xuất giữ nguyên. Chưa xác minh trên SQL Server thật.
 
 Các kiểm thử chạy ngày 13/10/2026:
 

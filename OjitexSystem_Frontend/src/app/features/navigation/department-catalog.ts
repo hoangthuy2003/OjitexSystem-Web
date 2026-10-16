@@ -33,3 +33,15 @@ export const REPORT_ITEMS: ReportItem[] = [
   { name: 'Monthly Stock', route: '/logistic/monthly-stock' },
   { name: 'FFG' },
 ];
+
+export const FACTORY_ITEMS: (ReportItem & { detail: string })[] = [
+  { name: 'Corrugator', detail: 'Online', route: '/factory/corrugator-online' },
+  { name: 'FDC', detail: 'Online' },
+  { name: 'Corrugator', detail: 'History' },
+  { name: 'Converting Label', detail: 'Reprint' },
+  { name: 'EVOL', detail: 'Online' },
+  { name: 'FAP', detail: 'Online' },
+  { name: 'Converting', detail: 'History' },
+  { name: 'FPS', detail: 'Online' },
+  { name: 'FG', detail: 'Online' },
+];

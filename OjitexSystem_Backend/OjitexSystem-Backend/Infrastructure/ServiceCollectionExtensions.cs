@@ -11,10 +11,12 @@ using OjitexSystem_Backend.Data.Production;
 using OjitexSystem_Backend.Repositories.Admin;
 using OjitexSystem_Backend.Repositories.Auth;
 using OjitexSystem_Backend.Repositories.Logistics;
+using OjitexSystem_Backend.Repositories.Factory;
 using OjitexSystem_Backend.Security;
 using OjitexSystem_Backend.Services.Admin;
 using OjitexSystem_Backend.Services.Auth;
 using OjitexSystem_Backend.Services.Logistics;
+using OjitexSystem_Backend.Services.Factory;
 namespace OjitexSystem_Backend.Infrastructure;
 
 public static class ServiceCollectionExtensions
@@ -51,6 +53,7 @@ public static class ServiceCollectionExtensions
             options.UseSqlServer(configuration.GetConnectionString("EVOLIO")));
 
         services.AddScoped<IStockReportRepository, StockReportRepository>();
+        services.AddScoped<ICorrugatorOnlineRepository, CorrugatorOnlineRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAccessRepository, AccessRepository>();
         services.AddScoped<IAdminUserRepository, AdminUserRepository>();
@@ -61,6 +64,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IStockReportService, StockReportService>();
+        services.AddScoped<ICorrugatorOnlineService, CorrugatorOnlineService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IAdminDashboardService, AdminDashboardService>();
         services.AddScoped<ILegacyPasswordMigrationService, LegacyPasswordMigrationService>();
@@ -111,6 +115,11 @@ public static class ServiceCollectionExtensions
 
         services.AddAuthorization(options =>
         {
+            options.AddPolicy(AuthorizationPolicies.ActiveUser, policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.AddRequirements(new ActiveUserRequirement());
+            });
             options.AddPolicy(AuthorizationPolicies.AdminOnly, policy =>
             {
                 policy.RequireAuthenticatedUser();
@@ -123,6 +132,7 @@ public static class ServiceCollectionExtensions
             });
         });
         services.AddScoped<IAuthorizationHandler, AdminAccessHandler>();
+        services.AddScoped<IAuthorizationHandler, ActiveUserHandler>();
         services.AddScoped<IAuthorizationHandler, CategoryAccessHandler>();
 
         services.AddHttpContextAccessor();

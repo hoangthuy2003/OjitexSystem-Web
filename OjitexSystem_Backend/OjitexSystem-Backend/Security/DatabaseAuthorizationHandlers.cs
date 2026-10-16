@@ -4,6 +4,18 @@ using OjitexSystem_Backend.Services.Auth;
 
 namespace OjitexSystem_Backend.Security;
 
+public sealed class ActiveUserHandler(IAccessService access, IHttpContextAccessor httpContextAccessor)
+    : AuthorizationHandler<ActiveUserRequirement>
+{
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ActiveUserRequirement requirement)
+    {
+        var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!string.IsNullOrWhiteSpace(userId)
+            && await access.IsActiveUserAsync(userId, httpContextAccessor.HttpContext?.RequestAborted ?? default))
+            context.Succeed(requirement);
+    }
+}
+
 public sealed class AdminAccessHandler(IAccessService access, IHttpContextAccessor httpContextAccessor)
     : AuthorizationHandler<AdminAccessRequirement>
 {

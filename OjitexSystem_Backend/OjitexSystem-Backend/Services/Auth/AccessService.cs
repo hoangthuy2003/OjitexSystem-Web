@@ -4,6 +4,9 @@ namespace OjitexSystem_Backend.Services.Auth;
 
 public sealed class AccessService(IAccessRepository repository) : IAccessService
 {
+    public Task<bool> IsActiveUserAsync(string userId, CancellationToken cancellationToken = default) =>
+        repository.IsActiveUserAsync(userId, cancellationToken);
+
     public Task<bool> IsAdminAsync(string userId, CancellationToken cancellationToken = default) =>
         repository.IsActiveAdminAsync(userId, cancellationToken);
 

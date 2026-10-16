@@ -193,7 +193,9 @@ Service được phối hợp repository ở feature khác khi có nhu cầu ngh
 - Với state reactive mới, ưu tiên signal/computed khi giúp quản lý dữ liệu dẫn xuất rõ hơn. Không chuyển toàn bộ component cũ sang một mô hình state mới ngoài phạm vi thay đổi; không thêm thư viện state chỉ để lưu vài biến trang.
 - Dùng control flow `@if`, `@for` và `track` theo key ổn định. Không đặt query, side effect hoặc xử lý nghiệp vụ phức tạp trong template.
 - Dùng SCSS theo component, giữ style toàn cục cho reset/theme hoặc nội dung cần scope tài liệu như print. Không thêm framework CSS hoặc style toàn cục để giải quyết một chi tiết riêng của page.
+- Các nút menu lấy Report Menu làm mẫu thống nhất: dùng chung `report-grid` và `report-card` trong trang department cho kích thước, font chữ, màu, viền, bo góc, khoảng cách, responsive và hiệu ứng hover/focus (nền xanh, chữ trắng, dịch lên 2px, transition 140ms). Menu mới phải tái sử dụng style này; không tự đặt kích thước hoặc hiệu ứng khác. Nút chức năng chờ triển khai vẫn giữ kiểu dáng và hover như mẫu, nhưng chưa thực hiện điều hướng hay nghiệp vụ. Chỉ thay đổi mẫu khi người dùng yêu cầu.
 - Giữ accessibility: label input, button đúng loại, tên truy cập, loading/error status và thao tác dialog/keyboard phù hợp.
+- Nhãn nút menu ngắn hiển thị trên cùng một dòng; không chủ động tách tên thành nhiều dòng. Chỉ cho phép tự xuống dòng khi chiều rộng màn hình không đủ.
 - Prettier theo `.prettierrc` và `.editorconfig` hiện có: hai dấu cách, dấu nháy đơn trong TS, độ rộng dòng mục tiêu 100. Không chỉnh cấu hình để bỏ qua lỗi style của một thay đổi.
 
 ### 5.3. HTTP, session và vòng đời
