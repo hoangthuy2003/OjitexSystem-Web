@@ -1,90 +1,52 @@
-# OjitexSystemFrontend
+# OjitexSystem Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.0.
+Angular 22.2 standalone, RxJS, AG Grid Community và Vitest. Xem [hướng dẫn chạy dự án](../README.md) và [kiến trúc chung](../docs/architecture.md).
 
-## Project structure
+Khi thêm/sửa code, tuân theo [quy chuẩn phát triển](../docs/development-standards.md), đặc biệt phần Angular, cùng [AGENTS.md](../AGENTS.md) ở repository root.
 
-Application code is separated by responsibility. Pages are grouped under their business department, while interfaces and services remain in their own top-level folders:
+## Cấu trúc
 
 ```text
 src/app/
-  app.config.ts
-  app.routes.ts
-  app.ts
-  guards/
-    authenticated.guard.ts
-  interfaces/
-    current-stock.interface.ts
-  services/
-    current-stock.service.ts
-  views/
-    department/
-      department-page.*
-    home/
-      home-page.*
-    logistic/
-      current-stock/
-        current-stock-page.*
+  app.*                         # Root App chỉ render shell
+  app.config.ts                 # Router, HTTP và interceptor
+  app.routes.ts                 # Ghép route từng feature
+  core/auth/                    # AuthService, AuthSessionStore, models, interceptor, guards
+  core/http/                    # Timeout policy, API errors
+  layout/app-shell/             # Header, tài khoản, đổi mật khẩu, router outlet
+  features/auth/login-page/
+  features/admin/user-management/
+  features/logistics/stock-report/
+  features/navigation/          # Catalog phòng ban/báo cáo, home, department
 ```
 
-Keep a page inside the folder for its department under `views` (for example, Logistic). Put TypeScript contracts in `interfaces` and API/business services in `services`. Add routes in `app.routes.ts`; use lazy-loaded pages for route entry points.
+Trang, API service, models và test nằm cạnh nhau theo tính năng. Các route tải component theo nhu cầu. Mã TypeScript và template bật strict checking.
 
-After signing in, users land on the department menu at `/home`. Selecting a department opens a large-button submenu beneath the shared header; the Report menu links **Current Stock** to the existing `/logistic/current-stock` page. The other department and report entries are placeholders until their pages are implemented.
+## Chạy và kiểm tra
 
-The current-stock view searches product code prefixes through `GET /api/CurrentStock/{productCode}` (for example, `100000` returns product codes beginning with `100000`). The view uses the free AG Grid Community Angular component for client-side rendering and pagination. Use **Show All** only to browse the inventory; `GET /api/CurrentStock` returns the complete list, which is cached for the current view to avoid repeatedly downloading it while browsing. **Refresh** fetches the inventory again. AG Grid Community is free; Enterprise features require a paid licence.
-
-## Development server
-
-To start a local development server, run:
-
-```bash
-ng serve
+```powershell
+npm.cmd ci
+npm.cmd start
+npm.cmd run build
+npm.cmd run test:ci
+npm.cmd run format:check
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Trên hệ điều hành khác dùng `npm` thay `npm.cmd`. Frontend chạy tại `http://localhost:4200`; `proxy.conf.json` chuyển `/api` đến `https://localhost:7013`. Backend cần chạy profile HTTPS tương ứng.
 
-## Code scaffolding
+## Báo cáo tồn kho
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Giữ các URL `/logistic/current-stock`, `/logistic/last-stock`, `/logistic/monthly-stock`. Route data chọn `current`, `last` hoặc `monthly` cho cùng trang báo cáo.
 
-```bash
-ng generate component component-name
-```
+`GET /api/StockReport/{kind}` lấy danh sách; thêm `/{productCode}` để tìm **tiền tố** mã sản phẩm. Show All cache trong instance trang; Refresh gọi API lại. Double-click ô tồn kho gọi `/{productCode}/history` theo **mã chính xác**, kể cả tồn kho bằng 0. Monthly gửi `reportDate` từ dòng được chọn; không đoán tháng khi dữ liệu thiếu ngày báo cáo.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+AG Grid dùng pagination phía client, formatter và clipboard được tách thành file riêng. Stock/history có timeout 15 giây và subscription được hủy khi rời trang.
 
-```bash
-ng generate --help
-```
+## Quy ước
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- Thêm tính năng vào thư mục nghiệp vụ phù hợp, theo [Angular style guide](https://angular.dev/style-guide).
+- API service chịu trách nhiệm HTTP và timeout; component quản lý tương tác và trạng thái hiển thị.
+- Session storage thuộc AuthSessionStore. Chỉ authInterceptor xử lý xóa phiên do HTTP 401 để bảo vệ phiên mới khỏi phản hồi của token cũ.
+- Route guard hỗ trợ UI; quyền thực tế được backend xác minh lại.
+- Mục phòng ban/báo cáo chưa triển khai ở navigation catalog; không tạo feature rỗng.
+- Test `.spec.ts` nằm cạnh mã nguồn; dùng `npm.cmd run format` để định dạng.

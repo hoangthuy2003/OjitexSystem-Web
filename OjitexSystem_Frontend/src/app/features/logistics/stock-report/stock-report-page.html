@@ -1,0 +1,167 @@
+<main class="page">
+  <section
+    class="stock-card"
+    [attr.aria-label]="reportTitle + ' lookup'"
+    [attr.aria-busy]="loading"
+  >
+    <form class="table-toolbar" (ngSubmit)="searchByProductCode()">
+      <div class="search-field">
+        <input
+          type="search"
+          name="productCode"
+          maxlength="7"
+          [(ngModel)]="searchTerm"
+          placeholder="Enter a product code"
+          aria-label="Product code"
+        />
+        <button class="search-button" type="submit" [disabled]="loading">Search</button>
+      </div>
+      <h1>
+        {{ reportTitle }}
+        @if (reportKind === 'last' && reportPeriod) {
+          <span>{{ reportPeriod | date: 'MMM-yyyy' }}</span>
+        }
+      </h1>
+      <div class="search-actions">
+        <button class="search-all-button" type="button" (click)="searchAll()" [disabled]="loading">
+          Show All
+        </button>
+        @if (searchMode !== 'idle') {
+          <button class="refresh-button" type="button" (click)="refresh()" [disabled]="loading">
+            Refresh
+          </button>
+        }
+      </div>
+    </form>
+
+    @if (loading) {
+      <p class="message" role="status">Loading {{ reportTitle.toLowerCase() }}...</p>
+    } @else if (errorMessage) {
+      <div class="message error-message" role="alert">
+        <p>{{ errorMessage }}</p>
+        @if (searchMode !== 'idle') {
+          <button class="retry-button" type="button" (click)="refresh()">Retry</button>
+        }
+      </div>
+    } @else if (searchMode === 'idle') {
+      <p class="message">
+        Enter a product code to search, or select “Show All” to browse the inventory.
+      </p>
+    } @else if (stockItems.length === 0) {
+      <p class="message">No matching stock records found.</p>
+    } @else {
+      <div class="table-scroll" (copy)="copyGridRange($event)">
+        <ag-grid-angular
+          [rowData]="stockItems"
+          [columnDefs]="columnDefs"
+          [defaultColDef]="defaultColDef"
+          [theme]="gridTheme"
+          [pagination]="gridPagination"
+          [paginationPageSize]="50"
+          [paginationPageSizeSelector]="[25, 50, 100]"
+          [enableCellTextSelection]="true"
+          [ensureDomOrder]="true"
+          (cellClicked)="onStockClicked($event)"
+          class="stock-grid"
+        />
+      </div>
+    }
+  </section>
+  <footer class="page-actions">
+    <a class="back-button" routerLink="/department/report">Go Back</a>
+  </footer>
+</main>
+
+<dialog
+  #historyDialog
+  class="stock-history-dialog"
+  aria-labelledby="history-title"
+  (cancel)="closeHistory()"
+>
+  <header class="history-header">
+    <span>History Of Stock Detail</span>
+    <button
+      type="button"
+      class="history-close"
+      aria-label="Close stock history"
+      (click)="closeHistory()"
+    >
+      ×
+    </button>
+  </header>
+  <h2 id="history-title">Ojitex Hai Phong Stock History</h2>
+  <div class="history-details">
+    <div class="history-details-column">
+      <span><strong>Customer:</strong> {{ history?.customerName || '—' }}</span>
+      <span><strong>Product Code:</strong> {{ historyProductCode }}</span>
+    </div>
+    <div class="history-details-column">
+      <span><strong>Product Name:</strong> {{ history?.productName || '—' }}</span>
+      <span
+        ><strong>Working Day From:</strong>
+        {{ (history?.workingDayFrom | date: 'MMM-dd-yyyy') || '—' }} <strong>To:</strong>
+        {{ (history?.workingDayTo | date: 'MMM-dd-yyyy') || '—' }}</span
+      >
+    </div>
+  </div>
+  @if (historyLoading) {
+    <p class="message" role="status">Loading stock history...</p>
+  } @else if (historyError) {
+    <div class="message error-message" role="alert">
+      <p>{{ historyError }}</p>
+      <button class="retry-button" type="button" (click)="openHistory(historyProductCode!)">
+        Retry
+      </button>
+    </div>
+  } @else if (history) {
+    <div class="history-table-scroll">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Receive No</th>
+            <th>Product Code</th>
+            <th>Section</th>
+            <th>Input Stock</th>
+            <th>Output Stock</th>
+            <th>Current Stock</th>
+            <th>Remark</th>
+            <th>Working Day</th>
+            <th>Date Input</th>
+            <th>User Input</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of history.items; track item.id) {
+            <tr>
+              <td>{{ item.receiveNo ?? '—' }}</td>
+              <td>{{ item.productCode ?? '—' }}</td>
+              <td>{{ item.section || '—' }}</td>
+              <td class="numeric-cell">{{ (item.inputStock | number) ?? '—' }}</td>
+              <td class="numeric-cell">{{ (item.outputStock | number) ?? '—' }}</td>
+              <td class="numeric-cell">{{ (item.currentStock | number) ?? '—' }}</td>
+              <td>{{ item.remark || '—' }}</td>
+              <td>{{ (item.workDate | date: 'MMM-dd-yyyy') || '—' }}</td>
+              <td>{{ (item.dateInput | date: 'MMM-dd-yyyy HH:mm') || '—' }}</td>
+              <td>{{ item.userFirstName || '—' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="10" class="message">No stock history found for this product.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+  <footer class="history-actions">
+    <button type="button" class="retry-button" (click)="closeHistory()">Quit</button>
+    <button
+      type="button"
+      class="search-button"
+      (click)="printHistory()"
+      [disabled]="historyLoading || !!historyError || !history?.items?.length"
+    >
+      Print
+    </button>
+  </footer>
+</dialog>

@@ -50,6 +50,49 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
+@media print {
+  @page {
+    size: landscape;
+    margin: 12mm;
+  }
+  body:has(.stock-history-dialog[open]) {
+    background: white;
+    min-width: 0;
+  }
+  body:has(.stock-history-dialog[open]) * {
+    visibility: hidden;
+  }
+  body:has(.stock-history-dialog[open]) .stock-history-dialog,
+  body:has(.stock-history-dialog[open]) .stock-history-dialog * {
+    visibility: visible;
+  }
+  body:has(.stock-history-dialog[open]) .stock-history-dialog {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+  }
+  body:has(.stock-history-dialog[open]) .history-table-scroll {
+    max-height: none;
+    overflow: visible;
+  }
+  body:has(.stock-history-dialog[open]) .history-header,
+  body:has(.stock-history-dialog[open]) .history-actions {
+    display: none;
+  }
+  body:has(.stock-history-dialog[open]) .history-table th {
+    position: static;
+  }
+  body:has(.stock-history-dialog[open]) .history-table tr {
+    break-inside: avoid;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root),
   ::view-transition-new(root) {

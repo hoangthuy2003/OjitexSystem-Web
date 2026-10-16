@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="OjitexSystem-Backend/OjitexSystem-Backend.csproj" />
+  <Project Path="OjitexSystem-Backend.Tests/OjitexSystem-Backend.Tests.csproj" />
 </Solution>
