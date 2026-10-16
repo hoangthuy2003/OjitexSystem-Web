@@ -1,0 +1,8 @@
+using OjitexSystem_Backend.Dtos.Factory;
+
+namespace OjitexSystem_Backend.Services.Factory;
+
+public interface IConvertingOnlineService
+{
+    Task<ConvertingOnlineDto> GetTodayAsync(string machineName, CancellationToken cancellationToken = default);
+}

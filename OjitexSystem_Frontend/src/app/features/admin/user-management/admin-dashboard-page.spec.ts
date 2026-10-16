@@ -295,7 +295,7 @@ describe('AdminDashboardPage', () => {
     http.verify();
   });
 
-  it('shows seven users per page and the remaining users on the next page', async () => {
+  it('shows 25 users per page and the remaining users on the next page', async () => {
     sessionStorage.setItem(
       'ojitex.auth',
       JSON.stringify({
@@ -325,13 +325,13 @@ describe('AdminDashboardPage', () => {
     fixture.detectChanges();
     http
       .expectOne('/api/admin/dashboard')
-      .flush(Array.from({ length: 10 }, (_, index) => ({ ...user, userId: `user-${index + 1}` })));
+      .flush(Array.from({ length: 28 }, (_, index) => ({ ...user, userId: `user-${index + 1}` })));
     http.expectOne('/api/admin/dashboard/roles').flush([]);
     http.expectOne('/api/admin/dashboard/categories').flush([]);
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelectorAll('tbody tr')).toHaveLength(7);
+    expect(fixture.nativeElement.querySelectorAll('tbody tr')).toHaveLength(25);
     fixture.nativeElement.querySelector('[aria-label="Next page"]').click();
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelectorAll('tbody tr')).toHaveLength(3);

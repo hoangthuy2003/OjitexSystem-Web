@@ -54,6 +54,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IStockReportRepository, StockReportRepository>();
         services.AddScoped<ICorrugatorOnlineRepository, CorrugatorOnlineRepository>();
+        services.AddScoped<IConvertingOnlineRepository, ConvertingOnlineRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAccessRepository, AccessRepository>();
         services.AddScoped<IAdminUserRepository, AdminUserRepository>();
@@ -65,6 +66,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IStockReportService, StockReportService>();
         services.AddScoped<ICorrugatorOnlineService, CorrugatorOnlineService>();
+        services.AddScoped<IConvertingOnlineService, ConvertingOnlineService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IAdminDashboardService, AdminDashboardService>();
         services.AddScoped<ILegacyPasswordMigrationService, LegacyPasswordMigrationService>();

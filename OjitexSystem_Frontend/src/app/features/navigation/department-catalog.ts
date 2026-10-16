@@ -36,12 +36,12 @@ export const REPORT_ITEMS: ReportItem[] = [
 
 export const FACTORY_ITEMS: (ReportItem & { detail: string })[] = [
   { name: 'Corrugator', detail: 'Online', route: '/factory/corrugator-online' },
-  { name: 'FDC', detail: 'Online' },
+  { name: 'FDC', detail: 'Online', route: '/factory/fdc-online' },
   { name: 'Corrugator', detail: 'History' },
   { name: 'Converting Label', detail: 'Reprint' },
-  { name: 'EVOL', detail: 'Online' },
-  { name: 'FAP', detail: 'Online' },
+  { name: 'EVOL', detail: 'Online', route: '/factory/evol-online' },
+  { name: 'FAP', detail: 'Online', route: '/factory/fap-online' },
   { name: 'Converting', detail: 'History' },
-  { name: 'FPS', detail: 'Online' },
-  { name: 'FG', detail: 'Online' },
+  { name: 'FPS', detail: 'Online', route: '/factory/fps-online' },
+  { name: 'FG', detail: 'Online', route: '/factory/fg-online' },
 ];

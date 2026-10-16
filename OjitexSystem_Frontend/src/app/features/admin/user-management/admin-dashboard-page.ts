@@ -34,7 +34,7 @@ export class AdminDashboardPage implements OnDestroy, OnInit {
   users: AdminUser[] = [];
   roles: UserRole[] = [];
   categories: Category[] = [];
-  readonly pageSize = 7;
+  readonly pageSize = 25;
   form: UserForm = this.emptyForm();
   searchTerm = '';
   currentPage = 1;

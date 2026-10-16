@@ -1,15 +1,4 @@
 <main class="admin-page">
-  <header class="page-header">
-    <div>
-      <h1>User Management</h1>
-    </div>
-    <div class="header-actions">
-      <button class="button secondary" type="button" (click)="loadData()" [disabled]="loading">
-        Refresh
-      </button>
-    </div>
-  </header>
-
   @if (notice) {
     <p class="feedback success toast" role="status">{{ notice }}</p>
   }
@@ -17,13 +6,9 @@
     <p class="feedback error" role="alert">{{ pageError }}</p>
   }
 
-  <section class="users-card" aria-labelledby="users-heading">
+  <section class="users-card" aria-labelledby="users-heading" [attr.aria-busy]="loading">
     <div class="list-toolbar">
-      <div>
-        <h2 id="users-heading">User Accounts</h2>
-        <p>{{ filteredUsers.length }} / {{ users.length }} users</p>
-      </div>
-      <div class="list-actions">
+      <div class="user-search">
         <input
           type="search"
           name="searchUsers"
@@ -32,7 +17,15 @@
           placeholder="Search by user ID, name, or role"
           aria-label="Search users"
         />
+      </div>
+      <div class="list-heading">
+        <h1 id="users-heading">User Management</h1>
+      </div>
+      <div class="list-actions">
         <button class="button primary" type="button" (click)="startCreate()">+ Create User</button>
+        <button class="button secondary" type="button" (click)="loadData()" [disabled]="loading">
+          Refresh
+        </button>
       </div>
     </div>
 
