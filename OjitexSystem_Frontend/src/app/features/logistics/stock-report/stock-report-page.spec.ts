@@ -2,9 +2,9 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { AgGridAngular } from 'ag-grid-angular';
-import { CellDoubleClickedEvent } from 'ag-grid-community';
+import { CellClickedEvent } from 'ag-grid-community';
 import { StockReportHistory, StockReportItem, StockReportKind } from './stock-report.models';
 import { routes } from '../../../app.routes';
 import { logisticsAccessGuard } from '../../../core/auth/guards/category-access.guard';
@@ -62,6 +62,7 @@ describe.each<StockReportKind>(['current', 'last', 'monthly'])('%s stock report'
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideRouter([]),
         { provide: ActivatedRoute, useValue: { snapshot: { data: { stockReport: kind } } } },
       ],
     }).compileComponents();
@@ -89,11 +90,11 @@ describe.each<StockReportKind>(['current', 'last', 'monthly'])('%s stock report'
     );
   }
 
-  function doubleClick(page: StockReportPage, data = stock, field = 'closingStock') {
-    page.onStockDoubleClicked({
+  function clickStock(page: StockReportPage, data = stock, field = 'closingStock') {
+    page.onStockClicked({
       colDef: { field },
       data,
-    } as CellDoubleClickedEvent<StockReportItem>);
+    } as CellClickedEvent<StockReportItem>);
   }
 
   it('starts idle and searches a prefix through the corresponding API', () => {
@@ -112,10 +113,20 @@ describe.each<StockReportKind>(['current', 'last', 'monthly'])('%s stock report'
     );
   });
 
-  it('opens exact product history from a zero stock cell and displays customer, dates and user name', () => {
+  it('opens exact product history with one click on zero stock and displays customer, dates and user name', async () => {
     const { fixture, page, dialog } = setup();
-    doubleClick(page);
-    expect(dialog.open).toBe(true);
+    page.searchTerm = '104';
+    page.searchByProductCode();
+    http.expectOne(`${endpoint}/104`).flush(report);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const stockCell = fixture.nativeElement.querySelector(
+      '.ag-row .ag-cell[col-id="closingStock"]',
+    ) as HTMLElement;
+    expect(stockCell.textContent?.trim()).toBe('0');
+    stockCell.click();
+    await vi.waitFor(() => expect(dialog.open).toBe(true));
+    expect(dialog.showModal).toHaveBeenCalledOnce();
     expectHistory().flush(history);
     fixture.detectChanges();
     expect(dialog.textContent).toContain('MITSUBISHI');
@@ -128,17 +139,33 @@ describe.each<StockReportKind>(['current', 'last', 'monthly'])('%s stock report'
     expect(dialog.textContent).not.toContain('logivp04');
   });
 
+  it('returns to the report menu using Go Back, including before loading stock', () => {
+    const { fixture } = setup();
+    const router = TestBed.inject(Router);
+    const navigate = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+    const back = fixture.nativeElement.querySelector(
+      '.page-actions .back-button',
+    ) as HTMLAnchorElement;
+
+    expect(back.textContent?.trim()).toBe('Go Back');
+    expect(back.getAttribute('href')).toBe('/department/report');
+    back.click();
+    expect(navigate).toHaveBeenCalledOnce();
+    expect(navigate.mock.calls[0][0].toString()).toBe('/department/report');
+    http.expectNone((request) => request.url.startsWith(endpoint));
+  });
+
   it('ignores other columns and rows without a product code', () => {
     const { page, dialog } = setup();
-    doubleClick(page, stock, 'openingStock');
-    doubleClick(page, { ...stock, productCode: null });
+    clickStock(page, stock, 'openingStock');
+    clickStock(page, { ...stock, productCode: null });
     expect(dialog.open).toBe(false);
     http.expectNone((request) => request.url.includes('/history'));
   });
 
   it('preserves the selected period when retrying history', () => {
     const { fixture, page, dialog } = setup();
-    doubleClick(page);
+    clickStock(page);
     expectHistory().flush('Failed', { status: 500, statusText: 'Error' });
     fixture.detectChanges();
     expect(dialog.textContent).toContain('Unable to load stock history');
@@ -150,14 +177,14 @@ describe.each<StockReportKind>(['current', 'last', 'monthly'])('%s stock report'
 
   it('ignores stale responses when switching products or closing the dialog', () => {
     const { page, dialog } = setup();
-    doubleClick(page);
+    clickStock(page);
     const first = expectHistory();
-    doubleClick(page, { ...stock, productCode: 4000050 });
+    clickStock(page, { ...stock, productCode: 4000050 });
     const second = expectHistory(4000050);
     second.flush({ ...history, productCode: 4000050 });
     first.flush(history);
     expect(page.history?.productCode).toBe(4000050);
-    doubleClick(page);
+    clickStock(page);
     const third = expectHistory();
     page.closeHistory();
     third.flush(history);
@@ -167,7 +194,7 @@ describe.each<StockReportKind>(['current', 'last', 'monthly'])('%s stock report'
 
   it('shows empty history and disables printing', () => {
     const { fixture, page, dialog } = setup();
-    doubleClick(page);
+    clickStock(page);
     expectHistory().flush({ ...history, items: [] });
     fixture.detectChanges();
     expect(dialog.textContent).toContain('No stock history found');
@@ -180,7 +207,7 @@ describe.each<StockReportKind>(['current', 'last', 'monthly'])('%s stock report'
     const { fixture, page, dialog } = setup();
     const print = vi.spyOn(window, 'print').mockImplementation(() => {});
     try {
-      doubleClick(page);
+      clickStock(page);
       expectHistory().flush(history);
       fixture.detectChanges();
       dialog.querySelector<HTMLButtonElement>('.history-actions .search-button')!.click();
@@ -306,9 +333,9 @@ describe.each<StockReportKind>(['current', 'last', 'monthly'])('%s stock report'
   if (kind === 'monthly') {
     it('selects each row month separately for the same product and ignores stale month responses', () => {
       const { page } = setup();
-      doubleClick(page);
+      clickStock(page);
       const july = expectHistory();
-      doubleClick(page, { ...stock, id: 2, reportDate: '2024-01-29' });
+      clickStock(page, { ...stock, id: 2, reportDate: '2024-01-29' });
       const january = expectHistory(1040100, '2024-01-29');
       january.flush({ ...history, workingDayFrom: '2024-01-01', workingDayTo: '2024-01-31' });
       july.flush(history);
@@ -317,7 +344,7 @@ describe.each<StockReportKind>(['current', 'last', 'monthly'])('%s stock report'
 
     it('does not guess a history month for records without a report date', () => {
       const { page, dialog } = setup();
-      doubleClick(page, { ...stock, reportDate: null });
+      clickStock(page, { ...stock, reportDate: null });
       expect(dialog.open).toBe(true);
       expect(page.historyError).toContain('no report date');
       expect(page.historyLoading).toBe(false);

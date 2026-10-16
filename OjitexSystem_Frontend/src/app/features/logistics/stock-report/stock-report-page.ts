@@ -6,7 +6,7 @@ import {
   ViewChild,
   inject,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +15,7 @@ import { AgGridAngular } from 'ag-grid-angular';
 import {
   CellStyleModule,
   ClientSideRowModelModule,
-  CellDoubleClickedEvent,
+  CellClickedEvent,
   ModuleRegistry,
   PaginationModule,
   TooltipModule,
@@ -39,7 +39,7 @@ ModuleRegistry.registerModules([
 ]);
 
 @Component({
-  imports: [FormsModule, AgGridAngular, DatePipe, DecimalPipe],
+  imports: [FormsModule, AgGridAngular, DatePipe, DecimalPipe, RouterLink],
   selector: 'app-stock-report-page',
   styleUrl: './stock-report-page.scss',
   templateUrl: './stock-report-page.html',
@@ -74,7 +74,7 @@ export class StockReportPage {
     return this.searchMode === 'all' || this.stockItems.length > 1;
   }
 
-  onStockDoubleClicked(event: CellDoubleClickedEvent<StockReportItem>): void {
+  onStockClicked(event: CellClickedEvent<StockReportItem>): void {
     if (event.colDef.field !== 'closingStock' || event.data?.productCode == null) return;
     this.openHistory(event.data.productCode, event.data.reportDate);
   }

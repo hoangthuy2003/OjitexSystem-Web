@@ -4,7 +4,7 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TimeoutError } from 'rxjs';
 import { AdminUser, UserForm, UserRole } from './admin-user.models';
 import { Category } from '../../../core/auth/auth.models';
@@ -17,7 +17,7 @@ type UserConfirmation = {
 };
 
 @Component({
-  imports: [DatePipe, FormsModule],
+  imports: [DatePipe, FormsModule, RouterLink],
   selector: 'app-admin-dashboard-page',
   styleUrl: './admin-dashboard-page.scss',
   templateUrl: './admin-dashboard-page.html',

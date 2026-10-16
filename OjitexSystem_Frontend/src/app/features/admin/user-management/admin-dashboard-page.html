@@ -47,12 +47,18 @@
     } @else {
       <div class="table-scroll">
         <table>
+          <colgroup>
+            <col class="user-id-column" />
+            <col class="full-name-column" />
+            <col class="roles-column" />
+            <col class="last-login-column" />
+            <col class="actions-column" />
+          </colgroup>
           <thead>
             <tr>
               <th>User ID</th>
               <th>Full Name</th>
               <th>Roles</th>
-              <th>Status</th>
               <th>Last Login</th>
               <th>Action</th>
             </tr>
@@ -61,7 +67,7 @@
             @for (user of paginatedUsers; track user.userId) {
               <tr>
                 <td class="user-id">{{ user.userId }}</td>
-                <td>{{ displayName(user) }}</td>
+                <td class="full-name">{{ displayName(user) }}</td>
                 <td>
                   <div class="tag-list">
                     @for (role of user.roles; track role) {
@@ -71,12 +77,7 @@
                     }
                   </div>
                 </td>
-                <td>
-                  <span class="status-pill" [class.locked]="user.isLocked">
-                    {{ user.isLocked ? 'Locked' : 'Active' }}
-                  </span>
-                </td>
-                <td>
+                <td class="last-login">
                   {{
                     user.lastLoginDate ? (user.lastLoginDate | date: 'MMM d, y, h:mm a') : 'Never'
                   }}
@@ -138,6 +139,10 @@
       </nav>
     }
   </section>
+
+  <footer class="page-actions">
+    <a class="button secondary back-button" routerLink="/home">Go Back</a>
+  </footer>
 
   @if (pendingConfirmation; as confirmation) {
     <div

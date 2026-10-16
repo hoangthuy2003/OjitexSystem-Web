@@ -92,9 +92,24 @@
 }
 
 .page {
+  display: flex;
+  flex-direction: column;
   width: min(1280px, calc(100% - clamp(64px, 8vw, 128px)));
+  min-height: calc(100vh - 76px);
   margin: 0 auto;
   padding: 32px 0;
+}
+
+.page-actions {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .page-header,
@@ -124,6 +139,7 @@ h1 {
   font-weight: 650;
 }
 
+.back-button,
 .refresh-button,
 .retry-button,
 .search-button,
@@ -139,6 +155,8 @@ h1 {
   cursor: pointer;
 }
 
+.back-button:hover,
+.back-button:focus-visible,
 .refresh-button:hover:not(:disabled),
 .retry-button:hover,
 .search-button:hover:not(:disabled),
@@ -212,7 +230,7 @@ h1 {
 .stock-grid {
   display: block;
   width: 100%;
-  height: min(65vh, 600px);
+  height: min(52vh, 480px);
   min-width: 1070px;
   font-size: 13px;
 }
@@ -241,6 +259,12 @@ h1 {
 
 .error-message p {
   margin: 0 0 12px;
+}
+
+@media (max-width: 640px) {
+  .page {
+    min-height: calc(100vh - 64px);
+  }
 }
 
 @media (max-width: 600px) {

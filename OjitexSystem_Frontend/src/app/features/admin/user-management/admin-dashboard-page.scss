@@ -1,13 +1,32 @@
 :host {
   display: block;
-  min-height: 100vh;
+  min-height: 100%;
   background: #f6f8fb;
 }
 
 .admin-page {
+  display: flex;
+  flex-direction: column;
   width: min(1320px, calc(100% - clamp(64px, 8vw, 128px)));
+  min-height: calc(100vh - 76px);
   margin: 0 auto;
-  padding: 32px 0 56px;
+  padding: 32px 0;
+}
+
+.page-actions {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.back-button:focus-visible {
+  background: #f8fafc;
 }
 
 .page-header,
@@ -133,6 +152,7 @@ h1 {
 
 .table-scroll {
   overflow: auto;
+  max-height: min(52vh, 480px);
 }
 
 .pagination,
@@ -174,44 +194,36 @@ table {
   table-layout: fixed;
 }
 
-th:nth-child(1),
-td:nth-child(1) {
-  width: 13%;
+.user-id-column {
+  width: 16%;
 }
 
-th:nth-child(2),
-td:nth-child(2) {
-  width: 19%;
+.full-name-column {
+  width: 26%;
 }
 
-th:nth-child(3),
-td:nth-child(3) {
+.roles-column {
   width: 12%;
 }
 
-th:nth-child(4),
-td:nth-child(4) {
-  width: 10%;
+.last-login-column {
+  width: 22%;
 }
 
-th:nth-child(5),
-td:nth-child(5) {
-  width: 18%;
-}
-
-th:nth-child(6),
-td:nth-child(6) {
-  width: 28%;
+.actions-column {
+  width: 24%;
 }
 
 th,
 td {
-  padding: 12px 14px;
+  padding: 7px 14px;
   border-bottom: 1px solid #eaecf0;
   vertical-align: middle;
 }
 
 th {
+  position: sticky;
+  top: 0;
   background: #f9fafb;
   color: #475467;
   font-size: 12px;
@@ -225,6 +237,16 @@ tbody tr:last-child td {
 .user-id {
   color: #183c68;
   font-weight: 700;
+}
+
+.user-id,
+.full-name {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.last-login {
+  font-variant-numeric: tabular-nums;
 }
 
 .tag-list,
@@ -553,6 +575,12 @@ tbody tr:last-child td {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .admin-page {
+    min-height: calc(100vh - 64px);
+  }
 }
 
 @media (max-width: 760px) {

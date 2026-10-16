@@ -51,7 +51,7 @@ export function stockReportColumns(kind: StockReportKind): ColDef<StockReportIte
       field: 'closingStock',
       headerName: { current: 'Current Stock', last: 'Stock', monthly: 'Closing Stock' }[kind],
       cellClass: 'numeric-cell stock-history-cell',
-      tooltipValueGetter: () => 'Double-click to view stock history',
+      tooltipValueGetter: () => 'Click to view stock history',
       valueFormatter: formatQuantity,
     },
   ];

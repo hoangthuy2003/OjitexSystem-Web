@@ -73,7 +73,7 @@ describe('AdminDashboardPage', () => {
 
     expect(fixture.nativeElement.textContent).toContain('trung');
     expect(fixture.nativeElement.textContent).not.toContain('Category Access');
-    expect(fixture.nativeElement.querySelectorAll('tbody tr td')).toHaveLength(6);
+    expect(fixture.nativeElement.querySelectorAll('tbody tr td')).toHaveLength(5);
     expect(fixture.nativeElement.querySelector('thead').textContent).toContain('Action');
     expect(fixture.nativeElement.querySelectorAll('.row-actions .action-button')).toHaveLength(3);
     expect(getComputedStyle(fixture.nativeElement.querySelector('table')).textAlign).toBe('center');
