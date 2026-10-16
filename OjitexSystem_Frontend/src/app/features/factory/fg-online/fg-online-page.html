@@ -1,0 +1,44 @@
+<main class="page">
+  <section class="result-card" aria-label="FG online results" [attr.aria-busy]="loading()">
+    <div class="table-toolbar">
+      <div class="report-meta">
+        <span>Date: {{ report()?.refreshedAt | date: 'MM/dd/yyyy h:mm a' }}</span>
+      </div>
+      <h1>FG Online Result</h1>
+      <div class="toolbar-actions">
+        <button class="refresh-button" type="button" (click)="refresh()" [disabled]="loading()">
+          Refresh
+        </button>
+        <button class="clear-button" type="button" (click)="clear()">Clear</button>
+      </div>
+    </div>
+    @if (loading()) {
+      <p class="message" role="status">Loading today's results…</p>
+    } @else if (error()) {
+      <p class="message error-message" role="alert">{{ error() }}</p>
+    } @else if (cleared()) {
+      <p class="message" role="status">Results cleared. Select Refresh to load today's results.</p>
+    } @else if (!report()?.items?.length) {
+      <p class="message" role="status">No FG results for today.</p>
+    } @else {
+      <div class="table-scroll">
+        <ag-grid-angular
+          class="result-grid"
+          aria-label="FG online results"
+          [rowData]="report()?.items ?? []"
+          [columnDefs]="columns"
+          [defaultColDef]="defaultColDef"
+          [theme]="gridTheme"
+          [pagination]="true"
+          [paginationPageSize]="50"
+          [paginationPageSizeSelector]="[25, 50, 100]"
+          [enableCellTextSelection]="true"
+          [ensureDomOrder]="true"
+        />
+      </div>
+    }
+  </section>
+  <footer class="page-actions">
+    <a class="back-button" routerLink="/department/factory">Go Back</a>
+  </footer>
+</main>

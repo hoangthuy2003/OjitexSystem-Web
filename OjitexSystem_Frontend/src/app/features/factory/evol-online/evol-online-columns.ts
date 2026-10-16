@@ -1,0 +1,4 @@
+export {
+  CONVERTING_COLUMN_DEFS as EVOL_COLUMN_DEFS,
+  CONVERTING_DEFAULT_COLUMN as EVOL_DEFAULT_COLUMN,
+} from '../converting-online-columns';

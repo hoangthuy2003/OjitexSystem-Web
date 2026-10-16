@@ -9,7 +9,7 @@
 | Xác thực | Đăng nhập JWT, lưu phiên, đăng xuất, đổi mật khẩu |
 | Quản trị | Danh sách tài khoản, tạo/sửa, role, quyền category, đặt lại mật khẩu, xóa mềm |
 | Logistics | Current / Last / Monthly Stock, tìm theo tiền tố mã sản phẩm, lịch sử theo sản phẩm, in và sao chép bảng |
-| Factory | Corrugator Online: kết quả chạy máy trong ngày UTC+7, Refresh lấy lại dữ liệu, Clear xóa bảng hiển thị |
+| Factory | Corrugator Online / FDC Online / EVOL Online / FG Online / FAP Online / FPS Online: kết quả chạy máy trong ngày UTC+7, Refresh lấy lại dữ liệu, Clear xóa bảng hiển thị |
 | Điều hướng | Trang chủ, danh mục phòng ban, danh mục báo cáo |
 
 Các mục Work Progress, Management Loss, FFG và những phòng ban chưa có chức năng vẫn là mục dự kiến trong danh mục điều hướng. Không tạo module nghiệp vụ rỗng cho các mục này.
