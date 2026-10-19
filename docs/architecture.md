@@ -29,6 +29,7 @@ Luồng chính: **HTTP → Controller → Service → Repository → DbContext �
 - `IAuthUnitOfWork` điều phối SaveChanges và transaction trên cùng AuthContext scoped. Entity lấy để cập nhật được tracking trong scope này. Các truy vấn danh sách/lookup dùng `AsNoTracking` và projection.
 - Handler phân quyền gọi `IAccessService`; backend kiểm tra lại tài khoản còn hoạt động và quyền hiện tại trong database cho từng yêu cầu được bảo vệ.
 - `Infrastructure/ServiceCollectionExtensions` là điểm đăng ký DI, persistence, JWT, policy, CORS và xử lý lỗi. `Program.cs` chỉ lắp pipeline và xử lý chế độ CLI hiện có.
+- Trong Development, khi chưa cấu hình `Authentication:SigningKey`, khóa JWT được tạo một lần và lưu tại `.local/jwt-signing-key` dưới content root (đã gitignore), để token còn hạn vẫn hợp lệ sau build/khởi động lại. Ngoài Development vẫn bắt buộc cung cấp khóa cấu hình. Thời hạn JWT giữ nguyên một giờ.
 - Các class Data là mapping/entity database đã scaffold. Refactor không sửa schema hoặc mapping và không thêm migration.
 
 Lỗi đã xử lý vẫn phát diagnostics để giữ log/metrics phục vụ điều tra. .NET 10 mặc định tắt diagnostics khi handler trả true; cấu hình `SuppressDiagnosticsCallback` tại infrastructure giữ lại chúng theo [tài liệu ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling?view=aspnetcore-10.0).
@@ -83,6 +84,7 @@ src/app/
 - Root App chỉ render shell. Các route entry point tải component qua `loadComponent`; AG Grid chỉ tải khi mở trang báo cáo tồn kho hoặc các trang Online của Factory, không import vào root/core.
 - `app.routes.ts` ghép route từng feature và guard xác thực toàn vùng. Giữ URL `/logistic/...` để tương thích dù thư mục nghiệp vụ tên `logistics`.
 - `AuthService` xử lý HTTP và expose thông tin phiên. `AuthSessionStore` xử lý storage, schema/expiry validation, memory cache và thay đổi storage từ tab khác.
+- Đăng nhập mặc định bật Remember me, lưu phiên trong localStorage để khôi phục khi đóng/mở tab hoặc tải lại ứng dụng. Bỏ chọn thì chỉ lưu trong sessionStorage của tab. Đăng xuất xóa cả hai nơi; phiên hết hạn hoặc bị API từ chối bằng 401 vẫn phải đăng nhập lại.
 - `authInterceptor` gắn token cho API nội bộ và xử lý 401, bảo vệ phiên mới khỏi phản hồi của token cũ. Component hiển thị lỗi; lỗi 403 quản trị điều hướng về home và giữ phiên đăng nhập.
 - Timeout 15 giây nằm trong API service, dùng một constant, áp dụng cả stock/history. Component không đặt lại timeout trùng lặp.
 - Subscription ở component dùng `takeUntilDestroyed`; timer thông báo được cleanup. ID yêu cầu bảo vệ kết quả hiện tại khỏi phản hồi cũ. Cache Show All chỉ tồn tại trong instance trang; Refresh lấy lại dữ liệu.

@@ -31,6 +31,8 @@ dotnet run --project OjitexSystem_Backend/OjitexSystem-Backend --launch-profile 
 
 Cấu hình `ConnectionStrings:EVOLIO`, `ConnectionStrings:OJITEXHP` bằng cấu hình local hoặc biến môi trường. `appsettings.json` local được gitignore. Ngoài môi trường Development, phải cung cấp `Authentication:SigningKey` có ít nhất 32 byte UTF-8; có thể cấu hình thêm issuer, audience và `Frontend:Origin`.
 
+Trong Development, nếu chưa cấu hình `Authentication:SigningKey`, ứng dụng lưu khóa tự sinh tại `OjitexSystem_Backend/OjitexSystem-Backend/.local/jwt-signing-key` (đã gitignore), giữ token còn hạn qua các lần build/khởi động lại. Không đưa file này vào source control; xóa file sẽ làm token cũ mất hiệu lực ở lần khởi động sau.
+
 Profile HTTPS phục vụ API tại `https://localhost:7013`; tài liệu Scalar nằm tại `/scalar` trong Development. Nếu tiến trình đang chạy giữ khóa file build, có thể kiểm tra ở thư mục output riêng:
 
 ```powershell
@@ -49,5 +51,7 @@ npm.cmd run format:check
 ```
 
 Frontend chạy tại `http://localhost:4200`; proxy `/api` đến backend HTTPS. `npm.cmd` dùng được trên Windows khi execution policy không cho chạy `npm.ps1`; trên hệ điều hành khác dùng `npm`.
+
+Remember me được bật mặc định để giữ đăng nhập khi đóng/mở tab hoặc build lại, trên cùng địa chỉ frontend và trình duyệt. Có thể bỏ chọn để chỉ giữ phiên trong tab. JWT hiện hết hạn sau một giờ kể từ đăng nhập; hết hạn hoặc đăng xuất thì cần đăng nhập lại.
 
 Trong bảng báo cáo Stock, lịch sử tồn kho và Factory Online, bôi chọn vùng ô rồi Ctrl+C, sang Excel chọn ô đích rồi Ctrl+V. Dữ liệu được sao chép thành hàng/cột; nội dung xuống dòng vẫn nằm trong cùng ô. Với bảng AG Grid, click vào bảng rồi Ctrl+A → Ctrl+C để lấy toàn bộ dữ liệu theo thứ tự lọc/sắp xếp hiện tại, kèm tiêu đề và cả các trang chưa hiển thị.

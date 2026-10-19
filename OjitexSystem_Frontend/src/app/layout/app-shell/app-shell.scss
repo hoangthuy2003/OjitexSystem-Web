@@ -253,6 +253,8 @@
 }
 
 .app-content {
+  // Keep table headers and other page layers below the account menu.
+  isolation: isolate;
   min-height: calc(100vh - 76px);
   width: 100%;
   min-width: 0;

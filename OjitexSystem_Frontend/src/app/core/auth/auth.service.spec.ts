@@ -49,6 +49,26 @@ describe('AuthService', () => {
     expect(auth.hasCategory('other')).toBe(false);
   });
 
+  it('restores a remembered login after the tab is closed and the application restarts', () => {
+    auth.login('trung', 'password', true).subscribe();
+    http.expectOne('/api/auth/login').flush(session());
+    http.verify();
+
+    TestBed.resetTestingModule();
+    sessionStorage.clear();
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    auth = TestBed.inject(AuthService);
+    http = TestBed.inject(HttpTestingController);
+
+    expect(auth.accessToken).toBe('test-token');
+    expect(auth.hasCategory('logistics')).toBe(true);
+    auth.clearSession();
+    expect(localStorage.getItem(key)).toBeNull();
+    expect(auth.accessToken).toBeNull();
+  });
+
   it.each(['{broken', 'null', '[]', JSON.stringify({ accessToken: 'abc', user: {} })])(
     'rejects corrupt or malformed storage: %s',
     (stored) => {

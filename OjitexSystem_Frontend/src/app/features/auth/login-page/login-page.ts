@@ -21,7 +21,7 @@ export class LoginPage {
 
   username = '';
   password = '';
-  rememberMe = false;
+  rememberMe = true;
   showPassword = false;
   statusMessage = '';
   statusType: 'error' | 'success' = 'error';

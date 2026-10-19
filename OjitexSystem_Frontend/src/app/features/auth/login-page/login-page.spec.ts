@@ -40,38 +40,50 @@ describe('LoginPage', () => {
     expect(password.type).toBe('text');
   });
 
-  it('posts login credentials and navigates to an authorized page', async () => {
-    const fixture = await createPage();
-    const http = TestBed.inject(HttpTestingController);
-    const router = TestBed.inject(Router);
-    const navigateSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+  it.each([true, false])(
+    'saves login with rememberMe=%s and navigates home',
+    async (rememberMe) => {
+      const fixture = await createPage();
+      const http = TestBed.inject(HttpTestingController);
+      const router = TestBed.inject(Router);
+      const navigateSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
 
-    fixture.componentInstance.username = 'trung';
-    fixture.componentInstance.password = '123456';
-    fixture.componentInstance.rememberMe = true;
-    fixture.componentInstance.submitLogin();
-    const request = http.expectOne('/api/auth/login');
-    expect(request.request.method).toBe('POST');
-    expect(request.request.body).toEqual({ username: 'trung', password: '123456' });
+      fixture.componentInstance.username = 'trung';
+      fixture.componentInstance.password = '123456';
+      await fixture.whenStable();
+      const rememberOption = fixture.nativeElement.querySelector(
+        'input[name="rememberMe"]',
+      ) as HTMLInputElement;
+      expect(rememberOption.checked).toBe(true);
+      if (!rememberMe) {
+        rememberOption.click();
+      }
+      fixture.componentInstance.submitLogin();
+      const request = http.expectOne('/api/auth/login');
+      expect(request.request.method).toBe('POST');
+      expect(request.request.body).toEqual({ username: 'trung', password: '123456' });
 
-    request.flush({
-      accessToken: 'test-token',
-      expiresAt: new Date(Date.now() + 3600000).toISOString(),
-      user: {
-        userId: 'trung',
-        userFamilyName: null,
-        userFirstName: null,
-        roles: ['USER'],
-        categories: [{ categoryId: 'C000000005', categoryName: 'LOGISTICS' }],
-      },
-    });
-    fixture.detectChanges();
+      request.flush({
+        accessToken: 'test-token',
+        expiresAt: new Date(Date.now() + 3600000).toISOString(),
+        user: {
+          userId: 'trung',
+          userFamilyName: null,
+          userFirstName: null,
+          roles: ['USER'],
+          categories: [{ categoryId: 'C000000005', categoryName: 'LOGISTICS' }],
+        },
+      });
+      fixture.detectChanges();
 
-    expect(navigateSpy).toHaveBeenCalledWith('/home', { replaceUrl: true });
-    expect(localStorage.getItem('ojitex.auth')).toContain('test-token');
-    expect(sessionStorage.getItem('ojitex.auth')).toBeNull();
-    http.verify();
-  });
+      expect(navigateSpy).toHaveBeenCalledWith('/home', { replaceUrl: true });
+      const destination = rememberMe ? localStorage : sessionStorage;
+      const other = rememberMe ? sessionStorage : localStorage;
+      expect(destination.getItem('ojitex.auth')).toContain('test-token');
+      expect(other.getItem('ojitex.auth')).toBeNull();
+      http.verify();
+    },
+  );
 
   it('shows a useful message when the credentials are rejected', async () => {
     const fixture = await createPage();

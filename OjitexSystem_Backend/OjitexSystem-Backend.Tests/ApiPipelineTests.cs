@@ -18,6 +18,39 @@ namespace OjitexSystem_Backend.Tests;
 
 public sealed class ApiPipelineTests
 {
+    [Fact]
+    public async Task DevelopmentRestartPreservesExistingTokensWithoutConfiguredSigningKey()
+    {
+        var contentRoot = Path.Combine(Path.GetTempPath(), "ojitex-auth-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(contentRoot);
+        try
+        {
+            using var fixture = new AuthTestFixture();
+            fixture.AddUser();
+            void Configure(IServiceCollection services)
+            {
+                services.AddScoped<IAccessService>(_ => new AccessService(fixture.Access));
+                services.AddSingleton<ICorrugatorOnlineService>(new RecordingCorrugatorService());
+            }
+
+            string token;
+            await using (var first = await StartAsync(Configure, contentRoot))
+            {
+                token = first.Services.GetRequiredService<JwtTokenService>().CreateToken("alice", []).Token;
+            }
+
+            await using var restarted = await StartAsync(Configure, contentRoot);
+            using var client = restarted.GetTestClient();
+            client.DefaultRequestHeaders.Authorization = new("Bearer", token);
+            using var response = await client.GetAsync("/api/factory/corrugator-online");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+        finally
+        {
+            Directory.Delete(contentRoot, recursive: true);
+        }
+    }
+
     [Theory]
     [InlineData("corrugator-online", false, false, HttpStatusCode.OK)]
     [InlineData("corrugator-online", true, false, HttpStatusCode.Forbidden)]
@@ -128,9 +161,18 @@ public sealed class ApiPipelineTests
         Assert.True(body.RootElement.TryGetProperty("traceId", out _));
     }
 
-    private static async Task<WebApplication> StartAsync(Action<IServiceCollection>? configure = null)
+    private static async Task<WebApplication> StartAsync(
+        Action<IServiceCollection>? configure = null, string? contentRoot = null)
     {
-        var builder = WebApplication.CreateBuilder(new WebApplicationOptions { EnvironmentName = "Development" });
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+        {
+            EnvironmentName = "Development",
+            ContentRootPath = contentRoot
+        });
+        // Only the restart regression exercises key persistence; other tests need no key files.
+        builder.Configuration["Authentication:SigningKey"] = contentRoot is null
+            ? "ojitex-tests-only-signing-key-at-least-32-bytes"
+            : null;
         builder.WebHost.UseTestServer();
         builder.Logging.ClearProviders();
         builder.Services.AddOjitexApplication(builder.Configuration, builder.Environment);
