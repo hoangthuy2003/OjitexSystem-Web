@@ -49,3 +49,5 @@ npm.cmd run format:check
 ```
 
 Frontend chạy tại `http://localhost:4200`; proxy `/api` đến backend HTTPS. `npm.cmd` dùng được trên Windows khi execution policy không cho chạy `npm.ps1`; trên hệ điều hành khác dùng `npm`.
+
+Trong bảng báo cáo Stock, lịch sử tồn kho và Factory Online, bôi chọn vùng ô rồi Ctrl+C, sang Excel chọn ô đích rồi Ctrl+V. Dữ liệu được sao chép thành hàng/cột; nội dung xuống dòng vẫn nằm trong cùng ô. Với bảng AG Grid, click vào bảng rồi Ctrl+A → Ctrl+C để lấy toàn bộ dữ liệu theo thứ tự lọc/sắp xếp hiện tại, kèm tiêu đề và cả các trang chưa hiển thị.

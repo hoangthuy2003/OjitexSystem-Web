@@ -71,10 +71,11 @@ src/app/
     auth/                         # API, session store, interceptor, models, constants, guards
     http/                         # timeout policy, đọc message/ProblemDetails
   layout/app-shell/               # header, tài khoản, đổi mật khẩu, router outlet
+  shared/report-clipboard/        # copy vùng bảng sang Excel, dùng chung Stock/history và Factory
   features/
     auth/                        # route đăng nhập và login-page
     admin/                       # routes, user-management: API, models, page, tests
-    logistics/                   # routes, stock-report: API, models, grid, clipboard, page, tests
+    logistics/                   # routes, stock-report: API, models, grid, page, tests
     factory/                     # routes, corrugator-online, fdc-online, evol-online, fg-online, fap-online, fps-online: API, models, columns, page, tests
     navigation/                  # catalog, routes, home, department
 ```
@@ -86,6 +87,7 @@ src/app/
 - Timeout 15 giây nằm trong API service, dùng một constant, áp dụng cả stock/history. Component không đặt lại timeout trùng lặp.
 - Subscription ở component dùng `takeUntilDestroyed`; timer thông báo được cleanup. ID yêu cầu bảo vệ kết quả hiện tại khỏi phản hồi cũ. Cache Show All chỉ tồn tại trong instance trang; Refresh lấy lại dữ liệu.
 - Cấu hình và formatter AG Grid, xử lý clipboard được tách khỏi component trang. Danh mục phòng ban/báo cáo nằm trong navigation catalog.
+- `ReportClipboardDirective` trong `shared/report-clipboard` dùng chung cho bảng Stock, lịch sử tồn kho và sáu bảng Online của Factory. Copy vùng ô tạo cả HTML table và TSV; giữ ký tự xuống dòng/tab trong một ô, kiểu số và mã chuỗi. AG Grid lấy giá trị qua API theo thứ tự hàng/cột hiện tại thay vì đọc DOM, tránh mất dữ liệu do virtualization. Ctrl+A khi focus trong grid rồi Ctrl+C sao chép tiêu đề và toàn bộ các hàng sau lọc/sắp xếp, bao gồm các trang khác; copy vùng chỉ lấy hình chữ nhật giữa hai ô đầu/cuối.
 - Editor quản trị không đóng/chuyển sang tài khoản khác trong lúc lưu. TypeScript strict và Angular strictTemplates được bật; định dạng mã dùng Prettier.
 - `ag-grid-community` được khai báo là dependency trực tiếp vì ứng dụng import package này trực tiếp.
 

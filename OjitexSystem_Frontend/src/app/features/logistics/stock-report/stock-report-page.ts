@@ -12,6 +12,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { TimeoutError } from 'rxjs';
 import { AgGridAngular } from 'ag-grid-angular';
+import { ReportClipboardDirective } from '../../../shared/report-clipboard/report-clipboard.directive';
 import {
   CellStyleModule,
   ClientSideRowModelModule,
@@ -28,7 +29,6 @@ import {
   StockReportKind,
 } from './stock-report.models';
 import { STOCK_DEFAULT_COLUMN, STOCK_REPORT_TITLES, stockReportColumns } from './stock-report-grid';
-import { copyStockGridRange } from './stock-grid-clipboard';
 import { StockReportService } from './stock-report.service';
 
 ModuleRegistry.registerModules([
@@ -39,7 +39,14 @@ ModuleRegistry.registerModules([
 ]);
 
 @Component({
-  imports: [FormsModule, AgGridAngular, DatePipe, DecimalPipe, RouterLink],
+  imports: [
+    ReportClipboardDirective,
+    FormsModule,
+    AgGridAngular,
+    DatePipe,
+    DecimalPipe,
+    RouterLink,
+  ],
   selector: 'app-stock-report-page',
   styleUrl: './stock-report-page.scss',
   templateUrl: './stock-report-page.html',
@@ -119,10 +126,6 @@ export class StockReportPage {
 
   printHistory(): void {
     if (this.history && !this.historyLoading && !this.historyError) window.print();
-  }
-
-  copyGridRange(event: ClipboardEvent): void {
-    copyStockGridRange(event, this.columnDefs);
   }
 
   searchByProductCode(): void {
