@@ -3,7 +3,7 @@
 .history-toolbar {
   flex-shrink: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
   align-items: center;
   gap: 10px 32px;
   min-height: 64px;
@@ -90,7 +90,7 @@
   font-size: 13px;
 }
 
-@media (max-width: 1535px) {
+@media (max-width: 1000px) {
   .history-toolbar {
     grid-template-columns: minmax(0, 1fr) auto;
     column-gap: 24px;

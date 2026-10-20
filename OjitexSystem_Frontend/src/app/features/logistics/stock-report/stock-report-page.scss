@@ -145,11 +145,18 @@ h1 {
   cursor: pointer;
 }
 
+.back-button,
+.search-button,
+.search-all-button {
+  font-weight: 700;
+}
+
 .back-button:hover,
 .back-button:focus-visible,
 .refresh-button:hover:not(:disabled),
 .retry-button:hover,
 .search-button:hover:not(:disabled),
+.search-button:focus-visible,
 .search-all-button:hover:not(:disabled) {
   background: #f8fafc;
 }
@@ -165,17 +172,6 @@ h1 {
   display: flex;
   justify-self: end;
   gap: 8px;
-}
-
-.search-button {
-  border-color: #1d4ed8;
-  background: #1d4ed8;
-  color: #fff;
-}
-
-.search-button:hover:not(:disabled) {
-  border-color: #1e40af;
-  background: #1e40af;
 }
 
 .search-all-button {
