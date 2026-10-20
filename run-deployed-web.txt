@@ -1,1 +1,1 @@
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\Code\OjitexSystem\artifacts\deployment-guide\Deploy-Iis.ps1"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\Code\OjitexSystem\artifacts\deployment-guide\Deploy-Iis.ps1" -WebsiteUrl "http://172.88.1.65:8080"

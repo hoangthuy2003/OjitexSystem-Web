@@ -73,7 +73,7 @@ export class StockReportPage {
   loading = false;
   errorMessage: string | null = null;
   searchTerm = '';
-  readonly gridTheme = themeQuartz;
+  readonly gridTheme = themeQuartz.withParams({ wrapperBorderRadius: 0 });
   readonly defaultColDef = STOCK_DEFAULT_COLUMN;
   readonly columnDefs = stockReportColumns(this.reportKind);
 
