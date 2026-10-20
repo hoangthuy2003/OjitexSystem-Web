@@ -14,8 +14,8 @@ import {
   themeQuartz,
 } from 'ag-grid-community';
 import { apiErrorMessage } from '../../../core/http/api-errors';
-import { CORRUGATOR_COLUMN_DEFS, CORRUGATOR_DEFAULT_COLUMN } from './corrugator-online-columns';
-import { CorrugatorOnlineReport } from './corrugator-online.models';
+import { CORRUGATOR_COLUMN_DEFS, CORRUGATOR_DEFAULT_COLUMN } from '../corrugator-report-columns';
+import { CorrugatorReport } from '../corrugator-report.models';
 import { CorrugatorOnlineService } from './corrugator-online.service';
 
 ModuleRegistry.registerModules([CellStyleModule, ClientSideRowModelModule, PaginationModule]);
@@ -37,7 +37,7 @@ export class CorrugatorOnlinePage {
     rowHeight: 32,
     headerHeight: 44,
   });
-  protected readonly report = signal<CorrugatorOnlineReport | null>(null);
+  protected readonly report = signal<CorrugatorReport | null>(null);
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly cleared = signal(false);

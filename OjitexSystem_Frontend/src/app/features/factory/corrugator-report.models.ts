@@ -1,4 +1,4 @@
-export interface CorrugatorOnlineItem {
+export interface CorrugatorReportItem {
   planDate: string | null;
   orderNo: number | null;
   targetCut: number | null;
@@ -21,8 +21,8 @@ export interface CorrugatorOnlineItem {
   dateInput: string | null;
 }
 
-export interface CorrugatorOnlineReport {
+export interface CorrugatorReport {
   reportDate: string;
   refreshedAt: string;
-  items: CorrugatorOnlineItem[];
+  items: CorrugatorReportItem[];
 }

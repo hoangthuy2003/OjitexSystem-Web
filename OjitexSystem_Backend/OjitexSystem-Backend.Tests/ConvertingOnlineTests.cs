@@ -325,6 +325,10 @@ public sealed class ConvertingOnlineTests
         public string? MachineName { get; private set; }
         public CancellationToken Token { get; private set; }
 
+        public Task<IReadOnlyList<ConvertingOnlineRow>> GetHistoryAsync(
+            DateOnly? date, string? process, string? productCode, CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
         public Task<IReadOnlyList<ConvertingOnlineRow>> GetTodayAsync(DateOnly date, string machineName, CancellationToken cancellationToken = default)
         {
             Date = date;

@@ -6,12 +6,12 @@ import { provideRouter } from '@angular/router';
 import { AgGridAngular } from 'ag-grid-angular';
 import { CellApiModule, ColumnApiModule, ModuleRegistry, RowApiModule } from 'ag-grid-community';
 import { CorrugatorOnlinePage } from './corrugator-online-page';
-import { CorrugatorOnlineItem, CorrugatorOnlineReport } from './corrugator-online.models';
+import { CorrugatorReportItem, CorrugatorReport } from '../corrugator-report.models';
 
 ModuleRegistry.registerModules([CellApiModule, ColumnApiModule, RowApiModule]);
 
 const endpoint = '/api/factory/corrugator-online';
-const report: CorrugatorOnlineReport = {
+const report: CorrugatorReport = {
   reportDate: '2026-10-16',
   refreshedAt: '2026-10-16T09:04:00',
   items: [
@@ -74,7 +74,7 @@ describe('CorrugatorOnlinePage', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     const grid = fixture.debugElement.query(By.directive(AgGridAngular))
-      .componentInstance as AgGridAngular<CorrugatorOnlineItem>;
+      .componentInstance as AgGridAngular<CorrugatorReportItem>;
     const columns = grid.api.getColumns() ?? [];
     expect(columns).toHaveLength(20);
     expect(grid.rowData).toEqual(report.items);
@@ -180,7 +180,7 @@ describe('CorrugatorOnlinePage', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     const grid = fixture.debugElement.query(By.directive(AgGridAngular))
-      .componentInstance as AgGridAngular<CorrugatorOnlineItem>;
+      .componentInstance as AgGridAngular<CorrugatorReportItem>;
     expect(grid.api.paginationGetPageSize()).toBe(50);
     expect(grid.api.paginationGetTotalPages()).toBe(2);
     grid.api.applyColumnState({ state: [{ colId: 'orderNo', sort: 'desc' }] });

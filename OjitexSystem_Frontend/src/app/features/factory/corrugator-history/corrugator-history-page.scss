@@ -1,0 +1,44 @@
+@use '../online-report';
+
+.search-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  color: #475467;
+  font-size: 13px;
+}
+
+.date-search-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-field input {
+  width: 130px;
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid #d0d5dd;
+  border-radius: 7px;
+  color: #344054;
+  font: inherit;
+}
+
+.search-field input[aria-invalid='true'] {
+  border-color: #b42318;
+}
+
+#date-format {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.history-meta {
+  padding: 8px 16px;
+  color: #475467;
+  font-size: 13px;
+}

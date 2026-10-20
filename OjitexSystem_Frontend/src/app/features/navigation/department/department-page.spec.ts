@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angul
 import { DepartmentPage } from './department-page';
 
 describe('Factory menu', () => {
-  it('opens implemented Online reports and keeps planned functions disabled', () => {
+  it('opens implemented Factory reports and keeps planned functions disabled', () => {
     TestBed.configureTestingModule({
       imports: [DepartmentPage],
       providers: [
@@ -22,13 +22,15 @@ describe('Factory menu', () => {
     expect(buttons).toHaveLength(9);
     expect(buttons[0].disabled).toBe(false);
     expect(buttons[1].disabled).toBe(false);
+    expect(buttons[2].disabled).toBe(false);
     expect(buttons[4].disabled).toBe(false);
     expect(buttons[5].disabled).toBe(false);
+    expect(buttons[6].disabled).toBe(false);
     expect(buttons[7].disabled).toBe(false);
     expect(buttons[8].disabled).toBe(false);
     expect(
       buttons
-        .filter((_, index) => ![0, 1, 4, 5, 7, 8].includes(index))
+        .filter((_, index) => ![0, 1, 2, 4, 5, 6, 7, 8].includes(index))
         .every((button) => button.disabled),
     ).toBe(true);
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
@@ -36,6 +38,10 @@ describe('Factory menu', () => {
     expect(navigate).toHaveBeenCalledWith('/factory/corrugator-online');
     buttons[1].click();
     expect(navigate).toHaveBeenCalledWith('/factory/fdc-online');
+    buttons[2].click();
+    expect(navigate).toHaveBeenCalledWith('/factory/corrugator-history');
+    buttons[6].click();
+    expect(navigate).toHaveBeenCalledWith('/factory/converting-history');
     buttons[4].click();
     expect(navigate).toHaveBeenCalledWith('/factory/evol-online');
     buttons[8].click();

@@ -8,6 +8,39 @@ namespace OjitexSystem_Backend.Tests;
 public sealed class CorrugatorOnlineTests
 {
     [Fact]
+    public async Task HistoryUsesSelectedDateAndMapsTheHistorySampleWithoutChangingTheOnlineRules()
+    {
+        var repository = new RecordingRepository([new TCorrugatorOnlineReport
+        {
+            CoorNo41PlanDate = "261018", CoorNo40CorrugatedDatetime = "2610190758",
+            CoorNo1OrderNo = 10, CoorNo4TargetCut = 40, CoorNo34QualityItem = 40,
+            CoorNo3CorruLength = 1155, CoorNo38DriveTime = 42, CoorNo39StopTime = 0,
+            CoorNo32Dfl = " DHC 125 ", CoorNo31Sf2m = "S  125", CoorNo30Sf2l = "DHC 125",
+            CoorNo42DateInput = new DateTime(2026, 10, 20, 8, 22, 0)
+        }]);
+        var service = new CorrugatorOnlineService(repository,
+            new FixedTimeProvider(DateTimeOffset.Parse("2026-10-20T02:00:00Z")));
+        using var cancellation = new CancellationTokenSource();
+        var selectedDate = new DateOnly(2026, 10, 19);
+        var result = await service.GetHistoryAsync(selectedDate, cancellation.Token);
+
+        Assert.Equal(selectedDate, repository.Date);
+        Assert.Equal(cancellation.Token, repository.Token);
+        Assert.Equal(selectedDate, result.ReportDate);
+        Assert.Equal(new DateTime(2026, 10, 20, 9, 0, 0), result.RefreshedAt);
+        var row = Assert.Single(result.Items);
+        Assert.Equal(new DateOnly(2026, 10, 18), row.PlanDate);
+        Assert.Equal(selectedDate, row.CorrugatedDate);
+        Assert.Equal("07:58", row.EndTime);
+        Assert.Equal(0.7m, row.DriveMinutes);
+        Assert.Equal(0m, row.StopMinutes);
+        Assert.Equal(66m, row.AverageSpeed);
+        Assert.Equal("DHC 125", row.Glue);
+        Assert.Equal("S  125", row.Bm);
+        Assert.Equal(new DateTime(2026, 10, 20, 8, 22, 0), row.DateInput);
+    }
+
+    [Fact]
     public async Task UsesBusinessDateAndForwardsCancellation()
     {
         var repository = new RecordingRepository([]);
@@ -86,14 +119,31 @@ public sealed class CorrugatorOnlineTests
         context.TCorrugatorOnlineReports.AddRange(
             new TCorrugatorOnlineReport { CoorNo1OrderNo = 30, CoorNo40CorrugatedDatetime = "2610160838", CoorNo41PlanDate = "261015" },
             new TCorrugatorOnlineReport { CoorNo1OrderNo = 10, CoorNo40CorrugatedDatetime = "2610160800" },
+            new TCorrugatorOnlineReport { CoorNo1OrderNo = 15, CoorNo40CorrugatedDatetime = "2610160800" },
             new TCorrugatorOnlineReport { CoorNo1OrderNo = 20, CoorNo40CorrugatedDatetime = "2610152359", CoorNo42DateInput = new DateTime(2026, 10, 16) },
             new TCorrugatorOnlineReport { CoorNo1OrderNo = 40, CoorNo40CorrugatedDatetime = "2610170000" },
             new TCorrugatorOnlineReport { CoorNo1OrderNo = 50 });
         await context.SaveChangesAsync();
         context.ChangeTracker.Clear();
-        var rows = await new CorrugatorOnlineRepository(context).GetTodayAsync(new DateOnly(2026, 10, 16));
-        Assert.Equal(new decimal?[] { 10, 30 }, rows.Select(row => row.CoorNo1OrderNo));
+        var rows = await new CorrugatorOnlineRepository(context).GetByDateAsync(new DateOnly(2026, 10, 16));
+        Assert.Equal(new decimal?[] { 10, 15, 30 }, rows.Select(row => row.CoorNo1OrderNo));
         Assert.Empty(context.ChangeTracker.Entries());
+    }
+
+    [Theory]
+    [InlineData(1926)]
+    [InlineData(2126)]
+    public async Task HistoryDoesNotReturnAnotherCenturyForTheSameTwoDigitYear(int year)
+    {
+        using var context = new TestProductionContext(new DbContextOptionsBuilder<ProductionContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
+        context.TCorrugatorOnlineReports.Add(new TCorrugatorOnlineReport
+        {
+            CoorNo1OrderNo = 10, CoorNo40CorrugatedDatetime = "2610160800"
+        });
+        await context.SaveChangesAsync();
+        var rows = await new CorrugatorOnlineRepository(context).GetByDateAsync(new DateOnly(year, 10, 16));
+        Assert.Empty(rows);
     }
 
     private static CorrugatorOnlineService CreateService(TCorrugatorOnlineReport row) =>
@@ -103,7 +153,7 @@ public sealed class CorrugatorOnlineTests
     {
         public DateOnly Date { get; private set; }
         public CancellationToken Token { get; private set; }
-        public Task<IReadOnlyList<TCorrugatorOnlineReport>> GetTodayAsync(DateOnly date, CancellationToken cancellationToken = default)
+        public Task<IReadOnlyList<TCorrugatorOnlineReport>> GetByDateAsync(DateOnly date, CancellationToken cancellationToken = default)
         {
             Date = date;
             Token = cancellationToken;

@@ -50,8 +50,12 @@ export const CONVERTING_COLUMN_DEFS: ColDef<ConvertingOnlineItem>[] = CONVERTING
     tooltipField:
       column.field === 'productName' || column.field === 'customerName' ? column.field : undefined,
     valueFormatter: ({ value }) => {
-      if (value == null || value === '') return '—';
-      return typeof value === 'number' && !column.code ? value.toLocaleString() : String(value);
+      return formatConvertingValue(value, column.code);
     },
   }),
 );
+
+export function formatConvertingValue(value: unknown, code = false): string {
+  if (value == null || value === '') return '—';
+  return typeof value === 'number' && !code ? value.toLocaleString() : String(value);
+}

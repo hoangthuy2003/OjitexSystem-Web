@@ -10,6 +10,7 @@
 | Quản trị | Danh sách tài khoản, tạo/sửa, role, quyền category, đặt lại mật khẩu, xóa mềm |
 | Logistics | Current / Last / Monthly Stock, tìm theo tiền tố mã sản phẩm, lịch sử theo sản phẩm, in và sao chép bảng |
 | Factory | Corrugator Online / FDC Online / EVOL Online / FG Online / FAP Online / FPS Online: kết quả chạy máy trong ngày UTC+7, Refresh lấy lại dữ liệu, Clear xóa bảng hiển thị |
+| Factory History | Corrugator History tìm theo ngày `mm/dd/yyyy`; Converting History lọc kết hợp ngày, Process và tiền tố Product Code, bỏ trống cả ba rồi nhấn Search để xem toàn bộ; Clear xóa bộ lọc và bảng hiển thị |
 | Điều hướng | Trang chủ, danh mục phòng ban, danh mục báo cáo |
 
 Các mục Work Progress, Management Loss, FFG và những phòng ban chưa có chức năng vẫn là mục dự kiến trong danh mục điều hướng. Không tạo module nghiệp vụ rỗng cho các mục này.
@@ -54,4 +55,4 @@ Frontend chạy tại `http://localhost:4200`; proxy `/api` đến backend HTTPS
 
 Remember me được bật mặc định để giữ đăng nhập khi đóng/mở tab hoặc build lại, trên cùng địa chỉ frontend và trình duyệt. Có thể bỏ chọn để chỉ giữ phiên trong tab. JWT hiện hết hạn sau một giờ kể từ đăng nhập; hết hạn hoặc đăng xuất thì cần đăng nhập lại.
 
-Trong bảng báo cáo Stock, lịch sử tồn kho và Factory Online, bôi chọn vùng ô rồi Ctrl+C, sang Excel chọn ô đích rồi Ctrl+V. Dữ liệu được sao chép thành hàng/cột; nội dung xuống dòng vẫn nằm trong cùng ô. Với bảng AG Grid, click vào bảng rồi Ctrl+A → Ctrl+C để lấy toàn bộ dữ liệu theo thứ tự lọc/sắp xếp hiện tại, kèm tiêu đề và cả các trang chưa hiển thị.
+Trong bảng báo cáo Stock, lịch sử tồn kho, Factory Online, Corrugator History và Converting History, bôi chọn vùng ô rồi Ctrl+C, sang Excel chọn ô đích rồi Ctrl+V. Dữ liệu được sao chép thành hàng/cột; nội dung xuống dòng vẫn nằm trong cùng ô. Với bảng AG Grid, click vào bảng rồi Ctrl+A → Ctrl+C để lấy toàn bộ dữ liệu theo thứ tự lọc/sắp xếp hiện tại, kèm tiêu đề và cả các trang chưa hiển thị.
