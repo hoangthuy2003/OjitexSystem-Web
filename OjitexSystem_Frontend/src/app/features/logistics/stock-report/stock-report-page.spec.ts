@@ -286,38 +286,13 @@ describe.each<StockReportKind>(['current', 'last', 'monthly'])('%s stock report'
     await fixture.whenStable();
     fixture.detectChanges();
 
-    const container = fixture.nativeElement.querySelector('.table-scroll') as HTMLElement;
-    const firstRow = document.createElement('div');
-    firstRow.className = 'ag-row';
-    firstRow.setAttribute('row-index', '100');
-    const firstProductCell = document.createElement('div');
-    firstProductCell.className = 'ag-cell';
-    firstProductCell.setAttribute('col-id', 'productCode');
-    firstProductCell.textContent = '1010060';
-    const firstStockCell = document.createElement('div');
-    firstStockCell.className = 'ag-cell';
-    firstStockCell.setAttribute('col-id', 'openingStock');
-    firstStockCell.textContent = '300';
-    firstRow.append(firstProductCell, firstStockCell);
-
-    const secondRow = document.createElement('div');
-    secondRow.className = 'ag-row';
-    secondRow.setAttribute('row-index', '101');
-    const secondProductCell = document.createElement('div');
-    secondProductCell.className = 'ag-cell';
-    secondProductCell.setAttribute('col-id', 'productCode');
-    secondProductCell.textContent = '1010061';
-    const secondStockCell = document.createElement('div');
-    secondStockCell.className = 'ag-cell';
-    secondStockCell.setAttribute('col-id', 'openingStock');
-    secondStockCell.textContent = '450';
-    secondRow.append(secondProductCell, secondStockCell);
-    container.append(firstRow, secondRow);
-
+    const container = fixture.nativeElement.querySelector('ag-grid-angular') as HTMLElement;
+    const firstProductCell = container.querySelector('.ag-cell[col-id="productCode"]')!;
+    const firstStockCell = container.querySelector('.ag-cell[col-id="openingStock"]')!;
     const selection = window.getSelection();
     const range = document.createRange();
     range.setStart(firstProductCell.firstChild!, 0);
-    range.setEnd(secondStockCell.firstChild!, secondStockCell.textContent!.length);
+    range.setEnd(firstStockCell.firstChild!, firstStockCell.textContent!.length);
     selection!.removeAllRanges();
     selection!.addRange(range);
 
@@ -327,7 +302,8 @@ describe.each<StockReportKind>(['current', 'last', 'monthly'])('%s stock report'
     container.dispatchEvent(copyEvent);
 
     expect(copyEvent.defaultPrevented).toBe(true);
-    expect(setData).toHaveBeenCalledWith('text/plain', '1010060\t300\n1010061\t450');
+    expect(setData).toHaveBeenCalledWith('text/plain', `${stock.productCode}\t0`);
+    expect(setData).toHaveBeenCalledWith('text/html', expect.stringContaining('<table>'));
   });
 
   if (kind === 'monthly') {

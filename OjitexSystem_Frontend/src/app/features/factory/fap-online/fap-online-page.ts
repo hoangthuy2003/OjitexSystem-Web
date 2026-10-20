@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { EMPTY, Subject, catchError, switchMap } from 'rxjs';
 import { AgGridAngular } from 'ag-grid-angular';
+import { ReportClipboardDirective } from '../../../shared/report-clipboard/report-clipboard.directive';
 import {
   CellStyleModule,
   ClientSideRowModelModule,
@@ -27,7 +28,7 @@ ModuleRegistry.registerModules([
 
 @Component({
   selector: 'app-fap-online-page',
-  imports: [DatePipe, RouterLink, AgGridAngular],
+  imports: [ReportClipboardDirective, DatePipe, RouterLink, AgGridAngular],
   templateUrl: './fap-online-page.html',
   styleUrl: './fap-online-page.scss',
 })

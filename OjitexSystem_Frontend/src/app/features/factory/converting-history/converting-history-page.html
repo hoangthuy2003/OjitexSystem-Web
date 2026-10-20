@@ -1,0 +1,87 @@
+<main class="page">
+  <section class="result-card" aria-label="Converting history results" [attr.aria-busy]="loading()">
+    <form class="history-toolbar" (ngSubmit)="search()">
+      <div class="history-filters">
+        <div class="filter-field">
+          <label for="converting-process">Process</label>
+          <input
+            #processInput
+            id="converting-process"
+            name="process"
+            type="text"
+            maxlength="6"
+            autocomplete="off"
+            [value]="filters().process"
+            (input)="changeFilter('process', processInput.value)"
+            [attr.aria-invalid]="invalidField() === 'process' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'process' ? 'search-error' : null"
+          />
+        </div>
+        <div class="filter-field">
+          <label for="converting-date">Date</label>
+          <input
+            #dateInput
+            id="converting-date"
+            name="date"
+            type="text"
+            maxlength="10"
+            autocomplete="off"
+            [value]="filters().date"
+            (input)="changeFilter('date', dateInput.value)"
+            [attr.aria-invalid]="invalidField() === 'date' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'date' ? 'search-error' : null"
+          />
+        </div>
+        <div class="filter-field">
+          <label for="converting-product-code">Product Code</label>
+          <input
+            #productInput
+            id="converting-product-code"
+            name="productCode"
+            type="text"
+            inputmode="numeric"
+            maxlength="7"
+            autocomplete="off"
+            [value]="filters().productCode"
+            (input)="changeFilter('productCode', productInput.value)"
+            [attr.aria-invalid]="invalidField() === 'productCode' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'productCode' ? 'search-error' : null"
+          />
+        </div>
+        <button class="refresh-button" type="submit" [disabled]="loading()">Search</button>
+      </div>
+      <h1>CONVERTING Online Result History</h1>
+      <button class="clear-button" type="button" (click)="clear()">Clear</button>
+    </form>
+    @if (loading()) {
+      <p class="message" role="status">Loading Converting history…</p>
+    } @else if (error()) {
+      <p id="search-error" class="message error-message" role="alert">{{ error() }}</p>
+    } @else if (!report()) {
+    } @else if (!report()?.items?.length) {
+      <p class="message" role="status">No matching Converting history found.</p>
+    } @else {
+      <div class="table-scroll">
+        <ag-grid-angular
+          reportClipboard
+          class="result-grid"
+          aria-label="Converting history results"
+          [rowData]="report()?.items ?? []"
+          [columnDefs]="columns"
+          [defaultColDef]="defaultColDef"
+          [theme]="gridTheme"
+          [pagination]="true"
+          [paginationPageSize]="50"
+          [paginationPageSizeSelector]="[25, 50, 100]"
+          [enableCellTextSelection]="true"
+          [ensureDomOrder]="true"
+        />
+      </div>
+    }
+    @if (report()) {
+    }
+  </section>
+  <footer class="page-actions">
+    <a class="back-button" routerLink="/department/factory">Go Back</a>
+  </footer>
+</main>

@@ -5,4 +5,5 @@ namespace OjitexSystem_Backend.Services.Factory;
 public interface ICorrugatorOnlineService
 {
     Task<CorrugatorOnlineDto> GetTodayAsync(CancellationToken cancellationToken = default);
+    Task<CorrugatorOnlineDto> GetHistoryAsync(DateOnly date, CancellationToken cancellationToken = default);
 }

@@ -1,9 +1,9 @@
 import { formatDate } from '@angular/common';
 import { ColDef } from 'ag-grid-community';
-import { CorrugatorOnlineItem } from './corrugator-online.models';
+import { CorrugatorReportItem } from './corrugator-report.models';
 
 interface CorrugatorColumn {
-  field: keyof CorrugatorOnlineItem;
+  field: keyof CorrugatorReportItem;
   label: string;
   format?: 'date' | 'datetime';
   minWidth: number;
@@ -32,7 +32,7 @@ export const CORRUGATOR_COLUMNS: readonly CorrugatorColumn[] = [
   { field: 'dateInput', label: 'Date Input', format: 'datetime', minWidth: 140 },
 ];
 
-export const CORRUGATOR_DEFAULT_COLUMN: ColDef<CorrugatorOnlineItem> = {
+export const CORRUGATOR_DEFAULT_COLUMN: ColDef<CorrugatorReportItem> = {
   flex: 1,
   minWidth: 50,
   resizable: true,
@@ -43,7 +43,7 @@ export const CORRUGATOR_DEFAULT_COLUMN: ColDef<CorrugatorOnlineItem> = {
   cellStyle: { textAlign: 'center' },
 };
 
-export const CORRUGATOR_COLUMN_DEFS: ColDef<CorrugatorOnlineItem>[] = CORRUGATOR_COLUMNS.map(
+export const CORRUGATOR_COLUMN_DEFS: ColDef<CorrugatorReportItem>[] = CORRUGATOR_COLUMNS.map(
   (column) => ({
     field: column.field,
     headerName: column.label,

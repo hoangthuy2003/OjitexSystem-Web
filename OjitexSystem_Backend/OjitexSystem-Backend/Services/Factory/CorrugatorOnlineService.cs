@@ -9,10 +9,13 @@ namespace OjitexSystem_Backend.Services.Factory;
 public sealed class CorrugatorOnlineService(ICorrugatorOnlineRepository repository, TimeProvider clock)
     : ICorrugatorOnlineService
 {
-    public async Task<CorrugatorOnlineDto> GetTodayAsync(CancellationToken cancellationToken = default)
+    public Task<CorrugatorOnlineDto> GetTodayAsync(CancellationToken cancellationToken = default) =>
+        GetHistoryAsync(DateOnly.FromDateTime(clock.GetBusinessNow()), cancellationToken);
+
+    public async Task<CorrugatorOnlineDto> GetHistoryAsync(
+        DateOnly date, CancellationToken cancellationToken = default)
     {
-        var date = DateOnly.FromDateTime(clock.GetBusinessNow());
-        var rows = await repository.GetTodayAsync(date, cancellationToken);
+        var rows = await repository.GetByDateAsync(date, cancellationToken);
         return new(date, clock.GetBusinessNow(), rows.Select(MapItem).ToArray());
     }
 

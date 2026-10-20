@@ -2,6 +2,20 @@ import { Routes } from '@angular/router';
 
 export const factoryRoutes: Routes = [
   {
+    path: 'factory/converting-history',
+    loadComponent: () =>
+      import('./converting-history/converting-history-page').then(
+        (module) => module.ConvertingHistoryPage,
+      ),
+  },
+  {
+    path: 'factory/corrugator-history',
+    loadComponent: () =>
+      import('./corrugator-history/corrugator-history-page').then(
+        (module) => module.CorrugatorHistoryPage,
+      ),
+  },
+  {
     path: 'factory/fps-online',
     loadComponent: () =>
       import('./fps-online/fps-online-page').then((module) => module.FpsOnlinePage),

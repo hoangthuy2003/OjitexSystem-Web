@@ -20,6 +20,26 @@ public sealed class ConvertingOnlineService(IConvertingOnlineRepository reposito
         return new(date, clock.GetBusinessNow(), rows.Select(MapItem).ToArray());
     }
 
+    public async Task<ConvertingHistoryDto> GetHistoryAsync(
+        DateOnly? date, string? process, string? productCode, CancellationToken cancellationToken = default)
+    {
+        process = string.IsNullOrWhiteSpace(process) ? null : process.Trim().ToUpperInvariant();
+        productCode = string.IsNullOrWhiteSpace(productCode) ? null : productCode.Trim();
+        var rows = await repository.GetHistoryAsync(date, process, productCode, cancellationToken);
+        return new(date, clock.GetBusinessNow(), rows.Select(MapHistoryItem).ToArray());
+    }
+
+    private static ConvertingHistoryItemDto MapHistoryItem(ConvertingOnlineRow row)
+    {
+        var item = MapItem(row);
+        var date = DateOnly.TryParseExact(row.Date?.Trim(), "yyyyMMdd", CultureInfo.InvariantCulture,
+            DateTimeStyles.None, out var parsed) ? parsed : (DateOnly?)null;
+        return new(date, item.Shift, row.MachineName?.Trim(' '), item.LotNo, item.OrderNo,
+            item.CustomerCode, item.CustomerName, item.ProductCode, item.ProductName,
+            item.PlanQty, item.InputQty, item.OutputQty, item.SurplusQty, item.LossQty, item.ShortestQty,
+            item.StartTime, item.FinishTime, item.DrivingMinutes, item.SetMinutes, item.StopMinutes, item.RestMinutes);
+    }
+
     private static ConvertingOnlineItemDto MapItem(ConvertingOnlineRow row) => new(
         row.Shift, row.LotNo, row.OrderNo, row.CustomerCode, row.CustomerName?.Trim(' '),
         row.ProductCode, row.ProductName?.Trim(' '), row.PlanQty, row.InputQty, row.OutputQty,

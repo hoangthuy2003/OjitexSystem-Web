@@ -74,6 +74,24 @@ public static class ServiceCollectionExtensions
         services.AddScoped<PasswordHasher<IeUser>>();
     }
 
+    private static string GetDevelopmentSigningKey(string contentRootPath)
+    {
+        var directory = Path.Combine(contentRootPath, ".local");
+        Directory.CreateDirectory(directory);
+        var path = Path.Combine(directory, "jwt-signing-key");
+        // Keep the development key outside build output so restarts preserve valid tokens.
+        using var stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+        if (stream.Length == 0)
+        {
+            var key = Encoding.UTF8.GetBytes(Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)));
+            stream.Write(key);
+            stream.Flush(flushToDisk: true);
+            stream.Position = 0;
+        }
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
+    }
+
     private static void AddSecurity(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
     {
         var issuer = configuration["Authentication:Issuer"] ?? "OjitexSystem";
@@ -87,7 +105,7 @@ public static class ServiceCollectionExtensions
                     "Set Authentication:SigningKey (at least 32 characters) before starting outside Development.");
             }
 
-            signingKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+            signingKey = GetDevelopmentSigningKey(environment.ContentRootPath);
         }
 
         var signingKeyBytes = Encoding.UTF8.GetBytes(signingKey);

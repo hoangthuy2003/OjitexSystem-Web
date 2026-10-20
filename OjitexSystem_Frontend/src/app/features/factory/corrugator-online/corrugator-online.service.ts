@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { timeout } from 'rxjs';
 import { API_REQUEST_TIMEOUT_MS } from '../../../core/http/api-policy';
-import { CorrugatorOnlineReport } from './corrugator-online.models';
+import { CorrugatorReport } from '../corrugator-report.models';
 
 @Injectable({ providedIn: 'root' })
 export class CorrugatorOnlineService {
@@ -10,7 +10,7 @@ export class CorrugatorOnlineService {
 
   getToday() {
     return this.http
-      .get<CorrugatorOnlineReport>('/api/factory/corrugator-online')
+      .get<CorrugatorReport>('/api/factory/corrugator-online')
       .pipe(timeout({ first: API_REQUEST_TIMEOUT_MS }));
   }
 }

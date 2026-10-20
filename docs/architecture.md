@@ -29,6 +29,7 @@ Luồng chính: **HTTP → Controller → Service → Repository → DbContext �
 - `IAuthUnitOfWork` điều phối SaveChanges và transaction trên cùng AuthContext scoped. Entity lấy để cập nhật được tracking trong scope này. Các truy vấn danh sách/lookup dùng `AsNoTracking` và projection.
 - Handler phân quyền gọi `IAccessService`; backend kiểm tra lại tài khoản còn hoạt động và quyền hiện tại trong database cho từng yêu cầu được bảo vệ.
 - `Infrastructure/ServiceCollectionExtensions` là điểm đăng ký DI, persistence, JWT, policy, CORS và xử lý lỗi. `Program.cs` chỉ lắp pipeline và xử lý chế độ CLI hiện có.
+- Trong Development, khi chưa cấu hình `Authentication:SigningKey`, khóa JWT được tạo một lần và lưu tại `.local/jwt-signing-key` dưới content root (đã gitignore), để token còn hạn vẫn hợp lệ sau build/khởi động lại. Ngoài Development vẫn bắt buộc cung cấp khóa cấu hình. Thời hạn JWT giữ nguyên một giờ.
 - Các class Data là mapping/entity database đã scaffold. Refactor không sửa schema hoặc mapping và không thêm migration.
 
 Lỗi đã xử lý vẫn phát diagnostics để giữ log/metrics phục vụ điều tra. .NET 10 mặc định tắt diagnostics khi handler trả true; cấu hình `SuppressDiagnosticsCallback` tại infrastructure giữ lại chúng theo [tài liệu ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/error-handling?view=aspnetcore-10.0).
@@ -71,10 +72,11 @@ src/app/
     auth/                         # API, session store, interceptor, models, constants, guards
     http/                         # timeout policy, đọc message/ProblemDetails
   layout/app-shell/               # header, tài khoản, đổi mật khẩu, router outlet
+  shared/report-clipboard/        # copy vùng bảng sang Excel, dùng chung Stock/history và Factory
   features/
     auth/                        # route đăng nhập và login-page
     admin/                       # routes, user-management: API, models, page, tests
-    logistics/                   # routes, stock-report: API, models, grid, clipboard, page, tests
+    logistics/                   # routes, stock-report: API, models, grid, page, tests
     factory/                     # routes, corrugator-online, fdc-online, evol-online, fg-online, fap-online, fps-online: API, models, columns, page, tests
     navigation/                  # catalog, routes, home, department
 ```
@@ -82,10 +84,12 @@ src/app/
 - Root App chỉ render shell. Các route entry point tải component qua `loadComponent`; AG Grid chỉ tải khi mở trang báo cáo tồn kho hoặc các trang Online của Factory, không import vào root/core.
 - `app.routes.ts` ghép route từng feature và guard xác thực toàn vùng. Giữ URL `/logistic/...` để tương thích dù thư mục nghiệp vụ tên `logistics`.
 - `AuthService` xử lý HTTP và expose thông tin phiên. `AuthSessionStore` xử lý storage, schema/expiry validation, memory cache và thay đổi storage từ tab khác.
+- Đăng nhập mặc định bật Remember me, lưu phiên trong localStorage để khôi phục khi đóng/mở tab hoặc tải lại ứng dụng. Bỏ chọn thì chỉ lưu trong sessionStorage của tab. Đăng xuất xóa cả hai nơi; phiên hết hạn hoặc bị API từ chối bằng 401 vẫn phải đăng nhập lại.
 - `authInterceptor` gắn token cho API nội bộ và xử lý 401, bảo vệ phiên mới khỏi phản hồi của token cũ. Component hiển thị lỗi; lỗi 403 quản trị điều hướng về home và giữ phiên đăng nhập.
 - Timeout 15 giây nằm trong API service, dùng một constant, áp dụng cả stock/history. Component không đặt lại timeout trùng lặp.
 - Subscription ở component dùng `takeUntilDestroyed`; timer thông báo được cleanup. ID yêu cầu bảo vệ kết quả hiện tại khỏi phản hồi cũ. Cache Show All chỉ tồn tại trong instance trang; Refresh lấy lại dữ liệu.
 - Cấu hình và formatter AG Grid, xử lý clipboard được tách khỏi component trang. Danh mục phòng ban/báo cáo nằm trong navigation catalog.
+- `ReportClipboardDirective` trong `shared/report-clipboard` dùng chung cho bảng Stock, lịch sử tồn kho và sáu bảng Online của Factory. Copy vùng ô tạo cả HTML table và TSV; giữ ký tự xuống dòng/tab trong một ô, kiểu số và mã chuỗi. AG Grid lấy giá trị qua API theo thứ tự hàng/cột hiện tại thay vì đọc DOM, tránh mất dữ liệu do virtualization. Ctrl+A khi focus trong grid rồi Ctrl+C sao chép tiêu đề và toàn bộ các hàng sau lọc/sắp xếp, bao gồm các trang khác; copy vùng chỉ lấy hình chữ nhật giữa hai ô đầu/cuối.
 - Editor quản trị không đóng/chuyển sang tài khoản khác trong lúc lưu. TypeScript strict và Angular strictTemplates được bật; định dạng mã dùng Prettier.
 - `ag-grid-community` được khai báo là dependency trực tiếp vì ứng dụng import package này trực tiếp.
 
@@ -93,7 +97,7 @@ src/app/
 
 ### Corrugator Online (16/10/2026)
 
-- Trang `/factory/corrugator-online` được tải theo nhu cầu từ Factory Menu; nguồn dữ liệu là `GET /api/factory/corrugator-online`. Các trang Online khác được mô tả bên dưới; History và Reprint vẫn chờ triển khai.
+- Trang `/factory/corrugator-online` được tải theo nhu cầu từ Factory Menu; nguồn dữ liệu là `GET /api/factory/corrugator-online`. Các trang Online, Corrugator History và Converting History được mô tả bên dưới; Reprint vẫn chờ triển khai.
 - Backend bổ sung nhóm `Factory` trong Controllers, Services, Repositories và Dtos, giữ luồng Controller → Service → Repository → ProductionContext. Dùng entity `TCorrugatorOnlineReport` đã scaffold; không đổi mapping/schema.
 - Mọi tài khoản đang hoạt động đều được xem, không yêu cầu category Factory. Policy `ActiveUser` kiểm tra lại tài khoản chưa khóa/chưa xóa qua `IAccessService` ở mỗi yêu cầu.
 - Repository lọc `coor_no40_corrugated_datetime` theo tiền tố `yyMMdd` của ngày UTC+7 do service cung cấp, sắp theo timestamp rồi order no/date input để ổn định thứ tự khi trùng thời điểm. Không lọc theo plan date hoặc date input.
@@ -146,6 +150,21 @@ Các kiểm thử chạy ngày 13/10/2026:
 Không kết nối database nghiệp vụ để thay đổi hoặc benchmark dữ liệu. InMemory không chứng minh locking/rollback/hiệu năng SQL Server thực tế. Trước khi triển khai, chạy kiểm thử tích hợp trên SQL Server thử nghiệm cho đồng thời xóa/hạ quyền admin, đồng bộ quyền và báo cáo với dữ liệu thực tế; đo execution plan và thời gian truy vấn để lượng hóa cải thiện của bộ lọc tiền tố.
 
 Không bổ sung server pagination, index database hoặc thay đổi hợp đồng Show All vì chưa có dữ liệu về kích thước báo cáo và yêu cầu phân trang. Chưa có bộ E2E trình duyệt cho dự án; test giao diện hiện tại dùng Angular TestBed/Vitest.
+
+### Corrugator History (20/10/2026)
+
+- Factory Menu mở `/factory/corrugator-history`, tải trang theo nhu cầu. `GET /api/factory/corrugator-history?date=10%2F19%2F2026` nhận đúng định dạng `MM/dd/yyyy`, trả 400 khi thiếu/sai ngày, áp policy `ActiveUser` và không cache phản hồi.
+- Dùng chung `CorrugatorOnlineDto`, service và repository của Corrugator Online. Repository `GetByDateAsync` lọc tiền tố `yyMMdd` của `coor_no40_corrugated_datetime` theo ngày được chọn, không theo ngày kế hoạch/ngày nhập; sắp theo timestamp, order number và ngày nhập, giữ dòng lặp. Nguồn ngày sáu chữ số được hiểu theo cutoff SQL Server mặc định 2049 như Online; ngày ngoài 1950–2049 trả bảng rỗng để tránh nhầm thế kỷ. Không đổi mapping/schema.
+- Hai trang dùng chung model và định nghĩa 20 cột ở `features/factory/corrugator-report.models.ts` và `corrugator-report-columns.ts`, giữ định dạng ngày trong bảng `MM/dd/yyyy` như report hiện có. Ô tìm kiếm History dùng `mm/dd/yyyy`, kiểm tra ngày thực tế kể cả năm nhuận. Search tải lại dữ liệu, Clear xóa ngày/bảng và hủy request; sửa ngày hoặc rời trang cũng hủy request. Trang có loading/error/empty, phân trang 25/50/100, sắp xếp, kéo giãn cột, cuộn ngang, sao chép Excel và Go Back về Factory Menu.
+- Test kiểm tra ngày được chọn/cancellation, mẫu 40 tấm × 1155 mm / 0,7 phút → AV Speed 66, bộ lọc và thứ tự ngày chạy, chống nhầm thế kỷ, HTTP 401/403/200/400 cùng định dạng ngày. Frontend kiểm tra ô ngày, năm nhuận/ngày sai, 20 cột, Search/Clear/hủy request, lỗi API, phân trang/sắp xếp/dòng lặp và điều hướng menu. EF InMemory và HTTP testing không thay thế kiểm chứng trên SQL Server thật hoặc trình duyệt.
+
+### Converting History (20/10/2026)
+
+- Factory Menu mở `/factory/converting-history`, tải trang theo nhu cầu. `GET /api/factory/converting-history` dùng policy `ActiveUser`, không cache, nhận ba query tùy chọn `date` (`MM/dd/yyyy`), `process` (tối đa sáu ký tự) và `productCode` (một đến bảy chữ số). Ví dụ `?date=10%2F19%2F2026&process=fdc&productCode=1153`. Ngày sai, mã sản phẩm sai định dạng và process quá dài trả 400 trước khi truy vấn.
+- Service chuẩn hóa khoảng trắng và tên process thành chữ hoa; không cố định máy hoặc mặc định về hôm nay. Các điều kiện kết hợp AND, ô trống bỏ qua; cả ba trống trả toàn bộ lịch sử có đủ hai INNER JOIN khách hàng/sản phẩm. Process tìm tiền tố không phân biệt hoa/thường; Product Code tìm tiền tố chuỗi của cột `decimal(7,0)`, giữ mã 0 và không bỏ số 0 đầu tiêu chí. Không diễn giải `%`/`_` thành wildcard nhập từ người dùng. Ngày lọc chính xác theo `cor_no1_date` lưu `yyyyMMdd`.
+- `ConvertingOnlineRepository` dùng chung projection nội bộ cho Online và History, không đưa IQueryable qua interface. History sắp theo `cor_no30_start_time` trước rồi các cột để ổn định thứ tự khi trùng giờ; giữ dòng lặp. Online giữ thứ tự shift/start time đang có. `ConvertingOnlineService` dùng chung phép tính Shortest Qty, format giờ và ROUND thời gian; History bổ sung Date và Machine Name, trả DTO riêng 21 cột. Không đổi API/JSON của Online hoặc mapping/schema.
+- Trang History giữ bảng, formatter, clipboard, phân trang 25/50/100 và Go Back về Factory Menu như các report hiện có. Ba bộ lọc kết hợp, ngày nhập `mm/dd/yyyy`, nút luôn có nhãn Search cạnh nhóm bộ lọc; bỏ trống cả ba rồi nhấn Search để xem toàn bộ. Clear xóa bộ lọc/bảng; sửa bất kỳ tiêu chí nào, Clear hoặc rời trang đều hủy request cũ. Không tự tải toàn bộ khi vừa mở trang. Hàm kiểm tra ngày dùng chung với Corrugator History tại `features/factory/report-date.ts`.
+- Test kiểm tra tám tổ hợp bộ lọc, tìm toàn bộ khi không có tiêu chí, INNER JOIN, tiền tố/mã 0, thứ tự start time trước shift, dòng lặp, mẫu FDC 00:28–00:45 với Driving/Set = 0,5/16,1 phút, cancellation và HTTP 401/403/400/200. Frontend kiểm tra bộ lọc, 21 cột, Search/Clear, lỗi API, hủy request, phân trang/sắp xếp và menu. EF InMemory/HTTP testing không kiểm chứng SQL Server thật hoặc bố cục trình duyệt.
 
 ## Khi thêm tính năng
 

@@ -23,6 +23,7 @@
     } @else {
       <div class="table-scroll">
         <ag-grid-angular
+          reportClipboard
           class="result-grid"
           aria-label="FPS online results"
           [rowData]="report()?.items ?? []"

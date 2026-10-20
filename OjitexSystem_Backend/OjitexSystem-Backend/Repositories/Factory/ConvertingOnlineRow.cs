@@ -2,6 +2,8 @@ namespace OjitexSystem_Backend.Repositories.Factory;
 
 public sealed record ConvertingOnlineRow
 {
+    public string? Date { get; init; }
+    public string? MachineName { get; init; }
     public decimal? Shift { get; init; }
     public decimal? LotNo { get; init; }
     public decimal? OrderNo { get; init; }

@@ -6,5 +6,6 @@
 
 # Local backend configuration (may contain secrets)
 /OjitexSystem_Backend/OjitexSystem-Backend/appsettings.json
+/OjitexSystem_Backend/OjitexSystem-Backend/.local/
 
 /artifacts/iis-staging/

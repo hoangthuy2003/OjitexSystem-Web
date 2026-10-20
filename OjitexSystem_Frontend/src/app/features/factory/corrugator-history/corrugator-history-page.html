@@ -1,0 +1,61 @@
+<main class="page">
+  <section class="result-card" aria-label="Corrugator history results" [attr.aria-busy]="loading()">
+    <form class="table-toolbar" (ngSubmit)="search()">
+      <div class="search-field">
+        <label for="corrugator-date" style="font-weight: bold; font-size: 16px;">Corrugator Date</label>
+        <div class="date-search-controls">
+          <input
+            #dateInput
+            id="corrugator-date"
+            name="corrugatorDate"
+            type="text"
+            maxlength="10"
+            autocomplete="off"
+            [value]="searchDate()"
+            (input)="changeDate(dateInput.value)"
+            [attr.aria-invalid]="invalidDate() ? 'true' : null"
+            [attr.aria-describedby]="invalidDate() ? 'date-format date-error' : 'date-format'"
+          />
+          <button class="refresh-button" type="submit" [disabled]="loading()">Search</button>
+        </div>
+        <span id="date-format">mm/dd/yyyy</span>
+      </div>
+      <h1>CORRUGATOR Online History</h1>
+      <div class="toolbar-actions">
+        <button class="clear-button" type="button" (click)="clear()">Clear</button>
+      </div>
+    </form>
+    @if (loading()) {
+      <p class="message" role="status">Loading Corrugator history…</p>
+    } @else if (error()) {
+      <p id="date-error" class="message error-message" role="alert">{{ error() }}</p>
+    } @else if (!report()) {
+      
+    } @else if (!report()?.items?.length) {
+      <p class="message" role="status">No Corrugator results for {{ searchDate() }}.</p>
+    } @else {
+      <div class="table-scroll">
+        <ag-grid-angular
+          reportClipboard
+          class="result-grid"
+          aria-label="Corrugator history results"
+          [rowData]="report()?.items ?? []"
+          [columnDefs]="columns"
+          [defaultColDef]="defaultColDef"
+          [theme]="gridTheme"
+          [pagination]="true"
+          [paginationPageSize]="50"
+          [paginationPageSizeSelector]="[25, 50, 100]"
+          [enableCellTextSelection]="true"
+          [ensureDomOrder]="true"
+        />
+      </div>
+    }
+    @if (report()) {
+      <div class="history-meta">Date: {{ report()?.refreshedAt | date: 'MM/dd/yyyy h:mm a' }}</div>
+    }
+  </section>
+  <footer class="page-actions">
+    <a class="back-button" routerLink="/department/factory">Go Back</a>
+  </footer>
+</main>
