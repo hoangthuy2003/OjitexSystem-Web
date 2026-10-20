@@ -79,11 +79,12 @@ describe('CorrugatorHistoryPage', () => {
     );
   }
 
-  it('waits for a date and provides the expected input format and Factory back link', () => {
+  it('waits for a date without a placeholder and provides the format hint and Factory back link', () => {
     const fixture = createPage();
     http.expectNone((request) => request.url === endpoint);
-    expect(fixture.nativeElement.querySelector('input').placeholder).toBe('mm/dd/yyyy');
-    expect(fixture.nativeElement.textContent).toContain('Enter a Corrugator date');
+    expect(fixture.nativeElement.querySelector('input').placeholder).toBe('');
+    expect(fixture.nativeElement.querySelector('#date-format').textContent).toBe('mm/dd/yyyy');
+    expect(fixture.nativeElement.querySelector('[role="status"]')).toBeNull();
     expect(fixture.nativeElement.querySelector('.back-button').getAttribute('href')).toBe(
       '/department/factory',
     );
@@ -210,7 +211,7 @@ describe('CorrugatorHistoryPage', () => {
     fixture.detectChanges();
     expect(pending.cancelled).toBe(true);
     expect(fixture.nativeElement.querySelector('input').value).toBe('');
-    expect(fixture.nativeElement.textContent).toContain('Enter a Corrugator date');
+    expect(fixture.nativeElement.querySelector('[role="status"]')).toBeNull();
     enterDate(fixture.nativeElement, '10/19/2026');
     button(fixture.nativeElement, 'Search').click();
     expectSearch().flush(report);

@@ -2,7 +2,9 @@
   <section class="result-card" aria-label="Corrugator history results" [attr.aria-busy]="loading()">
     <form class="table-toolbar" (ngSubmit)="search()">
       <div class="search-field">
-        <label for="corrugator-date" style="font-weight: bold; font-size: 16px;">Corrugator Date</label>
+        <label for="corrugator-date" style="font-weight: bold; font-size: 16px"
+          >Corrugator Date</label
+        >
         <div class="date-search-controls">
           <input
             #dateInput
@@ -30,7 +32,6 @@
     } @else if (error()) {
       <p id="date-error" class="message error-message" role="alert">{{ error() }}</p>
     } @else if (!report()) {
-      
     } @else if (!report()?.items?.length) {
       <p class="message" role="status">No Corrugator results for {{ searchDate() }}.</p>
     } @else {
