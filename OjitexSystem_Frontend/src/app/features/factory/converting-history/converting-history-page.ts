@@ -33,7 +33,7 @@ ModuleRegistry.registerModules([
 
 @Component({
   selector: 'app-converting-history-page',
-  imports: [DatePipe, FormsModule, RouterLink, AgGridAngular, ReportClipboardDirective],
+  imports: [FormsModule, RouterLink, AgGridAngular, ReportClipboardDirective],
   templateUrl: './converting-history-page.html',
   styleUrl: './converting-history-page.scss',
 })
