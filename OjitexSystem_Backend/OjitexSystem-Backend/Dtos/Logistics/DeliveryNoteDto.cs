@@ -1,4 +1,4 @@
-﻿namespace OjitexSystem_Backend.Dtos.Logistics;
+namespace OjitexSystem_Backend.Dtos.Logistics;
 
 public class DeliveryNoteDto
 {
@@ -40,3 +40,36 @@ public class DeliveryNoteDetailDto
     public string? Remark { get; set; }
     public string? OtherNote { get; set; }
 }
+
+public class DeliveryInformationDto
+{
+    public IReadOnlyList<DeliveryInformationItemDto> Items { get; set; } = [];
+}
+
+public class DeliveryInformationItemDto
+{
+    public long Key { get; set; }
+    public int? LineNo { get; set; }
+    public string DeliverySlip { get; set; } = "";
+    public decimal? ReceiveNo { get; set; }
+    public decimal? CustomerCode { get; set; }
+    public string? CustomerName { get; set; }
+    public decimal? ProductCode { get; set; }
+    public string? ProductName { get; set; }
+    public decimal? Quantity { get; set; }
+    public DateOnly? DeliveryDate { get; set; }
+    public string? CustomerPo { get; set; }
+    public string? Remark { get; set; }
+    public string? OtherNote { get; set; }
+    public string? TruckNumber { get; set; }
+    public string? CarType { get; set; }
+    public string? TransportCompany { get; set; }
+    public DateTime? DateInput { get; set; }
+    public string? UserId { get; set; }
+    public string? UserFirstName { get; set; }
+    public string? State { get; set; }
+    public string? Flute { get; set; }
+    public decimal? SheetSqm { get; set; }
+    public decimal? TotalSqm { get; set; }
+}
+

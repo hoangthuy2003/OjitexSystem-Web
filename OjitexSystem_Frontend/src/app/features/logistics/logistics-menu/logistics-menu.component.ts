@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LOGISTICS_PAGES, LogisticsMenuItem, LogisticsMenuPageData } from './logistics-menu.models';
 
 @Component({
@@ -10,9 +10,12 @@ import { LOGISTICS_PAGES, LogisticsMenuItem, LogisticsMenuPageData } from './log
 })
 export class LogisticsMenuComponent {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   readonly pages = LOGISTICS_PAGES;
-  readonly pageIndex = signal<number>(0);
+  readonly pageIndex = signal<number>(
+    this.route.snapshot.queryParamMap.get('page') === 'paper-roll' ? 1 : 0,
+  );
 
   readonly currentPage = computed<LogisticsMenuPageData>(() => this.pages[this.pageIndex()]);
 

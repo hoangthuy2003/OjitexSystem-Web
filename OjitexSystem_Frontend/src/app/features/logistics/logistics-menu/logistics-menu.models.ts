@@ -64,6 +64,7 @@ export const FINISHED_GOODS_MENU_ITEMS: (LogisticsMenuItem | null)[] = [
   {
     title: 'Delivery Note Information',
     lines: ['Delivery Note', 'Information'],
+    route: '/logistic/delivery-note-info',
     actionKey: 'delivery-note-info',
   },
 
@@ -109,13 +110,13 @@ export const FINISHED_GOODS_MENU_ITEMS: (LogisticsMenuItem | null)[] = [
 
 export const LOGISTICS_PAGES: LogisticsMenuPageData[] = [
   {
-    id: 'paper-roll',
-    title: 'LOGISTICS PAPER ROLL MENU',
-    items: PAPER_ROLL_MENU_ITEMS,
-  },
-  {
     id: 'finished-goods',
     title: 'LOGISTICS FINISHED GOODS MENU',
     items: FINISHED_GOODS_MENU_ITEMS,
+  },
+  {
+    id: 'paper-roll',
+    title: 'LOGISTICS PAPER ROLL MENU',
+    items: PAPER_ROLL_MENU_ITEMS,
   },
 ];

@@ -19,18 +19,21 @@ describe('LogisticsMenuComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create and display Page 1 (LOGISTICS PAPER ROLL MENU) initially', () => {
+  it('should create and display Page 1 (LOGISTICS FINISHED GOODS MENU) initially', () => {
     expect(component).toBeTruthy();
     expect(component.pageIndex()).toBe(0);
 
     const titleElement = fixture.nativeElement.querySelector('.page-title');
-    expect(titleElement?.textContent?.trim()).toBe('LOGISTICS PAPER ROLL MENU');
+    expect(titleElement?.textContent?.trim()).toBe('LOGISTICS FINISHED GOODS MENU');
 
     const menuCards = fixture.nativeElement.querySelectorAll('.menu-card');
     expect(menuCards.length).toBe(8);
   });
 
-  it('should render highlighted CONFIRM buttons on Page 1', () => {
+  it('should render highlighted CONFIRM buttons on Page 2', () => {
+    component.pageIndex.set(1);
+    fixture.detectChanges();
+
     const highlightedCards = fixture.nativeElement.querySelectorAll('.menu-card.highlighted');
     expect(highlightedCards.length).toBe(2);
 
@@ -41,14 +44,14 @@ describe('LogisticsMenuComponent', () => {
     expect(texts).toContain('Paper Roll Export CONFIRM');
   });
 
-  it('should switch to Page 2 (LOGISTICS FINISHED GOODS MENU) when clicking Next', () => {
+  it('should switch to Page 2 (LOGISTICS PAPER ROLL MENU) when clicking Next', () => {
     const nextBtn = fixture.nativeElement.querySelector('.nav-btn-next') as HTMLButtonElement;
     nextBtn.click();
     fixture.detectChanges();
 
     expect(component.pageIndex()).toBe(1);
     const titleElement = fixture.nativeElement.querySelector('.page-title');
-    expect(titleElement?.textContent?.trim()).toBe('LOGISTICS FINISHED GOODS MENU');
+    expect(titleElement?.textContent?.trim()).toBe('LOGISTICS PAPER ROLL MENU');
 
     const menuCards = fixture.nativeElement.querySelectorAll('.menu-card');
     expect(menuCards.length).toBe(8);
@@ -64,7 +67,7 @@ describe('LogisticsMenuComponent', () => {
 
     expect(component.pageIndex()).toBe(0);
     const titleElement = fixture.nativeElement.querySelector('.page-title');
-    expect(titleElement?.textContent?.trim()).toBe('LOGISTICS PAPER ROLL MENU');
+    expect(titleElement?.textContent?.trim()).toBe('LOGISTICS FINISHED GOODS MENU');
   });
 
   it('should navigate to /home when clicking Go Back from Page 1', () => {
@@ -90,12 +93,12 @@ describe('LogisticsMenuComponent', () => {
   it('should navigate if a menu card has an assigned route', () => {
     const navigateSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
 
-    const stockCard = fixture.nativeElement.querySelector(
-      '[data-action="stock"]',
+    const searchCard = fixture.nativeElement.querySelector(
+      '[data-action="delivery-note-search"]',
     ) as HTMLButtonElement;
-    expect(stockCard).toBeTruthy();
-    stockCard.click();
+    expect(searchCard).toBeTruthy();
+    searchCard.click();
 
-    expect(navigateSpy).toHaveBeenCalledWith('/logistic/current-stock');
+    expect(navigateSpy).toHaveBeenCalledWith('/logistic/delivery-note-search');
   });
 });
