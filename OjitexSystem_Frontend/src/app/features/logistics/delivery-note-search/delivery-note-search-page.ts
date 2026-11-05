@@ -36,6 +36,11 @@ export class DeliveryNoteSearchPage {
     return this.note?.details.slice(start, start + this.pageSize) ?? [];
   }
 
+  /** Legacy columns may hold blank strings, so trim before falling back to a dash. */
+  text(value: string | null | undefined): string {
+    return value?.trim() || '—';
+  }
+
   goToPage(index: number): void {
     this.pageIndex = Math.min(Math.max(0, index), this.pageCount - 1);
   }

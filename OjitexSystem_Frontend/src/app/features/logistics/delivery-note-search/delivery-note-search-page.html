@@ -40,32 +40,32 @@
             </div>
             <div class="info-field">
               <span class="info-label">State</span>
-              <span class="info-value">{{ data.header.state || '—' }}</span>
+              <span class="info-value">{{ text(data.header.state) }}</span>
             </div>
             <div class="info-field">
               <span class="info-label">Goods Type</span>
-              <span class="info-value">{{ data.header.goodsType || '—' }}</span>
+              <span class="info-value">{{ text(data.header.goodsType) }}</span>
             </div>
             <div class="info-field">
               <span class="info-label">Transport</span>
-              <span class="info-value">{{ data.header.transportCompany || '—' }}</span>
+              <span class="info-value">{{ text(data.header.transportCompany) }}</span>
             </div>
             <div class="info-field">
               <span class="info-label">Truck Number</span>
-              <span class="info-value">{{ data.header.truckNumber || '—' }}</span>
+              <span class="info-value">{{ text(data.header.truckNumber) }}</span>
             </div>
 
             <div class="info-field">
               <span class="info-label">Car Type</span>
-              <span class="info-value">{{ data.header.carType || '—' }}</span>
+              <span class="info-value">{{ text(data.header.carType) }}</span>
             </div>
             <div class="info-field">
               <span class="info-label">Supplier Code</span>
-              <span class="info-value">{{ data.header.supplierCode || '—' }}</span>
+              <span class="info-value">{{ text(data.header.supplierCode) }}</span>
             </div>
             <div class="info-field">
               <span class="info-label">User Input</span>
-              <span class="info-value">{{ data.header.userFirstName || '—' }}</span>
+              <span class="info-value">{{ text(data.header.userFirstName) }}</span>
             </div>
             <div class="info-field">
               <span class="info-label">Date Input</span>
@@ -81,17 +81,17 @@
             </div>
             <div class="info-field note-field">
               <span class="info-label">Note</span>
-              <span class="info-value">{{ data.header.note || '—' }}</span>
+              <span class="info-value">{{ text(data.header.note) }}</span>
             </div>
             <div class="info-field half">
               <span class="info-label">Customer</span>
               <span class="info-value"
-                >{{ data.header.customerCode ?? '' }} {{ data.header.customerName || '—' }}</span
+                >{{ data.header.customerCode ?? '' }} {{ text(data.header.customerName) }}</span
               >
             </div>
             <div class="info-field half">
               <span class="info-label">Address</span>
-              <span class="info-value">{{ data.header.deliveryAddress || '—' }}</span>
+              <span class="info-value">{{ text(data.header.deliveryAddress) }}</span>
             </div>
           </div>
         </section>
@@ -117,14 +117,14 @@
                 <td data-label="Receive No">{{ detail.receiveNo ?? '—' }}</td>
                 <td data-label="Product Code">{{ detail.productCode ?? '—' }}</td>
                 <td data-label="Product Name" class="name-cell">
-                  {{ detail.productName || '—' }}
+                  {{ text(detail.productName) }}
                 </td>
                 <td data-label="Quantity">
                   {{ (detail.quantity | number) ?? '—' }}
                 </td>
-                <td data-label="PO">{{ detail.customerPo || '—' }}</td>
-                <td data-label="Remark">{{ detail.remark || '—' }}</td>
-                <td data-label="Logistics Note">{{ detail.otherNote || '—' }}</td>
+                <td data-label="PO">{{ text(detail.customerPo) }}</td>
+                <td data-label="Remark">{{ text(detail.remark) }}</td>
+                <td data-label="Logistics Note">{{ text(detail.otherNote) }}</td>
               </tr>
             } @empty {
               <tr class="empty-row">
