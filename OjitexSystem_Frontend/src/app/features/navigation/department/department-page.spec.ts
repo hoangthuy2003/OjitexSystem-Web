@@ -61,7 +61,12 @@ describe('Logistics menu', () => {
         provideRouter([]),
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { paramMap: convertToParamMap({ departmentId: 'logistics' }) } },
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap({ departmentId: 'logistics' }),
+              queryParamMap: convertToParamMap({}),
+            },
+          },
         },
       ],
     });
@@ -72,6 +77,6 @@ describe('Logistics menu', () => {
     expect(logisticsMenu).toBeTruthy();
 
     const titleElement = fixture.nativeElement.querySelector('.page-title');
-    expect(titleElement?.textContent?.trim()).toBe('LOGISTICS PAPER ROLL MENU');
+    expect(titleElement?.textContent?.trim()).toBe('LOGISTICS FINISHED GOODS MENU');
   });
 });

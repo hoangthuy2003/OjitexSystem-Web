@@ -7,7 +7,7 @@ export interface LogisticsMenuItem {
 }
 
 export interface LogisticsMenuPageData {
-  id: 'paper-roll' | 'finished-goods';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+  id: 'paper-roll' | 'finished-goods';
   title: string;
   items: (LogisticsMenuItem | null)[];
 }

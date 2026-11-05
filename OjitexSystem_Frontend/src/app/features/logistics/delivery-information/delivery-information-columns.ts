@@ -145,4 +145,3 @@ export const DELIVERY_INFORMATION_COLUMN_DEFS: ColDef<DeliveryInformationItem>[]
     minWidth: 92,
   },
 ];
-

@@ -14,7 +14,7 @@ export class LogisticsMenuComponent {
 
   readonly pages = LOGISTICS_PAGES;
   readonly pageIndex = signal<number>(
-    this.route.snapshot.queryParamMap.get('page') === 'paper-roll' ? 1 : 0,
+    this.route.snapshot.queryParamMap?.get('page') === 'paper-roll' ? 1 : 0,
   );
 
   readonly currentPage = computed<LogisticsMenuPageData>(() => this.pages[this.pageIndex()]);

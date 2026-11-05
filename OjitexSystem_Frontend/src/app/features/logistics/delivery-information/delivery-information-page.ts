@@ -158,4 +158,3 @@ export class DeliveryInformationPage {
     this.loading.set(false);
   }
 }
-
