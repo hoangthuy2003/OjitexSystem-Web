@@ -1,4 +1,4 @@
-<header class="page-heading">
+                          <header class="page-heading">
   <h1 class="page-title">{{ currentPage().title }}</h1>
 </header>
 
@@ -10,15 +10,17 @@
         [class.highlighted]="item.isHighlighted"
         [attr.data-action]="item.actionKey"
         type="button"
-        (click)="onMenuItemClick(item)"
+        (click)="onMenuItemClick(item)" 
       >
         {{ item.lines.join(' ') }}
       </button>
     }
-  }
+  }                                                                         
 </div>
 
 <div class="menu-nav-actions" aria-label="Page navigation">
+  
+
   <button class="nav-button nav-btn-back" type="button" (click)="onGoBack()">Go Back</button>
   @if (hasNextPage()) {
     <button class="nav-button nav-btn-next" type="button" (click)="onNextPage()">Next</button>

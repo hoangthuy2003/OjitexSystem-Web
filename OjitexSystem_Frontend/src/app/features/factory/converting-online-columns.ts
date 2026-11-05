@@ -1,4 +1,4 @@
-import { ColDef } from 'ag-grid-community';
+                                                                                                                                                                                                                                                    import { ColDef } from 'ag-grid-community';
 import { ConvertingOnlineItem } from './converting-online.models';
 
 interface ConvertingColumn {
@@ -25,7 +25,7 @@ export const CONVERTING_COLUMNS: readonly ConvertingColumn[] = [
   { field: 'shortestQty', label: 'Shortest Qty', minWidth: 76 },
   { field: 'startTime', label: 'Start Time', minWidth: 70 },
   { field: 'finishTime', label: 'Finish Time', minWidth: 70 },
-  { field: 'drivingMinutes', label: 'Driving Time (Minutes)', minWidth: 88 },
+  { field: 'drivingMinutes', label: 'Driving Time (Minutes)', minWidth: 88 },                                                                                                       
   { field: 'setMinutes', label: 'Set Time (Minutes)', minWidth: 88 },
   { field: 'stopMinutes', label: 'Stop Time (Minutes)', minWidth: 88 },
   { field: 'restMinutes', label: 'Rest Time (Minutes)', minWidth: 88 },

@@ -13,6 +13,14 @@ export const logisticsRoutes: Routes = [
       import('./stock-report/stock-report-page').then((module) => module.StockReportPage),
   })),
   {
+    path: 'logistic/delivery-note-search',
+    canActivate: [logisticsAccessGuard],
+    loadComponent: () =>
+      import('./delivery-note-search/delivery-note-search-page').then(
+        (module) => module.DeliveryNoteSearchPage,
+      ),
+  },
+  {
     path: 'logistic/menu',
     canActivate: [logisticsAccessGuard],
     loadComponent: () =>

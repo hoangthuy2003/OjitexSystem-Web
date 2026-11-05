@@ -7,7 +7,7 @@ export interface LogisticsMenuItem {
 }
 
 export interface LogisticsMenuPageData {
-  id: 'paper-roll' | 'finished-goods';
+  id: 'paper-roll' | 'finished-goods';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
   title: string;
   items: (LogisticsMenuItem | null)[];
 }
@@ -70,6 +70,7 @@ export const FINISHED_GOODS_MENU_ITEMS: (LogisticsMenuItem | null)[] = [
   {
     title: 'Delivery Note Search',
     lines: ['Delivery Note', 'Search'],
+    route: '/logistic/delivery-note-search',
     actionKey: 'delivery-note-search',
   },
   {
