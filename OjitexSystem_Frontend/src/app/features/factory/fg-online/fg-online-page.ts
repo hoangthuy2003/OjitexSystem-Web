@@ -38,6 +38,7 @@ export class FgOnlinePage {
   protected readonly columns = FG_COLUMN_DEFS;
   protected readonly defaultColDef = FG_DEFAULT_COLUMN;
   protected readonly gridTheme = themeQuartz.withParams({
+    wrapperBorderRadius: 0,
     fontSize: 13,
     cellHorizontalPadding: 8,
     rowHeight: 32,

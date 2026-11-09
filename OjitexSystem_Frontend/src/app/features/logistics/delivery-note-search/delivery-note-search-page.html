@@ -1,0 +1,163 @@
+<main class="page">
+  <section class="result-card" aria-label="Delivery note search" [attr.aria-busy]="loading">
+    <form class="note-toolbar" (ngSubmit)="search()">
+      <div class="note-filter">
+        <div class="filter-field">
+          <label for="delivery-slip">Delivery Slip</label>
+          <input
+            id="delivery-slip"
+            name="deliverySlip"
+            type="text"
+            maxlength="30"
+            autocomplete="off"
+            enterkeyhint="search"
+            [(ngModel)]="deliverySlip"
+          />
+        </div>
+        <button class="refresh-button" type="submit" [disabled]="loading">Search</button>
+      </div>
+      <h1>LOGISTICS DELIVERY NOTE SEARCH</h1>
+      <button class="clear-button" type="button" (click)="clear()">Clear</button>
+    </form>
+
+    <div class="note-body">
+      @if (loading) {
+        <p class="message" role="status">Loading delivery note…</p>
+      } @else if (errorMessage) {
+        <p class="message error-message" role="alert">{{ errorMessage }}</p>
+      } @else if (note; as data) {
+        <section class="info-panel" aria-label="Delivery note header">
+          <div class="info-grid">
+            <div class="info-field">
+              <span class="info-label">Delivery Slip</span>
+              <strong class="info-value slip-value">{{ data.header.deliverySlip }}</strong>
+            </div>
+            <div class="info-field">
+              <span class="info-label">Delivery Date</span>
+              <span class="info-value">{{
+                (data.header.deliveryDate | date: 'M/d/yyyy') || '—'
+              }}</span>
+            </div>
+            <div class="info-field">
+              <span class="info-label">State</span>
+              <span class="info-value">{{ text(data.header.state) }}</span>
+            </div>
+            <div class="info-field">
+              <span class="info-label">Goods Type</span>
+              <span class="info-value">{{ text(data.header.goodsType) }}</span>
+            </div>
+            <div class="info-field">
+              <span class="info-label">Transport</span>
+              <span class="info-value">{{ text(data.header.transportCompany) }}</span>
+            </div>
+            <div class="info-field">
+              <span class="info-label">Truck Number</span>
+              <span class="info-value">{{ text(data.header.truckNumber) }}</span>
+            </div>
+
+            <div class="info-field">
+              <span class="info-label">Car Type</span>
+              <span class="info-value">{{ text(data.header.carType) }}</span>
+            </div>
+            <div class="info-field">
+              <span class="info-label">Supplier Code</span>
+              <span class="info-value">{{ text(data.header.supplierCode) }}</span>
+            </div>
+            <div class="info-field">
+              <span class="info-label">User Input</span>
+              <span class="info-value">{{ text(data.header.userFirstName) }}</span>
+            </div>
+            <div class="info-field">
+              <span class="info-label">Date Input</span>
+              <span class="info-value">{{
+                (data.header.dateInput | date: 'M/d/yyyy HH:mm') || '—'
+              }}</span>
+            </div>
+            <div class="info-field">
+              <span class="info-label">Last Update</span>
+              <span class="info-value">{{
+                (data.header.dateChange | date: 'M/d/yyyy HH:mm') || '—'
+              }}</span>
+            </div>
+            <div class="info-field note-field">
+              <span class="info-label">Note</span>
+              <span class="info-value">{{ text(data.header.note) }}</span>
+            </div>
+            <div class="info-field half">
+              <span class="info-label">Customer</span>
+              <span class="info-value"
+                >{{ data.header.customerCode ?? '' }} {{ text(data.header.customerName) }}</span
+              >
+            </div>
+            <div class="info-field half">
+              <span class="info-label">Address</span>
+              <span class="info-value">{{ text(data.header.deliveryAddress) }}</span>
+            </div>
+          </div>
+        </section>
+
+        <p class="detail-count">{{ data.details.length }} line(s)</p>
+        <table class="detail-table">
+          <thead>
+            <tr>
+              <th>Line No</th>
+              <th>Receive No</th>
+              <th>Product Code</th>
+              <th>Product Name</th>
+              <th>Quantity</th>
+              <th>PO</th>
+              <th>Remark</th>
+              <th>Logistics Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (detail of pagedDetails; track detail.key) {
+              <tr>
+                <td data-label="Line No">{{ detail.lineNo ?? '—' }}</td>
+                <td data-label="Receive No">{{ detail.receiveNo ?? '—' }}</td>
+                <td data-label="Product Code">{{ detail.productCode ?? '—' }}</td>
+                <td data-label="Product Name" class="name-cell">
+                  {{ text(detail.productName) }}
+                </td>
+                <td data-label="Quantity">
+                  {{ (detail.quantity | number) ?? '—' }}
+                </td>
+                <td data-label="PO">{{ text(detail.customerPo) }}</td>
+                <td data-label="Remark">{{ text(detail.remark) }}</td>
+                <td data-label="Logistics Note">{{ text(detail.otherNote) }}</td>
+              </tr>
+            } @empty {
+              <tr class="empty-row">
+                <td colspan="8" class="message">This delivery note has no detail lines.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        @if (pageCount > 1) {
+          <nav class="pager" aria-label="Detail pages">
+            <button
+              class="refresh-button"
+              type="button"
+              (click)="goToPage(pageIndex - 1)"
+              [disabled]="pageIndex === 0"
+            >
+              Previous
+            </button>
+            <span>Page {{ pageIndex + 1 }} / {{ pageCount }}</span>
+            <button
+              class="refresh-button"
+              type="button"
+              (click)="goToPage(pageIndex + 1)"
+              [disabled]="pageIndex >= pageCount - 1"
+            >
+              Next
+            </button>
+          </nav>
+        }
+      }
+    </div>
+  </section>
+  <footer class="page-actions">
+    <a class="back-button" routerLink="/department/logistics">Go Back</a>
+  </footer>
+</main>

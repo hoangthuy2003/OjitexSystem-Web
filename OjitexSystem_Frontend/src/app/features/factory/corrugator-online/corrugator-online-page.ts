@@ -32,6 +32,7 @@ export class CorrugatorOnlinePage {
   protected readonly columns = CORRUGATOR_COLUMN_DEFS;
   protected readonly defaultColDef = CORRUGATOR_DEFAULT_COLUMN;
   protected readonly gridTheme = themeQuartz.withParams({
+    wrapperBorderRadius: 0,
     fontSize: 13,
     cellHorizontalPadding: 8,
     rowHeight: 32,

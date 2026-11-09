@@ -52,3 +52,31 @@ describe('Factory menu', () => {
     expect(navigate).toHaveBeenCalledWith('/factory/fps-online');
   });
 });
+
+describe('Logistics menu', () => {
+  it('renders logistics menu component when navigating to logistics department', () => {
+    TestBed.configureTestingModule({
+      imports: [DepartmentPage],
+      providers: [
+        provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap({ departmentId: 'logistics' }),
+              queryParamMap: convertToParamMap({}),
+            },
+          },
+        },
+      ],
+    });
+    const fixture = TestBed.createComponent(DepartmentPage);
+    fixture.detectChanges();
+
+    const logisticsMenu = fixture.nativeElement.querySelector('app-logistics-menu');
+    expect(logisticsMenu).toBeTruthy();
+
+    const titleElement = fixture.nativeElement.querySelector('.page-title');
+    expect(titleElement?.textContent?.trim()).toBe('LOGISTICS FINISHED GOODS MENU');
+  });
+});

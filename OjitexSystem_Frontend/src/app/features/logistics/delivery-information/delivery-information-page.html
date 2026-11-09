@@ -1,0 +1,112 @@
+<main class="page">
+  <section
+    class="result-card"
+    aria-label="Delivery information results"
+    [attr.aria-busy]="loading()"
+  >
+    <form class="info-toolbar" (ngSubmit)="search()">
+      <div class="info-filters">
+        <div class="filter-field">
+          <label for="info-delivery-slip">Delivery Slip</label>
+          <input
+            #slipInput
+            id="info-delivery-slip"
+            name="deliverySlip"
+            type="text"
+            maxlength="30"
+            autocomplete="off"
+            [value]="filters().deliverySlip"
+            (input)="changeFilter('deliverySlip', slipInput.value)"
+            [attr.aria-invalid]="invalidField() === 'deliverySlip' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'deliverySlip' ? 'search-error' : null"
+          />
+        </div>
+        <div class="filter-field">
+          <label for="info-customer-code">Customer Code</label>
+          <input
+            #cusInput
+            id="info-customer-code"
+            name="customerCode"
+            type="text"
+            inputmode="numeric"
+            maxlength="3"
+            autocomplete="off"
+            [value]="filters().customerCode"
+            (input)="changeFilter('customerCode', cusInput.value)"
+            [attr.aria-invalid]="invalidField() === 'customerCode' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'customerCode' ? 'search-error' : null"
+          />
+        </div>
+        <div class="filter-field">
+          <label for="info-product-code">Product Code</label>
+          <input
+            #productInput
+            id="info-product-code"
+            name="productCode"
+            type="text"
+            inputmode="numeric"
+            maxlength="7"
+            autocomplete="off"
+            [value]="filters().productCode"
+            (input)="changeFilter('productCode', productInput.value)"
+            [attr.aria-invalid]="invalidField() === 'productCode' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'productCode' ? 'search-error' : null"
+          />
+        </div>
+        <div class="filter-field">
+          <label for="info-delivery-date">Delivery Date</label>
+          <input
+            #dateInput
+            id="info-delivery-date"
+            name="deliveryDate"
+            type="text"
+            maxlength="10"
+            placeholder="mm/dd/yyyy"
+            autocomplete="off"
+            [value]="filters().deliveryDate"
+            (input)="changeFilter('deliveryDate', dateInput.value)"
+            [attr.aria-invalid]="invalidField() === 'deliveryDate' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'deliveryDate' ? 'search-error' : null"
+          />
+        </div>
+        <button class="refresh-button" type="submit" [disabled]="loading()">Search</button>
+      </div>
+      <h1>DELIVERY INFORMATION</h1>
+      <div class="toolbar-actions">
+        <button class="refresh-button" type="button" (click)="showAll()" [disabled]="loading()">
+          Show All
+        </button>
+        <button class="clear-button" type="button" (click)="clear()">Clear</button>
+      </div>
+    </form>
+
+    @if (loading()) {
+      <p class="message" role="status">Loading Delivery Information…</p>
+    } @else if (error()) {
+      <p id="search-error" class="message error-message" role="alert">{{ error() }}</p>
+    } @else if (!report()) {
+    } @else if (!report()?.items?.length) {
+      <p class="message" role="status">No matching delivery information found.</p>
+    } @else {
+      <div class="table-scroll">
+        <ag-grid-angular
+          reportClipboard
+          class="result-grid"
+          aria-label="Delivery information results"
+          [rowData]="report()?.items ?? []"
+          [columnDefs]="columns"
+          [defaultColDef]="defaultColDef"
+          [theme]="gridTheme"
+          [pagination]="true"
+          [paginationPageSize]="50"
+          [paginationPageSizeSelector]="[25, 50, 100]"
+          [enableCellTextSelection]="true"
+          [ensureDomOrder]="true"
+        />
+      </div>
+    }
+  </section>
+  <footer class="page-actions">
+    <a class="back-button" routerLink="/department/logistics">Go Back</a>
+  </footer>
+</main>

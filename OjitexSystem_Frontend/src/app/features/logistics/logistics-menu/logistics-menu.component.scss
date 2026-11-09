@@ -1,0 +1,113 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.page-heading {
+  margin-bottom: 28px;
+}
+
+.page-title {
+  margin: 0;
+  color: #1f5366;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(27px, 4vw, 36px);
+}
+
+.logistics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.report-card {
+  display: flex;
+  min-height: 88px;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  border: 2px solid #367b8d;
+  border-radius: 15px;
+  background: #fff;
+  color: #28697e;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(14px, 1.5vw, 19px);
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease,
+    transform 140ms ease;
+}
+
+.report-card:hover,
+.report-card:focus-visible {
+  background: #286f84;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.report-card.highlighted {
+  background: #ffff00;
+  color: #000;
+
+  &:hover,
+  &:focus-visible {
+    background: #ffe600;
+    color: #000;
+  }
+}
+
+.menu-nav-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 24px;
+  margin-bottom: clamp(8px, 5vh, 42px);
+}
+
+.nav-button {
+  display: inline-flex;
+  min-width: 80px;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border: 2px solid #367b8d;
+  border-radius: 0 4px 0 4px;
+  background: #fff;
+  color: #28697e;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.nav-button:hover,
+.nav-button:focus-visible {
+  background: #286f84;
+  color: #fff;
+}
+
+@media (max-width: 520px) {
+  .logistics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .report-card {
+    min-height: 72px;
+    padding: 10px;
+    border-radius: 12px;
+  }
+}

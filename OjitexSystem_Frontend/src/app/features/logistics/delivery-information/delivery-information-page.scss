@@ -1,0 +1,149 @@
+@use '../../factory/online-report';
+
+.info-toolbar {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
+  align-items: center;
+  gap: 10px 24px;
+  min-height: 64px;
+  padding: 8px 16px;
+  border-bottom: 1px solid #e4e7ec;
+  color: #475467;
+  font-size: 13px;
+}
+
+.info-toolbar h1 {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.info-filters {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px 12px;
+  min-width: 0;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filter-field label {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.filter-field input {
+  box-sizing: border-box;
+  width: 112px;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid #d0d5dd;
+  border-radius: 7px;
+  color: #344054;
+  font: inherit;
+}
+
+.filter-field input[name='customerCode'] {
+  width: 96px;
+}
+
+.filter-field input[name='productCode'],
+.filter-field input[name='deliveryDate'] {
+  width: 120px;
+}
+
+.filter-field input[aria-invalid='true'] {
+  border-color: #b42318;
+}
+
+.info-toolbar .refresh-button,
+.info-toolbar .clear-button {
+  box-sizing: border-box;
+  min-height: 32px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+.info-toolbar .refresh-button {
+  min-width: 76px;
+}
+
+.info-toolbar .toolbar-actions {
+  grid-column: 3;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 8px;
+}
+
+@media (max-width: 1250px) {
+  .info-toolbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 16px;
+  }
+
+  .info-toolbar h1 {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    white-space: normal;
+  }
+
+  .info-filters {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .info-toolbar .toolbar-actions {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: end;
+  }
+}
+
+@media (max-width: 640px) {
+  .info-toolbar {
+    grid-template-columns: 1fr;
+    padding: 8px 12px;
+    gap: 10px;
+  }
+
+  .info-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 10px;
+  }
+
+  .filter-field input,
+  .filter-field input[name='customerCode'],
+  .filter-field input[name='productCode'],
+  .filter-field input[name='deliveryDate'] {
+    width: 100%;
+  }
+
+  .info-filters .refresh-button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .info-toolbar .toolbar-actions {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: stretch;
+  }
+
+  .info-toolbar .toolbar-actions button {
+    flex: 1;
+  }
+}

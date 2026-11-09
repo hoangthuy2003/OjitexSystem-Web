@@ -99,9 +99,7 @@ describe('ConvertingHistoryPage', () => {
     expect(fixture.nativeElement.querySelector('[type="submit"]').textContent.trim()).toBe(
       'Search',
     );
-    expect(fixture.nativeElement.querySelector('input[name="date"]').placeholder).toBe(
-      'mm/dd/yyyy',
-    );
+    expect(fixture.nativeElement.querySelector('input[name="date"]').placeholder).toBe('');
     expect(fixture.nativeElement.querySelector('.back-button').getAttribute('href')).toBe(
       '/department/factory',
     );
