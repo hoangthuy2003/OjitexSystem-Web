@@ -29,6 +29,22 @@ export const logisticsRoutes: Routes = [
       ),
   },
   {
+    path: 'logistic/goods-receipt-search',
+    canActivate: [logisticsAccessGuard],
+    loadComponent: () =>
+      import('./goods-receipt-search/goods-receipt-search-page').then(
+        (module) => module.GoodsReceiptSearchPage,
+      ),
+  },
+  {
+    path: 'logistic/delivery-note-monthly',
+    canActivate: [logisticsAccessGuard],
+    loadComponent: () =>
+      import('./delivery-note-monthly/delivery-note-monthly-page').then(
+        (module) => module.DeliveryNoteMonthlyPage,
+      ),
+  },
+  {
     path: 'logistic/menu',
     canActivate: [logisticsAccessGuard],
     loadComponent: () =>

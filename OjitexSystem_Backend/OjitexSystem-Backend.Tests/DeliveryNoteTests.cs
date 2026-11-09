@@ -138,4 +138,81 @@ public sealed class DeliveryNoteTests
         var single = Assert.Single(byDate.Items);
         Assert.Equal("71123", single.DeliverySlip);
     }
+
+    [Fact]
+    public async Task MonthlyFiltersByDateRangeSlipCustomerProductAndResolvesStatusAndUser()
+    {
+        using var auth = new AuthTestFixture();
+        auth.AddUser("alice");
+        using var context = NewContext();
+
+        context.TLogiDeliveryNotes.AddRange(
+            new TLogiDeliveryNote
+            {
+                DnKey = 1,
+                DnDeliverySlip = "71343",
+                DnCusCd = 134m,
+                DnCusNa = "SONIC APPLIANCES",
+                DnSupCd = "SUP1",
+                DnDateDelivery = new DateOnly(2026, 11, 9),
+                DnDateInput = new DateTime(2026, 11, 7, 16, 6, 0),
+                DnUserId = "alice",
+                DnStatus = "Done",
+                DnState = "Updated",
+                DnTruckNumber = "29E61740",
+                DnCarType = "8",
+                DnTransportCompany = "NKV"
+            },
+            new TLogiDeliveryNote
+            {
+                DnKey = 2,
+                DnDeliverySlip = "71344",
+                DnCusCd = 134m,
+                DnDateDelivery = new DateOnly(2026, 10, 25), // out of range
+                DnUserId = "alice"
+            });
+
+        context.TLogiDeliveryNoteDetails.AddRange(
+            new TLogiDeliveryNoteDetail
+            {
+                DndKey = 1,
+                DndDeliverySlip = "71343",
+                DndLineNo = 1,
+                DndReceiveNo = 0m,
+                DndProCd = 1340040m,
+                DndProName = "016-8DV00 CORNER P",
+                DndQty = 2800m,
+                DndCsPo = "5700318761-110",
+                DndRemark = "6H",
+                DndOtherNote = "3 PL 1400*1600"
+            },
+            new TLogiDeliveryNoteDetail
+            {
+                DndKey = 2,
+                DndDeliverySlip = "71343",
+                DndLineNo = 2,
+                DndReceiveNo = 0m,
+                DndProCd = 1340150m,
+                DndProName = "01C41C5-0C5 Protectio",
+                DndQty = 420m,
+                DndCsPo = "5700318761-20",
+                DndRemark = "6H",
+                DndOtherNote = "2 PL 850*850"
+            });
+        await context.SaveChangesAsync();
+
+        var service = new DeliveryNoteService(new DeliveryNoteRepository(context), auth.Users);
+
+        var report = await service.GetMonthlyAsync(
+            "71343", "134", "1340040",
+            new DateOnly(2026, 11, 1), new DateOnly(2026, 11, 9));
+
+        Assert.Single(report.Items);
+        var item = report.Items[0];
+        Assert.Equal("71343", item.DeliverySlip);
+        Assert.Equal("Done", item.Status);
+        Assert.Equal("Alice", item.UserFirstName);
+        Assert.Equal("SONIC APPLIANCES", item.CustomerName);
+        Assert.Equal(2800m, item.Quantity);
+    }
 }

@@ -54,6 +54,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IStockReportRepository, StockReportRepository>();
         services.AddScoped<IDeliveryNoteRepository, DeliveryNoteRepository>();
+        services.AddScoped<IGoodsReceiptRepository, GoodsReceiptRepository>();
         services.AddScoped<ICorrugatorOnlineRepository, CorrugatorOnlineRepository>();
         services.AddScoped<IConvertingOnlineRepository, ConvertingOnlineRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
@@ -67,6 +68,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IStockReportService, StockReportService>();
         services.AddScoped<IDeliveryNoteService, DeliveryNoteService>();
+        services.AddScoped<IGoodsReceiptService, GoodsReceiptService>();
         services.AddScoped<ICorrugatorOnlineService, CorrugatorOnlineService>();
         services.AddScoped<IConvertingOnlineService, ConvertingOnlineService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();

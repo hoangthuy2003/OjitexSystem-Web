@@ -77,11 +77,13 @@ export const FINISHED_GOODS_MENU_ITEMS: (LogisticsMenuItem | null)[] = [
   {
     title: 'Goods Receipt Search',
     lines: ['Goods Receipt', 'Search'],
+    route: '/logistic/goods-receipt-search',
     actionKey: 'goods-receipt-search',
   },
   {
     title: 'Delivery Note Monthly',
     lines: ['Delivery Note', 'Monthly'],
+    route: '/logistic/delivery-note-monthly',
     actionKey: 'delivery-note-monthly',
   },
 

@@ -7,6 +7,10 @@ import {
   DeliveryInformationReport,
   DeliveryNote,
 } from './delivery-note-search.models';
+import {
+  DeliveryMonthlyFilters,
+  DeliveryMonthlyReport,
+} from '../delivery-note-monthly/delivery-note-monthly.models';
 
 @Injectable({ providedIn: 'root' })
 export class DeliveryNoteService {
@@ -27,6 +31,19 @@ export class DeliveryNoteService {
 
     return this.http
       .get<DeliveryInformationReport>('/api/DeliveryNote/information', { params })
+      .pipe(timeout({ first: API_REQUEST_TIMEOUT_MS }));
+  }
+
+  getMonthly(filters: DeliveryMonthlyFilters): Observable<DeliveryMonthlyReport> {
+    let params = new HttpParams();
+    if (filters.deliverySlip) params = params.set('deliverySlip', filters.deliverySlip);
+    if (filters.customerCode) params = params.set('customerCode', filters.customerCode);
+    if (filters.productCode) params = params.set('productCode', filters.productCode);
+    if (filters.fromDate) params = params.set('fromDate', filters.fromDate);
+    if (filters.toDate) params = params.set('toDate', filters.toDate);
+
+    return this.http
+      .get<DeliveryMonthlyReport>('/api/DeliveryNote/monthly', { params })
       .pipe(timeout({ first: API_REQUEST_TIMEOUT_MS }));
   }
 }
