@@ -92,6 +92,16 @@
   gap: 8px;
 }
 
+:host ::ng-deep .result-grid .ag-header-cell-label {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+:host ::ng-deep .result-grid .ag-cell {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
 @media (max-width: 1320px) {
   .monthly-toolbar {
     grid-template-columns: minmax(0, 1fr) auto;

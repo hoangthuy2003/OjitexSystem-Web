@@ -19,7 +19,6 @@ export const DELIVERY_MONTHLY_DEFAULT_COLUMN: ColDef<DeliveryMonthlyItem> = {
   minWidth: 70,
   resizable: true,
   sortable: true,
-  headerClass: 'center-header',
   wrapHeaderText: true,
   autoHeaderHeight: true,
   cellStyle: { textAlign: 'left' },
