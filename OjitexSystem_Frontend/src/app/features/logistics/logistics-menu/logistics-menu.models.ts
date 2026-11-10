@@ -109,6 +109,7 @@ export const FINISHED_GOODS_MENU_ITEMS: (LogisticsMenuItem | null)[] = [
   {
     title: 'Delivery Note Status',
     lines: ['Delivery Note', 'Status'],
+    route: '/logistic/delivery-note-status',
     actionKey: 'delivery-note-status',
   },
 ];

@@ -104,3 +104,21 @@ public class DeliveryMonthlyItemDto
     public string? State { get; set; }
 }
 
+public class DeliveryStatusReportDto
+{
+    public IReadOnlyList<DeliveryStatusItemDto> Items { get; set; } = [];
+}
+
+public class DeliveryStatusItemDto
+{
+    public int Key { get; set; }
+    public decimal? CustomerCode { get; set; }
+    public string? CustomerName { get; set; }
+    public DateOnly? DeliveryDate { get; set; }
+    public string? TransportSupplier { get; set; }
+    public string? TruckNumber { get; set; }
+    public string DeliverySlip { get; set; } = "";
+    public string? Status { get; set; }
+    public string? Remark { get; set; }
+}
+

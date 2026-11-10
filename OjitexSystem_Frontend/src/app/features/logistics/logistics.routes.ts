@@ -69,6 +69,14 @@ export const logisticsRoutes: Routes = [
       ),
   },
   {
+    path: 'logistic/delivery-note-status',
+    canActivate: [logisticsAccessGuard],
+    loadComponent: () =>
+      import('./delivery-note-status/delivery-note-status-page').then(
+        (module) => module.DeliveryNoteStatusPage,
+      ),
+  },
+  {
     path: 'logistic/menu',
     canActivate: [logisticsAccessGuard],
     loadComponent: () =>

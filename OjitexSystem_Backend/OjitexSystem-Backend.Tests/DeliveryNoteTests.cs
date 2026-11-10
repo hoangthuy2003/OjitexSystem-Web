@@ -215,4 +215,64 @@ public sealed class DeliveryNoteTests
         Assert.Equal("SONIC APPLIANCES", item.CustomerName);
         Assert.Equal(2800m, item.Quantity);
     }
+
+    [Fact]
+    public async Task GetStatusFiltersByDateRangeAndOrdersByDeliveryDateDesc()
+    {
+        using var auth = new AuthTestFixture();
+        using var context = NewContext();
+        context.TLogiDeliveryNotes.AddRange(
+            new TLogiDeliveryNote
+            {
+                DnKey = 1,
+                DnDeliverySlip = "SLIP-01",
+                DnCusCd = 101m,
+                DnCusNa = "Customer A",
+                DnDateDelivery = new DateOnly(2026, 11, 4),
+                DnTransportCompany = "Transport Co A",
+                DnTruckNumber = "29C-12345",
+                DnStatus = "Delivered",
+                DnStatusRemark = "On time"
+            },
+            new TLogiDeliveryNote
+            {
+                DnKey = 2,
+                DnDeliverySlip = "SLIP-02",
+                DnCusCd = 102m,
+                DnCusNa = "Customer B",
+                DnDateDelivery = new DateOnly(2026, 11, 8),
+                DnTransportCompany = "Transport Co B",
+                DnTruckNumber = "29C-67890",
+                DnStatus = "Pending",
+                DnStatusRemark = "Delayed"
+            },
+            new TLogiDeliveryNote
+            {
+                DnKey = 3,
+                DnDeliverySlip = "SLIP-03",
+                DnCusCd = 103m,
+                DnCusNa = "Customer C",
+                DnDateDelivery = new DateOnly(2026, 10, 20),
+                DnStatus = "Old"
+            });
+        await context.SaveChangesAsync();
+
+        var service = new DeliveryNoteService(new DeliveryNoteRepository(context), auth.Users);
+
+        var report = await service.GetStatusAsync(
+            new DateOnly(2026, 11, 1),
+            new DateOnly(2026, 11, 10));
+
+        Assert.Equal(2, report.Items.Count);
+        // Ordered by DnDateDelivery DESC
+        Assert.Equal("SLIP-02", report.Items[0].DeliverySlip);
+        Assert.Equal(new DateOnly(2026, 11, 8), report.Items[0].DeliveryDate);
+        Assert.Equal("Pending", report.Items[0].Status);
+        Assert.Equal("Delayed", report.Items[0].Remark);
+        Assert.Equal("Customer B", report.Items[0].CustomerName);
+
+        Assert.Equal("SLIP-01", report.Items[1].DeliverySlip);
+        Assert.Equal(new DateOnly(2026, 11, 4), report.Items[1].DeliveryDate);
+        Assert.Equal("Delivered", report.Items[1].Status);
+    }
 }

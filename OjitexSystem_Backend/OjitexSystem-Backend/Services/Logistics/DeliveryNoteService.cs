@@ -89,4 +89,12 @@ public class DeliveryNoteService(IDeliveryNoteRepository repository, IUserReposi
 
         return new DeliveryMonthlyReportDto { Items = matchedItems };
     }
+
+    public async Task<DeliveryStatusReportDto> GetStatusAsync(
+        DateOnly? fromDate, DateOnly? toDate,
+        CancellationToken cancellationToken = default)
+    {
+        var items = await repository.GetStatusAsync(fromDate, toDate, cancellationToken);
+        return new DeliveryStatusReportDto { Items = items };
+    }
 }
