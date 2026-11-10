@@ -1,0 +1,126 @@
+@use '../../factory/online-report';
+
+.monthly-toolbar {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px 24px;
+  min-height: 64px;
+  padding: 8px 16px;
+  border-bottom: 1px solid #e4e7ec;
+  color: #475467;
+  font-size: 13px;
+}
+
+.monthly-toolbar h1 {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  padding: 0 16px;
+  white-space: nowrap;
+  text-align: center;
+  justify-self: center;
+}
+
+.monthly-filters {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px 12px;
+  min-width: 0;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filter-field label {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.filter-field input {
+  box-sizing: border-box;
+  width: 120px;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid #d0d5dd;
+  border-radius: 7px;
+  color: #344054;
+  font: inherit;
+}
+
+.filter-field input[name='fromDate'],
+.filter-field input[name='toDate'] {
+  width: 110px;
+}
+
+.filter-field input[name='productCode'] {
+  width: 120px;
+}
+
+.filter-field input[aria-invalid='true'] {
+  border-color: #b42318;
+}
+
+.monthly-toolbar .refresh-button,
+.monthly-toolbar .clear-button {
+  box-sizing: border-box;
+  min-height: 32px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+.monthly-toolbar .refresh-button {
+  min-width: 76px;
+}
+
+.monthly-toolbar .toolbar-actions {
+  grid-column: 3;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 8px;
+}
+
+:host ::ng-deep .result-grid .ag-header-cell-label {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+:host ::ng-deep .result-grid .ag-cell {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+@media (max-width: 1250px) {
+  .monthly-toolbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 16px;
+  }
+
+  .monthly-toolbar h1 {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding: 4px 0 0;
+  }
+
+  .monthly-filters {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .monthly-toolbar .toolbar-actions {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+  }
+}

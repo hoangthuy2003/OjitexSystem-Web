@@ -115,4 +115,79 @@ public class DeliveryNoteRepository(ProductionContext context) : IDeliveryNoteRe
             })
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<DeliveryMonthlyItemDto>> GetMonthlyAsync(
+        string? deliverySlip, string? customerCode, string? productCode,
+        DateOnly? fromDate, DateOnly? toDate,
+        CancellationToken cancellationToken = default)
+    {
+        var query =
+            from detail in context.TLogiDeliveryNoteDetails.AsNoTracking()
+            join note in context.TLogiDeliveryNotes.AsNoTracking()
+                on detail.DndDeliverySlip equals note.DnDeliverySlip
+            where note.DnUserId != null && note.DnUserId.Trim() != ""
+            select new { detail, note };
+
+        if (!string.IsNullOrEmpty(deliverySlip))
+        {
+            query = query.Where(row => row.detail.DndDeliverySlip != null
+                && row.detail.DndDeliverySlip.Trim().StartsWith(deliverySlip));
+        }
+
+        if (!string.IsNullOrEmpty(customerCode))
+        {
+            query = query.Where(row => row.note.DnCusCd.HasValue
+                && row.note.DnCusCd.Value.ToString().StartsWith(customerCode));
+        }
+
+        if (!string.IsNullOrEmpty(productCode))
+        {
+            query = query.Where(row => row.detail.DndProCd.HasValue
+                && row.detail.DndProCd.Value.ToString().StartsWith(productCode));
+        }
+
+        if (fromDate.HasValue)
+        {
+            var from = fromDate.Value;
+            query = query.Where(row => row.note.DnDateDelivery >= from);
+        }
+
+        if (toDate.HasValue)
+        {
+            var to = toDate.Value;
+            query = query.Where(row => row.note.DnDateDelivery <= to);
+        }
+
+        return await query
+            .OrderByDescending(row => row.note.DnDateDelivery)
+            .ThenByDescending(row => row.note.DnDateInput)
+            .ThenBy(row => row.note.DnDeliverySlip)
+            .ThenBy(row => row.detail.DndLineNo)
+            .ThenBy(row => row.detail.DndKey)
+            .Select(row => new DeliveryMonthlyItemDto
+            {
+                Key = row.detail.DndKey,
+                Status = row.note.DnStatus,
+                LineNo = row.detail.DndLineNo,
+                DeliverySlip = row.detail.DndDeliverySlip != null ? row.detail.DndDeliverySlip.Trim() : "",
+                ReceiveNo = row.detail.DndReceiveNo,
+                SupplierCode = row.note.DnSupCd,
+                CustomerCode = row.note.DnCusCd,
+                CustomerName = row.note.DnCusNa,
+                ProductCode = row.detail.DndProCd,
+                ProductName = row.detail.DndProName,
+                Quantity = row.detail.DndQty,
+                DeliveryDate = row.note.DnDateDelivery,
+                CustomerPo = row.detail.DndCsPo,
+                Remark = row.detail.DndRemark,
+                OtherNote = row.detail.DndOtherNote,
+                TruckNumber = row.note.DnTruckNumber,
+                CarType = row.note.DnCarType,
+                TransportCompany = row.note.DnTransportCompany,
+                DateInput = row.note.DnDateInput,
+                UserId = row.note.DnUserId,
+                State = row.note.DnState
+            })
+            .ToListAsync(cancellationToken);
+    }
 }

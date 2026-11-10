@@ -77,28 +77,33 @@ export const FINISHED_GOODS_MENU_ITEMS: (LogisticsMenuItem | null)[] = [
   {
     title: 'Goods Receipt Search',
     lines: ['Goods Receipt', 'Search'],
+    route: '/logistic/goods-receipt-search',
     actionKey: 'goods-receipt-search',
   },
   {
     title: 'Delivery Note Monthly',
     lines: ['Delivery Note', 'Monthly'],
+    route: '/logistic/delivery-note-monthly',
     actionKey: 'delivery-note-monthly',
   },
 
   {
     title: 'Goods Receipt Information',
     lines: ['Goods Receipt', 'Information'],
+    route: '/logistic/goods-receipt-info',
     actionKey: 'goods-receipt-info',
   },
 
   {
     title: 'Delivery Plan Search',
     lines: ['Delivery Plan', 'Search'],
+    route: '/logistic/delivery-plan-search',
     actionKey: 'delivery-plan-search',
   },
   {
     title: 'Delivery Plan Monthly',
     lines: ['Delivery Plan', 'Monthly'],
+    route: '/logistic/delivery-plan-monthly',
     actionKey: 'delivery-plan-monthly',
   },
   {

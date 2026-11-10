@@ -1,0 +1,93 @@
+<main class="page">
+  <section
+    class="result-card"
+    aria-label="Goods receipt information results"
+    [attr.aria-busy]="loading()"
+  >
+    <form class="info-toolbar" (ngSubmit)="search()">
+      <div class="info-filters">
+        <div class="filter-field">
+          <label for="info-date-receipt">Date Receipt</label>
+          <input
+            #dateInput
+            id="info-date-receipt"
+            name="dateReceipt"
+            type="text"
+            maxlength="10"
+            placeholder="MM/DD/YYYY"
+            autocomplete="off"
+            [value]="filters().dateReceipt"
+            (input)="changeFilter('dateReceipt', dateInput.value)"
+            [attr.aria-invalid]="invalidField() === 'dateReceipt' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'dateReceipt' ? 'search-error' : null"
+          />
+        </div>
+        <div class="filter-field">
+          <label for="info-receive-no">Receive no</label>
+          <input
+            #receiveInput
+            id="info-receive-no"
+            name="receiveNo"
+            type="text"
+            maxlength="20"
+            autocomplete="off"
+            [value]="filters().receiveNo"
+            (input)="changeFilter('receiveNo', receiveInput.value)"
+            [attr.aria-invalid]="invalidField() === 'receiveNo' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'receiveNo' ? 'search-error' : null"
+          />
+        </div>
+        <div class="filter-field">
+          <label for="info-product-code">Product Code</label>
+          <input
+            #productInput
+            id="info-product-code"
+            name="productCode"
+            type="text"
+            inputmode="numeric"
+            maxlength="7"
+            autocomplete="off"
+            [value]="filters().productCode"
+            (input)="changeFilter('productCode', productInput.value)"
+            [attr.aria-invalid]="invalidField() === 'productCode' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'productCode' ? 'search-error' : null"
+          />
+        </div>
+        <button class="refresh-button" type="submit" [disabled]="loading()">Search</button>
+      </div>
+      <h1>GOODS RECEIPT INFORMATION</h1>
+      <div class="toolbar-actions">
+        <button class="clear-button" type="button" (click)="clear()">Clear</button>
+      </div>
+    </form>
+
+    @if (loading()) {
+      <p class="message" role="status">Loading Goods Receipt Information…</p>
+    } @else if (error()) {
+      <p id="search-error" class="message error-message" role="alert">{{ error() }}</p>
+    } @else if (!report()) {
+    } @else if (!report()?.items?.length) {
+      <p class="message" role="status">No matching goods receipt records found.</p>
+    } @else {
+      <div class="table-scroll">
+        <ag-grid-angular
+          reportClipboard
+          class="result-grid"
+          aria-label="Goods receipt information results"
+          [rowData]="report()?.items ?? []"
+          [columnDefs]="columns"
+          [defaultColDef]="defaultColDef"
+          [theme]="gridTheme"
+          [pagination]="true"
+          [paginationPageSize]="20"
+          [paginationPageSizeSelector]="[20, 50, 100]"
+          [enableCellTextSelection]="true"
+          [ensureDomOrder]="true"
+        />
+      </div>
+    }
+  </section>
+  <footer class="page-actions">
+    <a class="back-button" routerLink="/logistic/menu">Go Back</a>
+  </footer>
+</main>

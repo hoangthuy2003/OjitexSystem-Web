@@ -55,4 +55,38 @@ public class DeliveryNoteService(IDeliveryNoteRepository repository, IUserReposi
 
         return new DeliveryInformationDto { Items = matchedItems };
     }
+
+    public async Task<DeliveryMonthlyReportDto> GetMonthlyAsync(
+        string? deliverySlip, string? customerCode, string? productCode,
+        DateOnly? fromDate, DateOnly? toDate,
+        CancellationToken cancellationToken = default)
+    {
+        deliverySlip = string.IsNullOrWhiteSpace(deliverySlip) ? null : deliverySlip.Trim();
+        customerCode = string.IsNullOrWhiteSpace(customerCode) ? null : customerCode.Trim();
+        productCode = string.IsNullOrWhiteSpace(productCode) ? null : productCode.Trim();
+
+        var items = await repository.GetMonthlyAsync(
+            deliverySlip, customerCode, productCode, fromDate, toDate, cancellationToken);
+
+        var userIds = items
+            .Where(item => !string.IsNullOrWhiteSpace(item.UserId))
+            .Select(item => item.UserId!.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        var firstNames = await users.GetFirstNamesAsync(userIds, cancellationToken);
+        var matchedItems = new List<DeliveryMonthlyItemDto>(items.Count);
+
+        foreach (var item in items)
+        {
+            var userId = item.UserId?.Trim() ?? "";
+            if (firstNames.TryGetValue(userId, out var firstName))
+            {
+                item.UserFirstName = firstName;
+                matchedItems.Add(item);
+            }
+        }
+
+        return new DeliveryMonthlyReportDto { Items = matchedItems };
+    }
 }
