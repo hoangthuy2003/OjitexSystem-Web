@@ -123,6 +123,43 @@ public class DeliveryNoteController(IDeliveryNoteService service) : ControllerBa
             deliverySlip, customerCode, productCode, parsedFromDate, parsedToDate, cancellationToken));
     }
 
+    [HttpGet("status")]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public async Task<ActionResult<DeliveryStatusReportDto>> GetStatus(
+        [FromQuery] string? fromDate,
+        [FromQuery] string? toDate,
+        CancellationToken cancellationToken)
+    {
+        DateOnly? parsedFromDate = null;
+        if (!string.IsNullOrWhiteSpace(fromDate))
+        {
+            if (!DateOnly.TryParseExact(fromDate.Trim(), ["MM/dd/yyyy", "M/d/yyyy", "yyyy-MM-dd"],
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed))
+            {
+                return BadRequest(new { message = "Enter a valid from date in MM/dd/yyyy format." });
+            }
+            parsedFromDate = parsed;
+        }
+
+        DateOnly? parsedToDate = null;
+        if (!string.IsNullOrWhiteSpace(toDate))
+        {
+            if (!DateOnly.TryParseExact(toDate.Trim(), ["MM/dd/yyyy", "M/d/yyyy", "yyyy-MM-dd"],
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed))
+            {
+                return BadRequest(new { message = "Enter a valid to date in MM/dd/yyyy format." });
+            }
+            parsedToDate = parsed;
+        }
+
+        if (parsedFromDate.HasValue && parsedToDate.HasValue && parsedFromDate.Value > parsedToDate.Value)
+        {
+            return BadRequest(new { message = "From date must be earlier than or equal to to date." });
+        }
+
+        return Ok(await service.GetStatusAsync(parsedFromDate, parsedToDate, cancellationToken));
+    }
+
     [HttpGet("{deliverySlip}")]
     public async Task<ActionResult<DeliveryNoteDto>> Search(string deliverySlip, CancellationToken cancellationToken)
     {

@@ -13,4 +13,7 @@ public interface IDeliveryNoteRepository
         string? deliverySlip, string? customerCode, string? productCode,
         DateOnly? fromDate, DateOnly? toDate,
         CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<DeliveryStatusItemDto>> GetStatusAsync(
+        DateOnly? fromDate, DateOnly? toDate,
+        CancellationToken cancellationToken = default);
 }

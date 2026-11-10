@@ -190,4 +190,38 @@ public class DeliveryNoteRepository(ProductionContext context) : IDeliveryNoteRe
             })
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<DeliveryStatusItemDto>> GetStatusAsync(
+        DateOnly? fromDate, DateOnly? toDate,
+        CancellationToken cancellationToken = default)
+    {
+        var query = context.TLogiDeliveryNotes.AsNoTracking();
+
+        if (fromDate.HasValue)
+        {
+            query = query.Where(note => note.DnDateDelivery >= fromDate.Value);
+        }
+
+        if (toDate.HasValue)
+        {
+            query = query.Where(note => note.DnDateDelivery <= toDate.Value);
+        }
+
+        return await query
+            .OrderByDescending(note => note.DnDateDelivery)
+            .ThenByDescending(note => note.DnKey)
+            .Select(note => new DeliveryStatusItemDto
+            {
+                Key = note.DnKey,
+                CustomerCode = note.DnCusCd,
+                CustomerName = note.DnCusNa,
+                DeliveryDate = note.DnDateDelivery,
+                TransportSupplier = note.DnTransportCompany,
+                TruckNumber = note.DnTruckNumber,
+                DeliverySlip = note.DnDeliverySlip.Trim(),
+                Status = note.DnStatus,
+                Remark = note.DnStatusRemark,
+            })
+            .ToListAsync(cancellationToken);
+    }
 }
