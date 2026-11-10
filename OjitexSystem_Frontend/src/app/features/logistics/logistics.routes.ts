@@ -37,6 +37,14 @@ export const logisticsRoutes: Routes = [
       ),
   },
   {
+    path: 'logistic/goods-receipt-info',
+    canActivate: [logisticsAccessGuard],
+    loadComponent: () =>
+      import('./goods-receipt-information/goods-receipt-information-page').then(
+        (module) => module.GoodsReceiptInformationPage,
+      ),
+  },
+  {
     path: 'logistic/delivery-note-monthly',
     canActivate: [logisticsAccessGuard],
     loadComponent: () =>

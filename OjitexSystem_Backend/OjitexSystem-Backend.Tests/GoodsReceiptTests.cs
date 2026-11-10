@@ -98,4 +98,61 @@ public sealed class GoodsReceiptTests
         Assert.Single(result.Items);
         Assert.Equal(588354m, result.Items[0].ReceiveNo);
     }
+
+    [Fact]
+    public async Task GetInformationFiltersByDateReceiveNoAndProductCode()
+    {
+        using var auth = new AuthTestFixture();
+        var user = auth.AddUser("staff");
+        user.UserFirstName = "Ms. Thanh";
+        auth.Context.SaveChanges();
+
+        using var context = NewContext();
+        context.TInputCustomers.Add(new TInputCustomer
+        {
+            CusCd = 501m,
+            CusName = "B Braun VN"
+        });
+
+        context.TLogiGoodsReceipts.AddRange(
+            new TLogiGoodsReceipt
+            {
+                GrKey = 1,
+                GrDateReceipt = new DateOnly(2026, 11, 10),
+                GrReceiveNo = 581322m,
+                GrCusCd = 501m,
+                GrProCd = 5010037m,
+                GrProName = "Carton Box",
+                GrQty = 480m,
+                GrProductionSection = "ST",
+                GrNote = "09/11/2026",
+                GrDateInput = new DateTime(2026, 11, 10, 7, 32, 0),
+                GrUserId = "staff"
+            },
+            new TLogiGoodsReceipt
+            {
+                GrKey = 2,
+                GrDateReceipt = new DateOnly(2026, 11, 10),
+                GrReceiveNo = 581322m,
+                GrCusCd = 501m,
+                GrProCd = 5010099m,
+                GrDateInput = new DateTime(2026, 11, 10, 7, 30, 0),
+                GrUserId = "staff"
+            });
+        await context.SaveChangesAsync();
+
+        var service = new GoodsReceiptService(new GoodsReceiptRepository(context), auth.Users);
+
+        var report = await service.GetInformationAsync(
+            new DateOnly(2026, 11, 10), "581322", "5010037");
+
+        Assert.Single(report.Items);
+        var item = report.Items[0];
+        Assert.Equal(581322m, item.ReceiveNo);
+        Assert.Equal(5010037m, item.ProductCode);
+        Assert.Equal("B Braun VN", item.CustomerName);
+        Assert.Equal("Ms. Thanh", item.UserFirstName);
+        Assert.Equal(480m, item.Quantity);
+        Assert.Equal("ST", item.ProductionSection);
+    }
 }

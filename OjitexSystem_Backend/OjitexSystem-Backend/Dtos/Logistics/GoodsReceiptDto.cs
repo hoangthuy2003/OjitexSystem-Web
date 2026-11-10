@@ -5,6 +5,11 @@ public class GoodsReceiptSearchResultDto
     public IReadOnlyList<GoodsReceiptItemDto> Items { get; set; } = [];
 }
 
+public class GoodsReceiptInformationDto
+{
+    public IReadOnlyList<GoodsReceiptItemDto> Items { get; set; } = [];
+}
+
 public class GoodsReceiptItemDto
 {
     public int Key { get; set; }

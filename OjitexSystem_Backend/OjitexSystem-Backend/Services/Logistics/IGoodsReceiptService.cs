@@ -7,4 +7,7 @@ public interface IGoodsReceiptService
     Task<GoodsReceiptSearchResultDto> SearchAsync(
         DateOnly? dateReceipt, string? receiveNo,
         CancellationToken cancellationToken = default);
+    Task<GoodsReceiptInformationDto> GetInformationAsync(
+        DateOnly? dateReceipt, string? receiveNo, string? productCode,
+        CancellationToken cancellationToken = default);
 }

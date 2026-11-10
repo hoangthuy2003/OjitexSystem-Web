@@ -10,8 +10,24 @@ public class GoodsReceiptService(IGoodsReceiptRepository repository, IUserReposi
         DateOnly? dateReceipt, string? receiveNo,
         CancellationToken cancellationToken = default)
     {
-        var items = await repository.SearchAsync(dateReceipt, receiveNo, cancellationToken);
+        var items = await repository.SearchAsync(dateReceipt, receiveNo, null, cancellationToken);
+        await ResolveUserNamesAsync(items, cancellationToken);
+        return new GoodsReceiptSearchResultDto { Items = items };
+    }
 
+    public async Task<GoodsReceiptInformationDto> GetInformationAsync(
+        DateOnly? dateReceipt, string? receiveNo, string? productCode,
+        CancellationToken cancellationToken = default)
+    {
+        var items = await repository.SearchAsync(dateReceipt, receiveNo, productCode, cancellationToken);
+        await ResolveUserNamesAsync(items, cancellationToken);
+        return new GoodsReceiptInformationDto { Items = items };
+    }
+
+    private async Task ResolveUserNamesAsync(
+        IReadOnlyList<GoodsReceiptItemDto> items,
+        CancellationToken cancellationToken)
+    {
         // Collect all distinct user IDs (input + changed) for a single batch lookup.
         var userIds = items
             .SelectMany(item => new[] { item.UserFirstName, item.UserChangedFirstName })
@@ -46,7 +62,5 @@ public class GoodsReceiptService(IGoodsReceiptRepository repository, IUserReposi
                 item.UserChangedFirstName = null;
             }
         }
-
-        return new GoodsReceiptSearchResultDto { Items = items };
     }
 }

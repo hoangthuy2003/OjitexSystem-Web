@@ -7,7 +7,7 @@ namespace OjitexSystem_Backend.Repositories.Logistics;
 public class GoodsReceiptRepository(ProductionContext context) : IGoodsReceiptRepository
 {
     public async Task<IReadOnlyList<GoodsReceiptItemDto>> SearchAsync(
-        DateOnly? dateReceipt, string? receiveNo,
+        DateOnly? dateReceipt, string? receiveNo, string? productCode = null,
         CancellationToken cancellationToken = default)
     {
         var query =
@@ -27,6 +27,13 @@ public class GoodsReceiptRepository(ProductionContext context) : IGoodsReceiptRe
             query = query.Where(row =>
                 row.gr.GrReceiveNo != null &&
                 row.gr.GrReceiveNo.Value.ToString().StartsWith(receiveNo));
+        }
+
+        if (!string.IsNullOrEmpty(productCode))
+        {
+            query = query.Where(row =>
+                row.gr.GrProCd != null &&
+                row.gr.GrProCd.Value.ToString().StartsWith(productCode));
         }
 
         return await query

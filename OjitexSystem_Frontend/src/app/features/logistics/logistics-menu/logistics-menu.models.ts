@@ -90,6 +90,7 @@ export const FINISHED_GOODS_MENU_ITEMS: (LogisticsMenuItem | null)[] = [
   {
     title: 'Goods Receipt Information',
     lines: ['Goods Receipt', 'Information'],
+    route: '/logistic/goods-receipt-info',
     actionKey: 'goods-receipt-info',
   },
 
