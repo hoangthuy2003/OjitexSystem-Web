@@ -1,0 +1,94 @@
+<main class="page">
+  <section
+    class="result-card"
+    aria-label="Delivery plan monthly results"
+    [attr.aria-busy]="loading()"
+  >
+    <form class="monthly-toolbar" (ngSubmit)="search()">
+      <div class="monthly-filters">
+        <div class="filter-field">
+          <label for="plan-monthly-from-date">Delivery From</label>
+          <input
+            #fromInput
+            id="plan-monthly-from-date"
+            name="fromDate"
+            type="text"
+            maxlength="10"
+            placeholder="MM/DD/YYYY"
+            autocomplete="off"
+            [value]="filters().fromDate"
+            (input)="changeFilter('fromDate', fromInput.value)"
+            [attr.aria-invalid]="invalidField() === 'fromDate' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'fromDate' ? 'search-error' : null"
+          />
+        </div>
+        <div class="filter-field">
+          <label for="plan-monthly-to-date">To</label>
+          <input
+            #toInput
+            id="plan-monthly-to-date"
+            name="toDate"
+            type="text"
+            maxlength="10"
+            placeholder="MM/DD/YYYY"
+            autocomplete="off"
+            [value]="filters().toDate"
+            (input)="changeFilter('toDate', toInput.value)"
+            [attr.aria-invalid]="invalidField() === 'toDate' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'toDate' ? 'search-error' : null"
+          />
+        </div>
+        <div class="filter-field">
+          <label for="plan-monthly-product-code">Product Code</label>
+          <input
+            #productInput
+            id="plan-monthly-product-code"
+            name="productCode"
+            type="text"
+            inputmode="numeric"
+            maxlength="7"
+            autocomplete="off"
+            [value]="filters().productCode"
+            (input)="changeFilter('productCode', productInput.value)"
+            [attr.aria-invalid]="invalidField() === 'productCode' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'productCode' ? 'search-error' : null"
+          />
+        </div>
+        <button class="refresh-button" type="submit" [disabled]="loading()">Search</button>
+      </div>
+      <h1>DELIVERY PLAN MONTHLY INFORMATION</h1>
+      <div class="toolbar-actions">
+        <button class="clear-button" type="button" (click)="clear()">Clear Content</button>
+      </div>
+    </form>
+
+    @if (loading()) {
+      <p class="message" role="status">Loading Delivery Plan Monthly Information…</p>
+    } @else if (error()) {
+      <p id="search-error" class="message error-message" role="alert">{{ error() }}</p>
+    } @else if (!report()) {
+    } @else if (!report()?.items?.length) {
+      <p class="message" role="status">No matching delivery plan monthly records found.</p>
+    } @else {
+      <div class="table-scroll">
+        <ag-grid-angular
+          reportClipboard
+          class="result-grid"
+          aria-label="Delivery plan monthly results"
+          [rowData]="report()?.items ?? []"
+          [columnDefs]="columns"
+          [defaultColDef]="defaultColDef"
+          [theme]="gridTheme"
+          [pagination]="true"
+          [paginationPageSize]="20"
+          [paginationPageSizeSelector]="[20, 50, 100]"
+          [enableCellTextSelection]="true"
+          [ensureDomOrder]="true"
+        />
+      </div>
+    }
+  </section>
+  <footer class="page-actions">
+    <a class="back-button" routerLink="/logistic/menu">Go Back</a>
+  </footer>
+</main>

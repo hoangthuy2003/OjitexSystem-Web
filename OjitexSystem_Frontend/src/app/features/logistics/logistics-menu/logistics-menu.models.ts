@@ -103,6 +103,7 @@ export const FINISHED_GOODS_MENU_ITEMS: (LogisticsMenuItem | null)[] = [
   {
     title: 'Delivery Plan Monthly',
     lines: ['Delivery Plan', 'Monthly'],
+    route: '/logistic/delivery-plan-monthly',
     actionKey: 'delivery-plan-monthly',
   },
   {

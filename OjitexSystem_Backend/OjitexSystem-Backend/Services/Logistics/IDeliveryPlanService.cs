@@ -7,4 +7,8 @@ public interface IDeliveryPlanService
     Task<DeliveryPlanSearchResultDto> SearchAsync(
         DateOnly? deliveryDate, string? receiveNo,
         CancellationToken cancellationToken = default);
+
+    Task<DeliveryPlanMonthlyResultDto> GetMonthlyAsync(
+        DateOnly? fromDate, DateOnly? toDate, string? productCode,
+        CancellationToken cancellationToken = default);
 }

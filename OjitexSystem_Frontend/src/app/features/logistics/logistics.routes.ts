@@ -61,6 +61,14 @@ export const logisticsRoutes: Routes = [
       ),
   },
   {
+    path: 'logistic/delivery-plan-monthly',
+    canActivate: [logisticsAccessGuard],
+    loadComponent: () =>
+      import('./delivery-plan-monthly/delivery-plan-monthly-page').then(
+        (module) => module.DeliveryPlanMonthlyPage,
+      ),
+  },
+  {
     path: 'logistic/menu',
     canActivate: [logisticsAccessGuard],
     loadComponent: () =>

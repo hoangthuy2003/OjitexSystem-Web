@@ -36,7 +36,7 @@ export const DELIVERY_PLAN_SEARCH_COLUMN_DEFS: ColDef<DeliveryPlanItem>[] = [
     field: 'deliveryDate',
     headerName: 'Delivery Date',
     minWidth: 105,
-    valueFormatter: ({ value }) => (value ? formatDate(value, 'MM/dd/yyyy', 'en-US') : '—'),
+    valueFormatter: ({ value }) => (value ? formatDate(value, 'M/d/yyyy', 'en-US') : '—'),
   },
   {
     field: 'customerName',
