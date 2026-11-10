@@ -97,6 +97,7 @@ export const FINISHED_GOODS_MENU_ITEMS: (LogisticsMenuItem | null)[] = [
   {
     title: 'Delivery Plan Search',
     lines: ['Delivery Plan', 'Search'],
+    route: '/logistic/delivery-plan-search',
     actionKey: 'delivery-plan-search',
   },
   {

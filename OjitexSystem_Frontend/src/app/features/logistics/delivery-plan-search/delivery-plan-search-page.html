@@ -1,0 +1,77 @@
+<main class="page">
+  <section
+    class="result-card"
+    aria-label="Delivery plan search results"
+    [attr.aria-busy]="loading()"
+  >
+    <form class="info-toolbar" (ngSubmit)="search()">
+      <div class="info-filters">
+        <div class="filter-field">
+          <label for="plan-delivery-date">Delivery Date</label>
+          <input
+            #dateInput
+            id="plan-delivery-date"
+            name="deliveryDate"
+            type="text"
+            maxlength="10"
+            placeholder="MM/DD/YYYY"
+            autocomplete="off"
+            [value]="filters().deliveryDate"
+            (input)="changeFilter('deliveryDate', dateInput.value)"
+            [attr.aria-invalid]="invalidField() === 'deliveryDate' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'deliveryDate' ? 'search-error' : null"
+          />
+        </div>
+        <div class="filter-field">
+          <label for="plan-receive-no">Receive No</label>
+          <input
+            #receiveInput
+            id="plan-receive-no"
+            name="receiveNo"
+            type="text"
+            maxlength="20"
+            autocomplete="off"
+            [value]="filters().receiveNo"
+            (input)="changeFilter('receiveNo', receiveInput.value)"
+            [attr.aria-invalid]="invalidField() === 'receiveNo' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'receiveNo' ? 'search-error' : null"
+          />
+        </div>
+        <button class="refresh-button" type="submit" [disabled]="loading()">Search</button>
+      </div>
+      <h1>DELIVERY PLAN SEARCH</h1>
+      <div class="toolbar-actions">
+        <button class="clear-button" type="button" (click)="clear()">Clear</button>
+      </div>
+    </form>
+
+    @if (loading()) {
+      <p class="message" role="status">Loading Delivery Plan…</p>
+    } @else if (error()) {
+      <p id="search-error" class="message error-message" role="alert">{{ error() }}</p>
+    } @else if (!report()) {
+    } @else if (!report()?.items?.length) {
+      <p class="message" role="status">No matching delivery plan records found.</p>
+    } @else {
+      <div class="table-scroll">
+        <ag-grid-angular
+          reportClipboard
+          class="result-grid"
+          aria-label="Delivery plan search results"
+          [rowData]="report()?.items ?? []"
+          [columnDefs]="columns"
+          [defaultColDef]="defaultColDef"
+          [theme]="gridTheme"
+          [pagination]="true"
+          [paginationPageSize]="20"
+          [paginationPageSizeSelector]="[20, 50, 100]"
+          [enableCellTextSelection]="true"
+          [ensureDomOrder]="true"
+        />
+      </div>
+    }
+  </section>
+  <footer class="page-actions">
+    <a class="back-button" routerLink="/logistic/menu">Go Back</a>
+  </footer>
+</main>
