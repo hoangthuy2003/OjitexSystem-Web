@@ -31,18 +31,25 @@ describe('DeliveryNoteStatusPage', () => {
     return { fixture, http: TestBed.inject(HttpTestingController) };
   }
 
-  it('requests delivery note status with default dates', () => {
+  it('requests delivery note status with filters', () => {
     const { fixture, http } = setup();
     const page = fixture.componentInstance as unknown as {
+      changeFilter: (field: string, value: string) => void;
       search: () => void;
       report: () => DeliveryStatusReport | null;
+      filters: () => { fromDate: string; toDate: string };
     };
 
+    expect(page.filters().fromDate).toBe('');
+    expect(page.filters().toDate).toBe('');
+
+    page.changeFilter('fromDate', '11/01/2026');
+    page.changeFilter('toDate', '11/10/2026');
     page.search();
 
     const request = http.expectOne((req) => req.url === '/api/DeliveryNote/status');
-    expect(request.request.params.get('fromDate')).toMatch(/^\d{2}\/\d{2}\/\d{4}$/);
-    expect(request.request.params.get('toDate')).toMatch(/^\d{2}\/\d{2}\/\d{4}$/);
+    expect(request.request.params.get('fromDate')).toBe('11/01/2026');
+    expect(request.request.params.get('toDate')).toBe('11/10/2026');
 
     request.flush(mockReport);
     expect(page.report()).toEqual(mockReport);
@@ -70,7 +77,7 @@ describe('DeliveryNoteStatusPage', () => {
     http.verify();
   });
 
-  it('restores default dates and clears report on clear()', () => {
+  it('clears filters and report on clear()', () => {
     const { fixture, http } = setup();
     const page = fixture.componentInstance as unknown as {
       changeFilter: (field: string, value: string) => void;
@@ -87,7 +94,8 @@ describe('DeliveryNoteStatusPage', () => {
 
     page.clear();
     expect(page.report()).toBeNull();
-    expect(page.filters().fromDate).toMatch(/^\d{2}\/01\/\d{4}$/);
+    expect(page.filters().fromDate).toBe('');
+    expect(page.filters().toDate).toBe('');
     http.verify();
   });
 });

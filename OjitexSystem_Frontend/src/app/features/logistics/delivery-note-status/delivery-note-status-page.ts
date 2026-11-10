@@ -30,17 +30,6 @@ ModuleRegistry.registerModules([
   TooltipModule,
 ]);
 
-function getInitialDates(): { fromDate: string; toDate: string } {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return {
-    fromDate: `${month}/01/${year}`,
-    toDate: `${month}/${day}/${year}`,
-  };
-}
-
 function parseDateForComparison(value: string): number | null {
   if (!isValidReportDate(value)) return null;
   const [month, day, year] = value.split('/').map(Number);
@@ -62,12 +51,7 @@ export class DeliveryNoteStatusPage {
   private readonly service = inject(DeliveryNoteService);
   private readonly searches = new Subject<DeliveryStatusFilters | null>();
 
-  private readonly initialDates = getInitialDates();
-  protected readonly filters = signal<DeliveryStatusFilters>({
-    ...EMPTY_FILTERS,
-    fromDate: this.initialDates.fromDate,
-    toDate: this.initialDates.toDate,
-  });
+  protected readonly filters = signal<DeliveryStatusFilters>({ ...EMPTY_FILTERS });
   protected readonly columns = DELIVERY_NOTE_STATUS_COLUMN_DEFS;
   protected readonly defaultColDef = DELIVERY_NOTE_STATUS_DEFAULT_COLUMN;
   protected readonly gridTheme = themeQuartz.withParams({
@@ -151,11 +135,7 @@ export class DeliveryNoteStatusPage {
 
   protected clear(): void {
     this.resetResults();
-    this.filters.set({
-      ...EMPTY_FILTERS,
-      fromDate: this.initialDates.fromDate,
-      toDate: this.initialDates.toDate,
-    });
+    this.filters.set({ ...EMPTY_FILTERS });
   }
 
   private resetResults(): void {
