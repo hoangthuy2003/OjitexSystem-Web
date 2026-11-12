@@ -2,8 +2,11 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  width: min(1180px, 100%);
+  width: min(1180px, calc(100% - clamp(48px, 8vw, 112px)));
+  min-height: calc(100vh - 76px);
   margin: 0 auto;
+  padding: clamp(32px, 7vh, 72px) 0 48px;
+  box-sizing: border-box;
 }
 
 .page-heading {
@@ -100,6 +103,12 @@
 }
 
 @media (max-width: 520px) {
+  :host {
+    width: calc(100% - 40px);
+    padding-top: 32px;
+    min-height: calc(100vh - 64px);
+  }
+
   .logistics-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;

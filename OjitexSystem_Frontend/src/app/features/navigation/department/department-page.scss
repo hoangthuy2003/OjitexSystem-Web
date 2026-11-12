@@ -12,6 +12,13 @@
   flex-direction: column;
 }
 
+.department-page.is-logistics-page {
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+  flex: 1;
+}
+
 .page-heading {
   margin-bottom: 28px;
 }
