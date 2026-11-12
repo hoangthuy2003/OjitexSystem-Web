@@ -16,6 +16,7 @@ export const PAPER_ROLL_MENU_ITEMS: (LogisticsMenuItem | null)[] = [
   {
     title: 'Paper Roll Import Search',
     lines: ['Paper Roll Import', 'Search'],
+    route: '/logistic/paper-roll-import-search',
     actionKey: 'import-search',
   },
   {

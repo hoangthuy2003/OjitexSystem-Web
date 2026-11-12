@@ -56,6 +56,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDeliveryNoteRepository, DeliveryNoteRepository>();
         services.AddScoped<IGoodsReceiptRepository, GoodsReceiptRepository>();
         services.AddScoped<IDeliveryPlanRepository, DeliveryPlanRepository>();
+        services.AddScoped<IPaperRollImportRepository, PaperRollImportRepository>();
         services.AddScoped<ICorrugatorOnlineRepository, CorrugatorOnlineRepository>();
         services.AddScoped<IConvertingOnlineRepository, ConvertingOnlineRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
@@ -71,6 +72,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDeliveryNoteService, DeliveryNoteService>();
         services.AddScoped<IGoodsReceiptService, GoodsReceiptService>();
         services.AddScoped<IDeliveryPlanService, DeliveryPlanService>();
+        services.AddScoped<IPaperRollImportService, PaperRollImportService>();
         services.AddScoped<ICorrugatorOnlineService, CorrugatorOnlineService>();
         services.AddScoped<IConvertingOnlineService, ConvertingOnlineService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();

@@ -101,4 +101,18 @@ describe('LogisticsMenuComponent', () => {
 
     expect(navigateSpy).toHaveBeenCalledWith('/logistic/delivery-note-search');
   });
+
+  it('should navigate to Paper Roll Import Search from the paper roll menu', () => {
+    const navigateSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+    component.pageIndex.set(1);
+    fixture.detectChanges();
+
+    const searchCard = fixture.nativeElement.querySelector(
+      '[data-action="import-search"]',
+    ) as HTMLButtonElement;
+    expect(searchCard).toBeTruthy();
+    searchCard.click();
+
+    expect(navigateSpy).toHaveBeenCalledWith('/logistic/paper-roll-import-search');
+  });
 });

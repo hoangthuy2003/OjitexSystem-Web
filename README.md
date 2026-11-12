@@ -8,7 +8,7 @@
 | --- | --- |
 | Xác thực | Đăng nhập JWT, lưu phiên, đăng xuất, đổi mật khẩu |
 | Quản trị | Danh sách tài khoản, tạo/sửa, role, quyền category, đặt lại mật khẩu, xóa mềm |
-| Logistics | Current / Last / Monthly Stock, tìm theo tiền tố mã sản phẩm, lịch sử theo sản phẩm, in và sao chép bảng |
+| Logistics | Current / Last / Monthly Stock, tìm theo tiền tố mã sản phẩm, lịch sử theo sản phẩm, Paper Roll Import Search (lọc Paper Label, Grade Name, Date Received), in và sao chép bảng |
 | Factory | Corrugator Online / FDC Online / EVOL Online / FG Online / FAP Online / FPS Online: kết quả chạy máy trong ngày UTC+7, Refresh lấy lại dữ liệu, Clear xóa bảng hiển thị |
 | Factory History | Corrugator History tìm theo ngày `mm/dd/yyyy`; Converting History lọc kết hợp ngày, Process và tiền tố Product Code, bỏ trống cả ba rồi nhấn Search để xem toàn bộ; Clear xóa bộ lọc và bảng hiển thị |
 | Điều hướng | Trang chủ, danh mục phòng ban, danh mục báo cáo |

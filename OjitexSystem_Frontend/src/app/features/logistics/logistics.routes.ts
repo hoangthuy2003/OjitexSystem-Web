@@ -5,6 +5,14 @@ import { StockReportKind } from './stock-report/stock-report.models';
 const reportKinds: StockReportKind[] = ['current', 'last', 'monthly'];
 
 export const logisticsRoutes: Routes = [
+  {
+    path: 'logistic/paper-roll-import-search',
+    canActivate: [logisticsAccessGuard],
+    loadComponent: () =>
+      import('./paper-roll-import-search/paper-roll-import-search-page').then(
+        (module) => module.PaperRollImportSearchPage,
+      ),
+  },
   ...reportKinds.map((kind) => ({
     path: `logistic/${kind}-stock`,
     canActivate: [logisticsAccessGuard],

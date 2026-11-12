@@ -76,7 +76,7 @@ src/app/
   features/
     auth/                        # route đăng nhập và login-page
     admin/                       # routes, user-management: API, models, page, tests
-    logistics/                   # routes, stock-report: API, models, grid, page, tests
+    logistics/                   # routes, stock-report, paper-roll-import-search, other Logistics feature pages
     factory/                     # routes, corrugator-online, fdc-online, evol-online, fg-online, fap-online, fps-online: API, models, columns, page, tests
     navigation/                  # catalog, routes, home, department
 ```

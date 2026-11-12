@@ -1,0 +1,92 @@
+<main class="page">
+  <section
+    class="result-card"
+    aria-label="Paper Roll Import Search results"
+    [attr.aria-busy]="loading()"
+  >
+    <form class="info-toolbar" (ngSubmit)="search()">
+      <div class="info-filters">
+        <div class="filter-field">
+          <label for="paper-label">Paper Label</label>
+          <input
+            #paperLabelInput
+            id="paper-label"
+            name="paperLabel"
+            type="text"
+            maxlength="10"
+            autocomplete="off"
+            [value]="filters().paperLabel"
+            (input)="changeFilter('paperLabel', paperLabelInput.value)"
+            [attr.aria-invalid]="invalidField() === 'paperLabel' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'paperLabel' ? 'search-error' : null"
+          />
+        </div>
+        <div class="filter-field">
+          <label for="grade-name">Grade Name</label>
+          <input
+            #gradeNameInput
+            id="grade-name"
+            name="gradeName"
+            type="text"
+            maxlength="15"
+            autocomplete="off"
+            [value]="filters().gradeName"
+            (input)="changeFilter('gradeName', gradeNameInput.value)"
+            [attr.aria-invalid]="invalidField() === 'gradeName' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'gradeName' ? 'search-error' : null"
+          />
+        </div>
+        <div class="filter-field">
+          <label for="date-received">Date Received</label>
+          <input
+            #dateReceivedInput
+            id="date-received"
+            name="dateReceived"
+            type="text"
+            maxlength="10"
+            placeholder="MM/DD/YYYY"
+            autocomplete="off"
+            [value]="filters().dateReceived"
+            (input)="changeFilter('dateReceived', dateReceivedInput.value)"
+            [attr.aria-invalid]="invalidField() === 'dateReceived' ? 'true' : null"
+            [attr.aria-describedby]="invalidField() === 'dateReceived' ? 'search-error' : null"
+          />
+        </div>
+        <button class="refresh-button" type="submit" [disabled]="loading()">Search</button>
+      </div>
+      <h1>PAPER ROLL IMPORT SEARCH</h1>
+      <div class="toolbar-actions">
+        <button class="clear-button" type="button" (click)="clear()">Clear</button>
+      </div>
+    </form>
+
+    @if (loading()) {
+      <p class="message" role="status">Loading Paper Roll Import…</p>
+    } @else if (error()) {
+      <p id="search-error" class="message error-message" role="alert">{{ error() }}</p>
+    } @else if (!report()) {
+    } @else if (!report()?.items?.length) {
+      <p class="message" role="status">No matching paper roll import records found.</p>
+    } @else {
+      <div class="table-scroll">
+        <ag-grid-angular
+          reportClipboard
+          class="result-grid"
+          aria-label="Paper Roll Import Search results"
+          [rowData]="report()?.items ?? []"
+          [columnDefs]="columns"
+          [defaultColDef]="defaultColDef"
+          [theme]="gridTheme"
+          [pagination]="true"
+          [paginationPageSize]="20"
+          [paginationPageSizeSelector]="[20, 50, 100]"
+          [enableCellTextSelection]="true"
+          [ensureDomOrder]="true"
+        />
+      </div>
+    }
+  </section>
+  <footer class="page-actions">
+    <a class="back-button" routerLink="/logistic/menu">Go Back</a>
+  </footer>
+</main>
